@@ -90,7 +90,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onAuthSuccess }) => {
       });
 
       onAuthSuccess();
-      navigate('/chat');
+      navigate('/');
     } catch (error) {
       console.error('Error during authentication:', error);
       setLoginError(

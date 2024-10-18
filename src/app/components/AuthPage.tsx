@@ -28,7 +28,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess, onNavigate }) => {
     const checkExistingSession = async () => {
       const userId = localStorage.getItem('userId');
       if (userId) {
-        onNavigate('/chat');
+        onNavigate('/');
       } else {
         setIsInitializing(false);
       }
@@ -101,7 +101,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess, onNavigate }) => {
       });
 
       onAuthSuccess();
-      onNavigate('/chat');
+      onNavigate('/');
     } catch (error) {
       handleAuthError(error);
       setLoginError('Authentication failed. Please try again.');
