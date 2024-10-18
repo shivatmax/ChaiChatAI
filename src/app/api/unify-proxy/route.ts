@@ -5,10 +5,16 @@ export async function POST(req: Request) {
   const apiUrl = process.env.NEXT_PUBLIC_UNIFY_BASE_URL || '';
   const apiKey = process.env.NEXT_PUBLIC_UNIFY_API_KEY || '';
 
-  if (!apiUrl || !apiKey) {
-    console.error('Missing Unify API configuration');
+  if (!apiUrl) {
     return NextResponse.json(
-      { error: 'Unify API URL or API Key is missing' },
+      { error: 'Unify API URL is missing' },
+      { status: 500 }
+    );
+  }
+
+  if (!apiKey) {
+    return NextResponse.json(
+      { error: 'Unify API Key is missing' },
       { status: 500 }
     );
   }
