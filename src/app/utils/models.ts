@@ -44,6 +44,8 @@ export async function unifyAgentChat(userPrompt: string, systemPrompt: string) {
     });
 
     if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('Unify proxy error:', errorData);
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
