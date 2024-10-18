@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "build": "next build && prisma generate",
+    "start": "next start && prisma generate",
+    "lint": "next lint && prisma format"
   },
   "dependencies": {
     "@babel/core": "^7.25.8",
