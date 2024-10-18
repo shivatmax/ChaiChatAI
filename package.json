@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "build": "next build && prisma generate",
+    "start": "next start && prisma generate",
+    "lint": "next lint && prisma format"
   },
   "dependencies": {
     "@babel/core": "^7.25.8",
@@ -93,7 +93,7 @@
     "eslint-plugin-react-hooks": "^5.1.0-rc-fb9a90fa48-20240614",
     "eslint-plugin-react-refresh": "^0.4.12",
     "globals": "^15.11.0",
-    "prisma": "5.20.0",
+    "prisma": "^5.21.1",
     "typescript-eslint": "^8.10.0",
     "typescript": "^5.6.3",
     "@types/node": "^20.16.12",

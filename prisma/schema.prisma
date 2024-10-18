@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   String                @id @default(uuid())
+  name                 String
+  email                String                @unique
+  about                String
+  persona              String
+  knowledge_base       String
+  created_at           DateTime              @default(now())
+  updated_at           DateTime              @updatedAt
+  AIFriend             AIFriend[]
+  conversation_history ConversationHistory[]
+  sessions             Session[]
+  user_knowledge_base  UserKnowledgeBase[]
+}
+
+model AIFriend {
+  id                     String                @id @default(uuid())
+  user_id                String
+  name                   String
+  about                  String
+  persona                String
+  knowledge_base         String
+  memory                 Json?
+  status                 Boolean               @default(true)
+  created_at             DateTime              @default(now())
+  updated_at             DateTime              @updatedAt
+  User                   User                  @relation(fields: [user_id], references: [id])
+  conversation_history   ConversationHistory[]
+  knowledge_base_updates KnowledgeBase[]
+  sessions               Session[]             @relation("AIFriendToSession")
+
+  @@unique([user_id, name])
+}
+
+model ConversationHistory {
+  id              String   @id @default(uuid())
+  user_id         String
+  ai_friend_id    String
+  message         String
+  sender          String
+  created_at      DateTime @default(now())
+  conversation_id String
+  updated_at      DateTime @updatedAt
+  summary         String?
+  AIFriend        AIFriend @relation(fields: [ai_friend_id], references: [id])
+  User            User     @relation(fields: [user_id], references: [id])
+
+  @@index([conversation_id])
+}
+
+model KnowledgeBase {
+  id           String   @id @default(uuid())
+  ai_friend_id String
+  content      String
+  source       String
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  AIFriend     AIFriend @relation(fields: [ai_friend_id], references: [id])
+}
+
+model UserKnowledgeBase {
+  id         String   @id @default(uuid())
+  user_id    String
+  content    String
+  source     String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  User       User     @relation(fields: [user_id], references: [id])
+}
+
+model Session {
+  id            String      @id @default(uuid())
+  user_id       String
+  ai_friend_ids String[]
+  session_type  SessionType
+  title         String?
+  description   String?
+  created_at    DateTime    @default(now())
+  updated_at    DateTime    @updatedAt
+  User          User        @relation(fields: [user_id], references: [id])
+  AIFriends     AIFriend[]  @relation("AIFriendToSession")
+}
+
+enum SessionType {
+  General
+  StoryMode
+  ResearchCreateMode
+}
