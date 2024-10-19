@@ -35,10 +35,11 @@ const LogoutButton: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
         <motion.div
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
+          className='flex justify-center'
         >
           <Button
             variant='outline'
-            className='w-full bg-comic-red hover:bg-comic-purple text-white font-bold py-3 px-6 rounded-full comic-border comic-shadow transition-all duration-300 ease-in-out text-xl'
+            className='w-[90%] bg-comic-red hover:bg-comic-purple text-white font-bold py-3 px-6 rounded-full comic-border comic-shadow transition-all duration-300 ease-in-out text-xl'
           >
             <LogOut className='mr-2 h-6 w-6' /> Logout
           </Button>

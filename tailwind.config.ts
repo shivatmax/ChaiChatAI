@@ -22,7 +22,10 @@ export default {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
-        background: 'hsl(var(--background))',
+        background: {
+          DEFAULT: 'var(--background)',
+          starry: 'var(--background-starry)',
+        },
         foreground: 'hsl(var(--foreground))',
         primary: {
           DEFAULT: 'hsl(var(--primary))',
@@ -56,10 +59,11 @@ export default {
           darkblue: '#0000FF',
           red: '#FF5252',
           blue: '#4FC3F7',
-          yellow: '#FFD740',
+          yellow: '#FFD760',
           green: '#69F0AE',
           purple: '#E040FB',
         },
+        pink: '#FFC0CB', // You can adjust this hex code to get the desired shade of pink
       },
       borderRadius: {
         lg: 'var(--radius)',

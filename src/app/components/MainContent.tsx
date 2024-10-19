@@ -109,9 +109,9 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className='bg-comic-yellow comic-bg fixed inset-0'
+      className=''
     >
-      <div className='max-w-7xl mx-auto px-2 sm:px-4 lg:px-4 py-2'>
+      <div className='max-w-7xl mx-auto px-2 sm:px-4 lg:px-4 py-2 '>
         <motion.div
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}

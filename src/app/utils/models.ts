@@ -186,7 +186,7 @@ export async function llamaVisionChat(
       throw new Error('Together client is not initialized');
     }
     const response = await together.chat.completions.create({
-      model: 'meta-llama/Llama-Vision-Free',
+      model: 'meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo',
       max_tokens: 150,
       temperature: 1,
       // @ts-expect-error Need to fix the TypeScript library type

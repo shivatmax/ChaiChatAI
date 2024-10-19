@@ -8,6 +8,8 @@ import {
   unifyAgentChat,
   unifyAgentChatWithResponseFormat,
 } from '../utils/models';
+import { systemPromptMessageRoute } from '../utils/prompts/MessageRoute';
+import { systemPromptFriendSummary } from '../utils/prompts/Summary';
 
 const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY || '';
 const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
@@ -23,13 +25,7 @@ export const routeMessage = async (
     friends: z.array(z.string()),
   });
 
-  const systemPrompt = `You are an AI tasked with determining which friends in a group chat should respond to a message. Your role is to analyze the message content, user context, and friends' profiles to make informed decisions. Follow these guidelines:
-
-1. If a user directly addresses a specific friend by name, that friend must be included in the response.
-2. Select 1 to 4 friends who are most relevant to the conversation based on their personalities, about, and the message content.
-3. If User want to talk to all friends at once then you must respond with all friends name.
-4. A friend can be selected multiple times if they remain highly relevant to the ongoing conversation example - [Allen, Tom, Allen, John, Doe, Doe]
-5. Consider the dynamics of the group and aim to create engaging and diverse interactions.`;
+  const systemPrompt = systemPromptMessageRoute;
 
   const userPrompt = `
 User: ${user.name}
@@ -141,8 +137,7 @@ export const generateFriendsSummary = async (
     const friendsInfo = aiFriends.map(
       (friend) => `${friend.name}: ${friend.persona}, about: ${friend.about}`
     );
-    const systemPrompt =
-      'You are a summarization agent. Your task is to create a brief summary of the AI friends in the chat.';
+    const systemPrompt = systemPromptFriendSummary;
     const userPrompt = `AI Friends:\n${friendsInfo.join(
       '\n'
     )}\n\nPlease provide a brief summary of these AI friends, highlighting their key characteristics and how they might interact in a group chat.`;
