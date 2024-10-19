@@ -99,7 +99,7 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = React.memo(
             </motion.div>
           )}
         </AnimatePresence>
-        <div className='flex items-center space-x-2 p-2 sm:p-3 bg-comic-green comic-border w-full max-w-4xl'>
+        <div className='flex items-center space-x-2 p-2 sm:p-3 bg-comic-green comic-border w-full max-w-5xl'>
           <motion.div
             whileHover={{ scale: isDisabled ? 1 : 1.05 }}
             whileTap={{ scale: isDisabled ? 1 : 0.95 }}
@@ -145,8 +145,9 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = React.memo(
                         adjustInputSize();
                       }}
                       onKeyPress={handleKeyPress}
-                      className='w-full max-w-3xl rounded-full bg-white comic-border focus:ring-2 focus:ring-comic-purple text-sm sm:text-base py-2 px-3'
+                      className='w-full max-w-full rounded-full bg-white comic-border focus:ring-2 focus:ring-comic-purple text-sm sm:text-base py-2 px-3'
                       disabled={isDisabled}
+                      style={{ minWidth: '200px', width: '100%' }}
                     />
                   </div>
                 </TooltipTrigger>

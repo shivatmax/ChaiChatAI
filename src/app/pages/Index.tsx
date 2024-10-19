@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../integrations/supabase/supabase';
 import { User } from '../types/User';
-import StarryBackground from '../components/StarryBackground';
 import LoadingScreen from '../components/LoadingScreen';
 import MainContent from '../components/MainContent';
+import ComicBackground from '../components/ComicBackground';
+import { motion } from 'framer-motion';
 
 interface IndexProps {
   onLogout: () => void;
@@ -83,13 +84,21 @@ const Index: React.FC<IndexProps> = ({ onLogout, onNavigate }) => {
   }
 
   return (
-    <div className='min-h-[90vh] bg-gradient-to-r from-purple-100 to-pink-100 p-2 sm:p-4 relative'>
-      <StarryBackground />
-      <MainContent
-        user={user}
-        onLogout={onLogout}
-      />
-    </div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+      className='relative'
+    >
+      <ComicBackground />
+      <div className='max-w-7xl mx-auto px-2 sm:px-4 lg:px-4 py-2 relative z-10'>
+        <MainContent
+          user={user}
+          onLogout={onLogout}
+        />
+      </div>
+    </motion.div>
   );
 };
 

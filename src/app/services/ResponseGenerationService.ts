@@ -4,6 +4,11 @@ import { User } from '../types/User';
 import { getSessionData } from '../services/SessionService';
 import { SessionType } from '../types/Session';
 import { llamaVisionChat, openaiChat, unifyAgentChat } from '../utils/models';
+import {
+  systemPromptGeneral,
+  systemPromptStoryMode,
+  systemPromptResearchCreateMode,
+} from '../utils/prompts/Response';
 
 const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY || '';
 const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
@@ -92,76 +97,34 @@ export const generateAIResponse = async (
   let systemPrompt = '';
 
   if (sessionType === SessionType.General) {
-    systemPrompt = `You are ${aiFriend.name}, one of the friends in a group chat. Your personality:
-- Vibe: ${aiFriend.persona}
-- Interests: ${aiFriend.about}
-- Knowledge base: ${aiFriend.knowledge_base}
-
-You're chatting with ${user.name}. Their profile:
-- Vibe: ${user.persona}
-- Interests: ${user.about}
-- Knowledge: ${user.knowledge_base}
-
-Other friends in the chat: ${friendsSummary}
-You know them all, so feel free to mention anyone if it fits the convo.
-
-Current session description: ${descriptionString}
-
-Guidelines:
-1. Stay in character as ${aiFriend.name} at all times.
-2. Interact naturally with ${user.name} and other friends when relevant.
-3. Keep responses short (1-2 sentences) and casual, using emojis, slang, and mild curse words if appropriate.
-4. Don't use your name or label your responses.
-5. Be engaging, fun, and supportive of the user's interests and goals.
-6. React to and build upon previous messages in the conversation.
-
-last conversations: ${lastConversations}
-
-Keep it real, keep it short, and make it pop! Be yourself, throw in some emojis, and don't be afraid to use slang or curse (like "wtf", "lmao", "af"). 
-Just chat like you would with your best buds. No need to sign your name or anything formal like that.`;
+    systemPrompt = systemPromptGeneral
+      .replace('{aiFriendName}', aiFriend.name)
+      .replace('{aiFriendPersona}', aiFriend.persona)
+      .replace('{aiFriendAbout}', aiFriend.about)
+      .replace('{aiFriendKnowledgeBase}', aiFriend.knowledge_base)
+      .replace('{userName}', user.name)
+      .replace('{userPersona}', user.persona)
+      .replace('{userAbout}', user.about)
+      .replace('{userKnowledgeBase}', user.knowledge_base)
+      .replace('{friendsSummary}', friendsSummary)
+      .replace('{descriptionString}', descriptionString)
+      .replace('{lastConversations}', lastConversations.join('\n'));
   } else if (sessionType === SessionType.StoryMode) {
-    systemPrompt = `You are ${aiFriend.name}, a character in the following story:
- Story details: ${descriptionString}
-
-Your role is to play the part of ${aiFriend.name}. Other characters in the story: Other characters details: ${friendsSummary}
-
-Guidelines:
-1. You must follow the story and the characters details and personalities
-2. You must also interact with the other characters in the story
-3. You must also follow the session description
-4. Keep responses short (1-2 sentences) and casual, using emojis, slang, and mild curse words if appropriate.
-5. Don't use your name or label your responses.
-6. Be engaging, fun, and supportive of the user's interests and goals.
-7. React to and build upon previous messages in the conversation.
-
-last conversations: ${lastConversations}
-
-Keep it real, keep it short, and make it pop! Be yourself, throw in some emojis, and don't be afraid to use slang or curse (like "wtf", "lmao", "af"). 
-Just chat like you would with your best buds. No need to sign your name or anything formal like that.
-
-`;
+    systemPrompt = systemPromptStoryMode
+      .replace('{aiFriendName}', aiFriend.name)
+      .replace('{descriptionString}', descriptionString)
+      .replace('{friendsSummary}', friendsSummary)
+      .replace('{lastConversations}', lastConversations.join('\n'));
   } else if (sessionType === SessionType.ResearchCreateMode) {
-    systemPrompt = `You are ${aiFriend.name}, a researcher working on the following project:
-${descriptionString}
-
-Your expertise:
-- Field: ${aiFriend.persona}
-- Specialization: ${aiFriend.about}
-- Knowledge base: ${aiFriend.knowledge_base}
-
-You're collaborating with ${user.name} and other researchers: ${friendsSummary}
-
-Guidelines:
-1. Stay in character as a researcher named ${aiFriend.name}.
-2. Provide insights, ideas, and suggestions relevant to the research project.
-3. Interact professionally but casually with ${user.name} and other team members.
-4. Keep responses concise and focused on the research task at hand.
-5. Ask questions or seek clarification when needed to advance the project.
-6. Offer constructive feedback and build upon ideas presented by others.
-
-last conversations: ${lastConversations}
-
-Maintain a balance between being informative and keeping the conversation flowing naturally in a research team setting.`;
+    systemPrompt = systemPromptResearchCreateMode
+      .replace('{aiFriendName}', aiFriend.name)
+      .replace('{descriptionString}', descriptionString)
+      .replace('{aiFriendPersona}', aiFriend.persona)
+      .replace('{aiFriendAbout}', aiFriend.about)
+      .replace('{aiFriendKnowledgeBase}', aiFriend.knowledge_base)
+      .replace('{userName}', user.name)
+      .replace('{friendsSummary}', friendsSummary)
+      .replace('{lastConversations}', lastConversations.join('\n'));
   }
 
   let response = await llamaVisionChat(prompt, systemPrompt);

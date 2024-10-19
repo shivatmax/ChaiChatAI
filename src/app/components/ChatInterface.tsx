@@ -253,7 +253,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
     );
 
     return (
-      <div className='flex pt-2 flex-col h-[calc(100vh-9rem)] lg:h-[calc(100vh-5.5rem)] bg-comic-yellow comic-bg'>
+      <div className='flex flex-col h-[calc(100vh-9rem)] lg:h-[calc(100vh-5.5rem)] bg-comic-yellow comic-bg'>
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}

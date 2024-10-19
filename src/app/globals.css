@@ -6,7 +6,8 @@
 
 @layer base {
   :root {
-    --background: 60 100% 98%;
+    --background: #ffd760; /* Comic yellow background */
+    --background-starry: #4fc3f7; /* Comic blue for starry background */
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
@@ -29,7 +30,8 @@
   }
 
   .dark {
-    --background: 20 14.3% 4.1%;
+    --background: 350 50% 40%; /* Darker pink for dark mode */
+    --background-starry: 350 50% 40%; /* Darker pink for starry background in dark mode */
     --foreground: 0 0% 95%;
     --card: 24 9.8% 10%;
     --card-foreground: 0 0% 95%;
@@ -92,5 +94,33 @@
   }
   .hide-scrollbar::-webkit-scrollbar {
     display: none; /* Chrome, Safari and Opera */
+  }
+  .starry-bg {
+    background-color: hsl(var(--background-starry));
+    background-image: radial-gradient(
+        white,
+        rgba(255, 255, 255, 0.2) 2px,
+        transparent 40px
+      ),
+      radial-gradient(white, rgba(255, 255, 255, 0.15) 1px, transparent 30px),
+      radial-gradient(white, rgba(255, 255, 255, 0.1) 2px, transparent 40px),
+      radial-gradient(
+        rgba(255, 255, 255, 0.4),
+        rgba(255, 255, 255, 0.1) 2px,
+        transparent 30px
+      );
+    animation: stars 200s linear infinite;
+    background-size: 1000px 1000px, 800px 800px, 600px 600px, 400px 400px;
+    background-position: 0 0, 60px 80px, 180px 320px, 100px 150px;
+  }
+
+  @keyframes stars {
+    0% {
+      background-position: 0 0, 40px 60px, 130px 270px, 70px 100px;
+    }
+    100% {
+      background-position: -1000px -1000px, -760px -740px, -470px -630px,
+        -130px -100px;
+    }
   }
 }
