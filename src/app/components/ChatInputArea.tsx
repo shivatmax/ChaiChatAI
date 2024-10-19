@@ -50,7 +50,8 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = React.memo(
 
     const handleKeyPress = useCallback(
       (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
           handleSendMessage();
         }
       },
@@ -67,8 +68,19 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = React.memo(
       [setInputMessage]
     );
 
+    useEffect(() => {
+      adjustInputSize();
+    }, [inputMessage]);
+
+    const adjustInputSize = () => {
+      if (inputRef.current) {
+        inputRef.current.style.width = 'auto';
+        inputRef.current.style.width = `${inputRef.current.scrollWidth}px`;
+      }
+    };
+
     return (
-      <div className='relative w-full'>
+      <div className='relative w-full flex justify-center items-center'>
         <AnimatePresence>
           {showEmojiPicker && (
             <motion.div
@@ -87,7 +99,7 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = React.memo(
             </motion.div>
           )}
         </AnimatePresence>
-        <div className='flex items-center space-x-2 p-2 bg-comic-green comic-border'>
+        <div className='flex items-center space-x-2 p-2 sm:p-3 bg-comic-green comic-border w-full max-w-4xl'>
           <motion.div
             whileHover={{ scale: isDisabled ? 1 : 1.05 }}
             whileTap={{ scale: isDisabled ? 1 : 0.95 }}
@@ -98,10 +110,10 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = React.memo(
                   onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                   variant='outline'
                   size='icon'
-                  className='rounded-full hover:bg-comic-yellow transition-colors duration-200 comic-border comic-shadow'
+                  className='rounded-full hover:bg-comic-yellow transition-colors duration-200 comic-border comic-shadow w-8 h-8 sm:w-10 sm:h-10'
                   disabled={isDisabled}
                 >
-                  <Smile className='h-4 w-4 text-comic-purple' />
+                  <Smile className='h-4 w-4 sm:h-5 sm:w-5 text-comic-purple' />
                 </Button>
               </TooltipTrigger>
               {isDisabled && (
@@ -111,24 +123,32 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = React.memo(
               )}
             </Tooltip>
           </motion.div>
-          <GlowingComponent isGlowing={isGlowing}>
+          <GlowingComponent
+            isGlowing={isGlowing}
+            className='flex-grow'
+          >
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Input
-                    ref={inputRef}
-                    type='text'
-                    placeholder={
-                      isDisabled
-                        ? 'Create a session to start chatting 🚀'
-                        : 'Type your message... 📝'
-                    }
-                    value={inputMessage}
-                    onChange={(e) => setInputMessage(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    className='flex-grow w-full rounded-full bg-white comic-border focus:ring-2 focus:ring-comic-purple text-xs py-2 px-3 min-w-[calc(100vw-140px)] sm:min-w-[calc(100vw-200px)] md:min-w-[calc(100vw-220px)] lg:min-w-[calc(100vw-1100px)] '
-                    disabled={isDisabled}
-                  />
+                  <div className='w-full flex justify-center'>
+                    <Input
+                      ref={inputRef}
+                      type='text'
+                      placeholder={
+                        isDisabled
+                          ? 'Create a session to start chatting 🚀'
+                          : 'Type your message... 📝'
+                      }
+                      value={inputMessage}
+                      onChange={(e) => {
+                        setInputMessage(e.target.value);
+                        adjustInputSize();
+                      }}
+                      onKeyPress={handleKeyPress}
+                      className='w-full max-w-3xl rounded-full bg-white comic-border focus:ring-2 focus:ring-comic-purple text-sm sm:text-base py-2 px-3'
+                      disabled={isDisabled}
+                    />
+                  </div>
                 </TooltipTrigger>
                 {isDisabled && (
                   <TooltipContent>
