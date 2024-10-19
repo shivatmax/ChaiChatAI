@@ -60,18 +60,18 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
         const hasNoSessions = !latestSession;
         const hasNoAIFriends = !aiFriendsData || aiFriendsData.length === 0;
 
-        console.log('First-time user check:', {
-          userId: user.id,
-          hasNoSessions,
-          hasNoAIFriends,
-          isLoadingAIFriends,
-        });
+        // console.log('First-time user check:', {
+        //   userId: user.id,
+        //   hasNoSessions,
+        //   hasNoAIFriends,
+        //   isLoadingAIFriends,
+        // });
 
         if (hasNoSessions && hasNoAIFriends && !isLoadingAIFriends) {
-          console.log('Showing first-time user experience');
+          // console.log('Showing first-time user experience');
           setShowFirstTimeExperience(true);
         } else {
-          console.log('Not showing first-time user experience');
+          // console.log('Not showing first-time user experience');
         }
       } catch (error) {
         console.error('Error checking first-time user status:', error);
@@ -317,7 +317,7 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
       {showFirstTimeExperience && (
         <FirstTimeUserExperience
           onComplete={() => {
-            console.log('First-time user experience completed');
+            // console.log('First-time user experience completed');
             setShowFirstTimeExperience(false);
           }}
           updateGlowingComponent={updateGlowingComponent}

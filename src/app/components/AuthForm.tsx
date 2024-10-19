@@ -80,7 +80,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onAuthSuccess }) => {
 
         if (insertError) throw insertError;
         userId = insertedUser.id;
-        console.log('New user created:', userId);
+        // console.log('New user created:', userId);
       }
 
       localStorage.setItem('userId', userId);

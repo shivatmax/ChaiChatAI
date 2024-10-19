@@ -3,7 +3,7 @@ import { AIFriend } from '../types/AIFriend';
 import { User } from '../types/User';
 import { getSessionData } from '../services/SessionService';
 import { SessionType } from '../types/Session';
-import { openaiChat, unifyAgentChat } from '../utils/models';
+import { llamaVisionChat, openaiChat, unifyAgentChat } from '../utils/models';
 
 const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY || '';
 const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
@@ -24,7 +24,7 @@ const getSessionDescription = async (
 
   try {
     const session = await getSessionData(sessionId);
-    console.log('session', session);
+    // console.log('session', session);
     if (session && session.description && session.session_type) {
       const sessionType = session.session_type;
       const description = {
@@ -67,12 +67,12 @@ export const generateAIResponse = async (
     limit: number
   ) => Promise<string[]>
 ): Promise<string> => {
-  console.log('lastConversations', lastConversations);
+  // console.log('lastConversations', lastConversations);
   if (!openai) {
     console.error('OpenAI API key not found');
     return "Sorry, I'm not configured properly. Please check the API key.";
   }
-  console.log('sessionId', conversationId);
+  // console.log('sessionId', conversationId);
 
   // Fetch additional conversations from Supabase if needed
   if (lastConversations.length < 20) {
@@ -80,14 +80,14 @@ export const generateAIResponse = async (
       conversationId,
       20
     );
-    console.log('additionalConversations', additionalConversations);
+    // console.log('additionalConversations', additionalConversations);
     lastConversations = [...additionalConversations].slice(-20);
   }
 
   const { descriptionString, sessionType } = await getSessionDescription(
     conversationId
   );
-  console.log('sessionDescription', { descriptionString, sessionType });
+  // console.log('sessionDescription', { descriptionString, sessionType });
 
   let systemPrompt = '';
 
@@ -164,8 +164,8 @@ last conversations: ${lastConversations}
 Maintain a balance between being informative and keeping the conversation flowing naturally in a research team setting.`;
   }
 
-  // let response = await llamaVisionChat(prompt, systemPrompt);
-  let response = 'I am busy now, I will respond later.';
+  let response = await llamaVisionChat(prompt, systemPrompt);
+  // let response = 'I am busy now, I will respond later.';
 
   if (!response || response === 'I am busy now, I will respond later.') {
     // Fallback to unifyAgentChat
@@ -176,15 +176,15 @@ Maintain a balance between being informative and keeping the conversation flowin
       response = await openaiChat(prompt, systemPrompt);
 
       if (!response || response === 'I am busy now, I will respond later.') {
-        console.log('No model responded correctly');
+        // console.log('No model responded correctly');
       } else {
-        console.log('OpenAI model responded correctly');
+        // console.log('OpenAI model responded correctly');
       }
     } else {
-      console.log('Unify model responded correctly');
+      // console.log('Unify model responded correctly');
     }
   } else {
-    console.log('LlamaVision model responded correctly');
+    // console.log('LlamaVision model responded correctly');
   }
 
   return response || 'I am busy now, I will respond later.';
