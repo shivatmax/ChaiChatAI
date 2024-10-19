@@ -29,7 +29,7 @@ export async function unifyAgentChat(userPrompt: string, systemPrompt: string) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'llama-3.1-8b-chat@fireworks-ai',
+        model: 'gpt-4o-mini@openai',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
@@ -53,6 +53,54 @@ export async function unifyAgentChat(userPrompt: string, systemPrompt: string) {
     return data.choices[0].message.content;
   } catch (error) {
     console.error('Error in unifyAgentChat:', error);
+    return 'I am busy now, I will respond later.';
+  }
+}
+
+export async function unifyAgentChatWithResponseFormat(
+  userPrompt: string,
+  systemPrompt: string,
+  responseFormat: string
+) {
+  try {
+    const response = await fetch('/api/unify-proxy', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini@openai',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
+        ],
+        max_tokens: 150,
+        temperature: 1,
+        stream: false,
+        frequency_penalty: 1.5,
+        n: 1,
+        drop_params: true,
+        response_format: {
+          type: 'json_schema',
+          json_schema: JSON.parse(responseFormat),
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('Unify proxy error:', errorData);
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    // console.log(
+    //   'data from unifyAgentChatWithResponseFormat',
+    //   data.choices[0].message.content
+    // );
+    return data.choices[0].message.content;
+  } catch (error) {
+    console.error('Error in unifyAgentChatWithResponseFormat:', error);
     return 'I am busy now, I will respond later.';
   }
 }
@@ -145,7 +193,7 @@ export async function llamaVisionChat(
       messages: messages,
     });
 
-    console.log(response);
+    // console.log(response);
 
     return (
       response.choices[0]?.message?.content ||
