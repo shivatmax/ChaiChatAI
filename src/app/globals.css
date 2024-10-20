@@ -86,7 +86,9 @@
       ),
       radial-gradient(circle, rgba(255, 255, 255, 0.5) 1px, transparent 1px);
     background-size: 20px 20px;
-    background-position: 0 0, 10px 10px;
+    background-position:
+      0 0,
+      10px 10px;
   }
   .hide-scrollbar {
     -ms-overflow-style: none; /* IE and Edge */
@@ -110,17 +112,38 @@
         transparent 30px
       );
     animation: stars 200s linear infinite;
-    background-size: 1000px 1000px, 800px 800px, 600px 600px, 400px 400px;
-    background-position: 0 0, 60px 80px, 180px 320px, 100px 150px;
+    background-size:
+      1000px 1000px,
+      800px 800px,
+      600px 600px,
+      400px 400px;
+    background-position:
+      0 0,
+      60px 80px,
+      180px 320px,
+      100px 150px;
   }
 
   @keyframes stars {
     0% {
-      background-position: 0 0, 40px 60px, 130px 270px, 70px 100px;
+      background-position:
+        0 0,
+        40px 60px,
+        130px 270px,
+        70px 100px;
     }
     100% {
-      background-position: -1000px -1000px, -760px -740px, -470px -630px,
+      background-position:
+        -1000px -1000px,
+        -760px -740px,
+        -470px -630px,
         -130px -100px;
     }
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 2px;
   }
 }

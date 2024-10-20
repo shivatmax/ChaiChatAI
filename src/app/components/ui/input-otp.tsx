@@ -7,6 +7,7 @@ import { cn } from '../../lib/utils';
 const InputOTP = React.forwardRef<
   React.ElementRef<typeof OTPInput>,
   React.ComponentPropsWithoutRef<typeof OTPInput>
+  // eslint-disable-next-line react/prop-types
 >(({ className, containerClassName, ...props }, ref) => (
   <OTPInput
     ref={ref}
@@ -23,18 +24,16 @@ InputOTP.displayName = 'InputOTP';
 const InputOTPGroup = React.forwardRef<
   React.ElementRef<'div'>,
   React.ComponentPropsWithoutRef<'div'>
+  // eslint-disable-next-line react/prop-types
 >(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn('flex items-center', className)}
-    {...props}
-  />
+  <div ref={ref} className={cn('flex items-center', className)} {...props} />
 ));
 InputOTPGroup.displayName = 'InputOTPGroup';
 
 const InputOTPSlot = React.forwardRef<
   React.ElementRef<'div'>,
   React.ComponentPropsWithoutRef<'div'> & { index: number }
+  // eslint-disable-next-line react/prop-types
 >(({ index, className, ...props }, ref) => {
   const inputOTPContext = React.useContext(OTPInputContext);
   const { char, hasFakeCaret, isActive } = inputOTPContext.slots[index];
@@ -51,8 +50,8 @@ const InputOTPSlot = React.forwardRef<
     >
       {char}
       {hasFakeCaret && (
-        <div className='pointer-events-none absolute inset-0 flex items-center justify-center'>
-          <div className='h-4 w-px animate-caret-blink bg-foreground duration-1000' />
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <div className="h-4 w-px animate-caret-blink bg-foreground duration-1000" />
         </div>
       )}
     </div>
@@ -64,11 +63,7 @@ const InputOTPSeparator = React.forwardRef<
   React.ElementRef<'div'>,
   React.ComponentPropsWithoutRef<'div'>
 >(({ ...props }, ref) => (
-  <div
-    ref={ref}
-    role='separator'
-    {...props}
-  >
+  <div ref={ref} role="separator" {...props}>
     <Dot />
   </div>
 ));
