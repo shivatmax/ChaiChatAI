@@ -1,3 +1,4 @@
+/* eslint-disable */
 import type { Config } from 'tailwindcss';
 
 export default {
@@ -62,6 +63,8 @@ export default {
           yellow: '#FFD760',
           green: '#69F0AE',
           purple: '#E040FB',
+          white: '#FFFFFF',
+          transparent: '#00000000',
         },
         pink: '#FFC0CB', // You can adjust this hex code to get the desired shade of pink
       },
@@ -94,6 +97,6 @@ export default {
       },
     },
   },
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  plugins: [require('tailwindcss-animate')],
+  //
+  plugins: [require('tailwindcss-animate'), require('tailwind-scrollbar')],
 } satisfies Config;
