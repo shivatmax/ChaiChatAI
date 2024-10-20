@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../integrations/supabase/supabase';
-import { User } from '../types/User';
+import { User } from '../types/SupabaseTypes';
 import LoadingScreen from '../components/LoadingScreen';
 import MainContent from '../components/MainContent';
 import ComicBackground from '../components/ComicBackground';
