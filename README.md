@@ -25,13 +25,13 @@ ChitChat AI is an open-source interactive chat application that allows users to 
 1. Fork the repository and clone it:
 
    ```bash
-   git clone https://github.com/your-username/chitchat-ai.git
+   git clone https://github.com:shivatmax/ChaiChatAI.git
    ```
 
 2. Navigate to the project directory:
 
    ```bash
-   cd chitchat-ai
+   cd ChaiChatAI
    ```
 
 3. Install dependencies:
