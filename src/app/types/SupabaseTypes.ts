@@ -6,6 +6,7 @@ export interface AIFriend {
   knowledge_base: string;
   memory?: unknown;
   status: boolean;
+  avatar_url?: string;
 }
 
 export interface KnowledgeBase {
@@ -46,6 +47,7 @@ export interface User {
   knowledge_base: string;
   created_at: string;
   updated_at: string;
+  avatar_url?: string;
 }
 
 export enum SessionType {

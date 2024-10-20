@@ -1,6 +1,7 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
+import Image from 'next/image';
 import { AIFriend } from '../types/AIFriend';
-import { Avatar, AvatarFallback } from './ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import {
   Tooltip,
   TooltipContent,
@@ -9,7 +10,16 @@ import {
 } from './ui/tooltip';
 import { Switch } from './ui/switch';
 import AIFriendEditor from './AIFriendEditor';
-import { Pencil, Trash2 } from 'lucide-react';
+import {
+  Pencil,
+  Trash2,
+  Camera,
+  Upload,
+  Wand2,
+  Loader2,
+  Sparkles,
+  Image as ImageIcon,
+} from 'lucide-react';
 import {
   useAIFriends,
   useUpdateAIFriend,
@@ -29,6 +39,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from './ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from './ui/dialog';
+import { Input } from './ui/input';
+import { imageGen } from '../utils/models';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { Label } from './ui/label';
 
 interface AIFriendListProps {
   onSelectFriend: (friend: AIFriend) => void;
@@ -42,6 +63,14 @@ const AIFriendList: React.FC<AIFriendListProps> = React.memo(
     const deleteAIFriendMutation = useDeleteAIFriend();
     const { toast } = useToast();
     const [friendToDelete, setFriendToDelete] = useState<AIFriend | null>(null);
+    const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
+    const [selectedFriend, setSelectedFriend] = useState<AIFriend | null>(null);
+    const [imagePrompt, setImagePrompt] = useState('');
+    const [previewImage, setPreviewImage] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
     const toggleFriendStatus = useCallback(
       (friend: AIFriend) => {
@@ -89,6 +118,65 @@ const AIFriendList: React.FC<AIFriendListProps> = React.memo(
       return name.length > limit ? name.substring(0, limit) + '...' : name;
     };
 
+    const handleAvatarUpload = async (
+      event: React.ChangeEvent<HTMLInputElement>
+    ) => {
+      const file = event.target.files?.[0];
+      if (file) {
+        setIsUploading(true);
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setPreviewImage(e.target?.result as string);
+          setIsUploading(false);
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+
+    const handleGenerateAvatar = async () => {
+      setIsGenerating(true);
+      try {
+        const b64Image = await imageGen(imagePrompt);
+        setPreviewImage(`data:image/png;base64,${b64Image}`);
+      } catch (error) {
+        console.error('Error generating avatar:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to generate avatar. Please try again.',
+          variant: 'destructive',
+        });
+      } finally {
+        setIsGenerating(false);
+      }
+    };
+
+    const saveAvatar = async () => {
+      if (selectedFriend && previewImage) {
+        setIsSaving(true);
+        try {
+          await updateAIFriendMutation.mutateAsync({
+            updatedAIFriend: { ...selectedFriend, avatar_url: previewImage },
+            userId,
+          });
+          toast({
+            title: 'Avatar Updated',
+            description: 'AI Friend avatar has been successfully updated.',
+          });
+          setIsAvatarDialogOpen(false);
+          setPreviewImage(null);
+        } catch (error) {
+          console.error('Error saving avatar:', error);
+          toast({
+            title: 'Error',
+            description: 'Failed to save avatar. Please try again.',
+            variant: 'destructive',
+          });
+        } finally {
+          setIsSaving(false);
+        }
+      }
+    };
+
     if (isLoading)
       return (
         <div className='text-center py-4 text-3xl font-bold text-comic-purple'>
@@ -116,18 +204,36 @@ const AIFriendList: React.FC<AIFriendListProps> = React.memo(
                       className={`flex items-center p-3 rounded-lg bg-comic-yellow hover:bg-comic-green cursor-pointer transition-all duration-200 comic-border comic-shadow w-11/12 mx-auto`}
                       onClick={() => onSelectFriend(friend)}
                     >
-                      <Avatar className='w-12 h-12 flex-shrink-0'>
-                        <AvatarFallback
-                          className={`bg-comic-purple text-white text-2xl font-bold ${
-                            friend.status
-                              ? 'ring-4 ring-comic-green ring-opacity-50'
-                              : ''
-                          }`}
+                      <div className='relative'>
+                        <Avatar className='w-12 h-12 flex-shrink-0'>
+                          <AvatarImage
+                            src={friend.avatar_url}
+                            alt={friend.name}
+                          />
+                          <AvatarFallback
+                            className={`bg-comic-purple text-white text-2xl font-bold ${
+                              friend.status
+                                ? 'ring-4 ring-comic-green ring-opacity-50'
+                                : ''
+                            }`}
+                          >
+                            {friend.name.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <Button
+                          variant='outline'
+                          size='xs'
+                          className='absolute bottom-0 right-0 rounded-full bg-comic-blue'
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedFriend(friend);
+                            setIsAvatarDialogOpen(true);
+                          }}
                         >
-                          {friend.name.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className='flex-grow min-w-0'>
+                          <Camera className='h-3 w-3' />
+                        </Button>
+                      </div>
+                      <div className='flex-grow min-w-0 ml-3'>
                         <p className='font-bold text-lg text-comic-darkblue'>
                           {truncateName(friend.name, 8)}
                         </p>
@@ -221,6 +327,131 @@ const AIFriendList: React.FC<AIFriendListProps> = React.memo(
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+        <Dialog
+          open={isAvatarDialogOpen}
+          onOpenChange={setIsAvatarDialogOpen}
+        >
+          <DialogContent className='sm:max-w-[500px] bg-gradient-to-br from-comic-yellow via-comic-green to-comic-blue comic-bg rounded-xl comic-border comic-shadow'>
+            <DialogHeader>
+              <DialogTitle className='text-3xl font-bold text-comic-purple mb-4 text-center'>
+                🎨 Update AI Friend Avatar 🖼️
+              </DialogTitle>
+            </DialogHeader>
+            <Tabs
+              defaultValue='upload'
+              className='w-full'
+            >
+              <TabsList className='grid w-full grid-cols-2 mb-4 bg-comic-purple rounded-full overflow-hidden'>
+                <TabsTrigger
+                  value='upload'
+                  className='text-lg font-bold text-white hover:bg-comic-blue transition-colors duration-300'
+                >
+                  📤 Upload
+                </TabsTrigger>
+                <TabsTrigger
+                  value='generate'
+                  className='text-lg font-bold text-white hover:bg-comic-blue transition-colors duration-300'
+                >
+                  ✨ Generate
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value='upload'>
+                <div className='space-y-4'>
+                  <Button
+                    onClick={() => fileInputRef.current?.click()}
+                    className='w-full bg-comic-red text-white hover:bg-comic-purple transition-all duration-300 comic-border comic-shadow text-lg font-bold rounded-full'
+                    disabled={isUploading}
+                  >
+                    {isUploading ? (
+                      <Loader2 className='mr-2 h-6 w-6 animate-spin' />
+                    ) : (
+                      <Upload className='mr-2 h-6 w-6' />
+                    )}
+                    {isUploading ? '📤 Uploading...' : '📁 Choose Image'}
+                  </Button>
+                  <input
+                    type='file'
+                    ref={fileInputRef}
+                    onChange={handleAvatarUpload}
+                    accept='image/*'
+                    className='hidden'
+                  />
+                </div>
+              </TabsContent>
+              <TabsContent value='generate'>
+                <div className='space-y-4'>
+                  <div className='grid w-full items-center gap-1.5'>
+                    <Label
+                      htmlFor='imagePrompt'
+                      className='text-lg font-bold text-comic-purple'
+                    >
+                      🧙‍♂️ Magic Prompt
+                    </Label>
+                    <Input
+                      id='imagePrompt'
+                      placeholder='Describe your dream avatar...'
+                      value={imagePrompt}
+                      onChange={(e) => setImagePrompt(e.target.value)}
+                      className='mb-2 bg-white/50 border-comic-purple focus:ring-comic-blue'
+                    />
+                  </div>
+                  <Button
+                    onClick={handleGenerateAvatar}
+                    className='w-full bg-comic-purple text-white hover:bg-comic-blue transition-all duration-300 comic-border comic-shadow text-lg font-bold rounded-full'
+                    disabled={isGenerating}
+                  >
+                    {isGenerating ? (
+                      <Loader2 className='mr-2 h-6 w-6 animate-spin' />
+                    ) : (
+                      <Wand2 className='mr-2 h-6 w-6' />
+                    )}
+                    {isGenerating
+                      ? '🎭 Conjuring...'
+                      : '🎨 Create Magic Avatar'}
+                  </Button>
+                </div>
+              </TabsContent>
+            </Tabs>
+            <div className='mt-4 h-64 w-full bg-white/70 rounded-lg overflow-hidden comic-border relative'>
+              {previewImage ? (
+                <Image
+                  src={previewImage}
+                  alt='Preview'
+                  layout='fill'
+                  objectFit='contain'
+                />
+              ) : (
+                <div className='w-full h-full flex items-center justify-center text-comic-purple text-lg font-bold'>
+                  <ImageIcon className='w-16 h-16 text-comic-purple/50 animate-pulse' />
+                </div>
+              )}
+            </div>
+            <DialogFooter className='mt-4 space-x-2'>
+              <Button
+                onClick={() => {
+                  setIsAvatarDialogOpen(false);
+                  setPreviewImage(null);
+                }}
+                variant='outline'
+                className='bg-comic-red text-white hover:bg-comic-purple transition-all duration-300 comic-border comic-shadow text-lg font-bold rounded-full'
+              >
+                🚫 Cancel
+              </Button>
+              <Button
+                onClick={saveAvatar}
+                disabled={!previewImage || isSaving}
+                className='bg-comic-green text-black hover:bg-comic-blue hover:text-white transition-all duration-300 comic-border comic-shadow text-lg font-bold rounded-full'
+              >
+                {isSaving ? (
+                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                ) : (
+                  <Sparkles className='mr-2 h-4 w-4' />
+                )}
+                {isSaving ? '💾 Saving...' : '✅ Save Avatar'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </ScrollArea>
     );
   }

@@ -14,6 +14,7 @@ model User {
   about                String
   persona              String
   knowledge_base       String
+  avatar_url           String?
   created_at           DateTime              @default(now())
   updated_at           DateTime              @updatedAt
   AIFriend             AIFriend[]
@@ -37,6 +38,7 @@ model AIFriend {
   conversation_history   ConversationHistory[]
   knowledge_base_updates KnowledgeBase[]
   sessions               Session[]             @relation("AIFriendToSession")
+  avatar_url             String?
 
   @@unique([user_id, name])
 }

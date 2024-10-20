@@ -1,6 +1,6 @@
 export interface AIFriend {
   id: string;
-  user_id: string; // Add this line
+  user_id: string;
   name: string;
   persona: string;
   about: string;
@@ -9,4 +9,5 @@ export interface AIFriend {
   status: boolean;
   created_at?: Date;
   updated_at?: Date;
+  avatar_url?: string;
 }

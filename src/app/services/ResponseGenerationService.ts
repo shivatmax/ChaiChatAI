@@ -127,7 +127,7 @@ export const generateAIResponse = async (
       .replace('{lastConversations}', lastConversations.join('\n'));
   }
 
-  let response = await llamaVisionChat(prompt, systemPrompt);
+  let response = await openaiChat(prompt, systemPrompt);
   // let response = 'I am busy now, I will respond later.';
 
   if (!response || response === 'I am busy now, I will respond later.') {
@@ -136,7 +136,7 @@ export const generateAIResponse = async (
 
     if (!response || response === 'I am busy now, I will respond later.') {
       // Fallback to openaiChat
-      response = await openaiChat(prompt, systemPrompt);
+      response = await llamaVisionChat(prompt, systemPrompt);
 
       if (!response || response === 'I am busy now, I will respond later.') {
         // console.log('No model responded correctly');
