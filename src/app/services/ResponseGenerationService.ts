@@ -1,6 +1,6 @@
 import OpenAI from 'openai';
 import { AIFriend } from '../types/AIFriend';
-import { User } from '../types/User';
+import { User } from '../types/SupabaseTypes';
 import { getSessionData } from '../services/SessionService';
 import { SessionType } from '../types/Session';
 import { llamaVisionChat, openaiChat, unifyAgentChat } from '../utils/models';
@@ -105,7 +105,7 @@ export const generateAIResponse = async (
       .replace('{userName}', user.name)
       .replace('{userPersona}', user.persona)
       .replace('{userAbout}', user.about)
-      .replace('{userKnowledgeBase}', user.knowledge_base)
+      .replace('{userKnowledgeBase}', user.knowledge_base || '')
       .replace('{friendsSummary}', friendsSummary)
       .replace('{descriptionString}', descriptionString)
       .replace('{lastConversations}', lastConversations.join('\n'));

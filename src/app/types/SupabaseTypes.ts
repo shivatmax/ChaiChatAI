@@ -43,7 +43,7 @@ export interface User {
   id: string;
   name: string;
   persona: string;
-  about: unknown;
+  about: string;
   knowledge_base: string;
   created_at: string;
   updated_at: string;
