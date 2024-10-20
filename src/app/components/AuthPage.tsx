@@ -77,9 +77,10 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess, onNavigate }) => {
           id: uuidv4(),
           name: username,
           email: email,
-          persona: 'Friendly and curious',
-          about: 'New user',
-          knowledge_base: 'General knowledge',
+          persona: 'Energetic and tech-savvy',
+          about: '23-year-old guy who loves gaming and coding',
+          knowledge_base:
+            'Extensive knowledge of latest tech trends, video games, and programming languages',
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         };

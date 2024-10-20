@@ -133,18 +133,26 @@ export async function openaiChat(
   }
 }
 
+async function imagePromptEnhancer(prompt: string) {
+  const response = await unifyAgentChat(
+    `Create a unique and visually stunning image based on this concept: ${prompt}. Enhance it with vivid details, dramatic lighting, and unexpected elements to make it truly extraordinary.`,
+    'You are an expert visual artist and creative director. Your task is to transform basic concepts into breathtaking, one-of-a-kind image descriptions that push the boundaries of imagination.'
+  );
+  return response;
+}
 export async function imageGen(prompt: string) {
   if (!together) {
     throw new Error('Together client is not initialized');
   }
+  const enhancedPrompt = await imagePromptEnhancer(prompt);
   const response = await together.images.create({
     model: 'black-forest-labs/FLUX.1-schnell-Free',
-    prompt,
+    prompt: enhancedPrompt,
     width: 960,
     height: 768,
     steps: 4,
     n: 1,
-    seed: 10000,
+    seed: 1000,
     // @ts-expect-error Need to fix the TypeScript library type
     response_format: 'b64_json',
   });

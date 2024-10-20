@@ -69,6 +69,8 @@ export default {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+        xs: 'calc(var(--radius) - 5px)',
+        xxs: 'calc(var(--radius) - 8px)',
       },
       fontFamily: {
         comic: ['Comic Neue', 'cursive'],

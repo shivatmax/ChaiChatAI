@@ -4,7 +4,7 @@ import AIFriendCreator from './AIFriendCreator';
 import AIFriendList from './AIFriendList';
 import ConversationInsights from './ConversationInsights';
 import UserProfile from './UserProfile';
-import { User } from '../types/User';
+import { User } from '../types/SupabaseTypes';
 import { X, Plus, Menu, Sparkles, Star, Coffee } from 'lucide-react';
 import { Button } from './ui/button';
 import { AIFriend } from '../types/AIFriend';
@@ -60,18 +60,8 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
         const hasNoSessions = !latestSession;
         const hasNoAIFriends = !aiFriendsData || aiFriendsData.length === 0;
 
-        // console.log('First-time user check:', {
-        //   userId: user.id,
-        //   hasNoSessions,
-        //   hasNoAIFriends,
-        //   isLoadingAIFriends,
-        // });
-
         if (hasNoSessions && hasNoAIFriends && !isLoadingAIFriends) {
-          // console.log('Showing first-time user experience');
           setShowFirstTimeExperience(true);
-        } else {
-          // console.log('Not showing first-time user experience');
         }
       } catch (error) {
         console.error('Error checking first-time user status:', error);
@@ -317,7 +307,6 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
       {showFirstTimeExperience && (
         <FirstTimeUserExperience
           onComplete={() => {
-            // console.log('First-time user experience completed');
             setShowFirstTimeExperience(false);
           }}
           updateGlowingComponent={updateGlowingComponent}

@@ -4,9 +4,17 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_PROJECT_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_API_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
-  throw new Error(
-    'Supabase URL or API key is missing in environment variables'
-  );
+  const missingVars = [];
+  if (!supabaseUrl) missingVars.push('NEXT_PUBLIC_SUPABASE_PROJECT_URL');
+  if (!supabaseKey) missingVars.push('NEXT_PUBLIC_SUPABASE_API_KEY');
+  throw new Error(`Missing environment variables: ${missingVars.join(', ')}`);
 }
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+export const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    persistSession: true,
+  },
+  global: {
+    headers: { 'x-my-custom-header': 'my-app-name' },
+  },
+});

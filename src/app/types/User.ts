@@ -4,6 +4,7 @@ export interface User {
   persona: string;
   about: string;
   knowledge_base: string;
-  created_at: Date;
-  updated_at: Date;
+  avatar_url?: string;
+  created_at: string | Date;
+  updated_at: string | Date;
 }

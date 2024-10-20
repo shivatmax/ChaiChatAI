@@ -65,9 +65,11 @@ const AuthForm: React.FC<AuthFormProps> = ({ onAuthSuccess }) => {
           id: uuidv4(),
           name: sanitizedUsername,
           email: sanitizedEmail,
-          persona: 'Friendly and curious',
-          about: 'New user',
-          knowledge_base: 'General knowledge',
+          persona: 'Enthusiastic and Funny, loves to chat and like ice cream',
+          about: '21 year old, loves to eat and play games',
+          knowledge_base:
+            'Knows a lot about AI, loves to talk about it and learn new things',
+          avatar_url: null, // Placeholder for future avatar implementation
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         };
