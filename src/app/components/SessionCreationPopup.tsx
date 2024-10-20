@@ -73,64 +73,73 @@ const SessionCreationPopup: React.FC<SessionCreationPopupProps> = ({
       open={isOpen}
       onOpenChange={onClose}
     >
-      <DialogContent>
+      <DialogContent className='sm:max-w-[425px] max-w-[85%] w-full'>
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className='text-base sm:text-lg'>
             {mode ? `Create ${mode} Mode Session` : 'Create New Session'}
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit}>
-          <div className='space-y-4'>
-            <div>
-              <label
-                htmlFor='title'
-                className='block text-sm font-medium text-gray-700'
-              >
-                Title
-              </label>
-              <Input
-                id='title'
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder='Enter session title'
-                required
-              />
-            </div>
-            <div>
-              <label
-                htmlFor='description'
-                className='block text-sm font-medium text-gray-700'
-              >
-                {mode === 'Story'
-                  ? 'Characters & Relationships'
-                  : mode === 'Research'
-                  ? 'Project Description'
-                  : 'Description'}
-              </label>
-              <Textarea
-                id='description'
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder={
-                  mode === 'Story'
-                    ? 'Describe characters and their relationships'
-                    : mode === 'Research'
-                    ? 'Describe the research project'
-                    : 'Enter session description'
-                }
-                rows={4}
-              />
-            </div>
+        <form
+          onSubmit={handleSubmit}
+          className='space-y-2 sm:space-y-3'
+        >
+          <div>
+            <label
+              htmlFor='title'
+              className='block text-xs sm:text-sm font-medium text-gray-700'
+            >
+              Title
+            </label>
+            <Input
+              id='title'
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder='Enter session title'
+              required
+              className='mt-1 text-sm'
+            />
           </div>
-          <DialogFooter className='mt-4'>
+          <div>
+            <label
+              htmlFor='description'
+              className='block text-xs sm:text-sm font-medium text-gray-700'
+            >
+              {mode === 'Story'
+                ? 'Characters & Relationships'
+                : mode === 'Research'
+                ? 'Project Description'
+                : 'Description'}
+            </label>
+            <Textarea
+              id='description'
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder={
+                mode === 'Story'
+                  ? 'Describe characters and their relationships'
+                  : mode === 'Research'
+                  ? 'Describe the research project'
+                  : 'Enter session description'
+              }
+              rows={2}
+              className='mt-1 text-sm'
+            />
+          </div>
+          <DialogFooter className='mt-3 sm:mt-4'>
             <Button
               type='button'
               variant='outline'
               onClick={onClose}
+              className='w-full sm:w-auto text-xs sm:text-sm'
             >
               Cancel
             </Button>
-            <Button type='submit'>Create Session</Button>
+            <Button
+              type='submit'
+              className='w-full sm:w-auto text-xs sm:text-sm'
+            >
+              Create Session
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

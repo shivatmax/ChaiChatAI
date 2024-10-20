@@ -147,7 +147,11 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = React.memo(
                       onKeyPress={handleKeyPress}
                       className='w-full max-w-full rounded-full bg-white comic-border focus:ring-2 focus:ring-comic-purple text-sm sm:text-base py-2 px-3'
                       disabled={isDisabled}
-                      style={{ minWidth: '200px', width: '100%' }}
+                      style={{
+                        minWidth: '200px',
+                        width: '100%',
+                        maxWidth: 'calc(100% - 120px)',
+                      }}
                     />
                   </div>
                 </TooltipTrigger>

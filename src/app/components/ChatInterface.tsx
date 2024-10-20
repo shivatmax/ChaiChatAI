@@ -260,10 +260,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
           transition={{ duration: 0.3 }}
           className='flex flex-col p-3 lg:p-4 bg-comic-blue comic-border'
         >
-          <div className='flex items-center justify-between mb-2'>
-            <div className='flex items-center space-x-1 sm:space-x-2'>
-              <MessageCircle className='h-4 w-4 sm:h-5 sm:w-5 text-white' />
-              <h1 className='text-sm sm:text-base font-bold text-white'>
+          <div className='flex items-center justify-center mb-4'>
+            <div className='flex items-center space-x-2 sm:space-x-3'>
+              <MessageCircle className='h-6 w-6 sm:h-7 sm:w-7 text-white' />
+              <h1 className='text-xl sm:text-2xl font-extrabold text-white'>
                 Chat Interface
               </h1>
             </div>

@@ -331,26 +331,26 @@ const AIFriendList: React.FC<AIFriendListProps> = React.memo(
           open={isAvatarDialogOpen}
           onOpenChange={setIsAvatarDialogOpen}
         >
-          <DialogContent className='sm:max-w-[500px] bg-gradient-to-br from-comic-yellow via-comic-green to-comic-blue comic-bg rounded-xl comic-border comic-shadow'>
+          <DialogContent className='sm:max-w-[500px] bg-gradient-to-br to-comic-blue comic-bg rounded-xl comic-border comic-shadow'>
             <DialogHeader>
               <DialogTitle className='text-3xl font-bold text-comic-purple mb-4 text-center'>
-                🎨 Update AI Friend Avatar 🖼️
+                🎨 Update {selectedFriend?.name} Avatar 🖼️
               </DialogTitle>
             </DialogHeader>
             <Tabs
               defaultValue='upload'
               className='w-full'
             >
-              <TabsList className='grid w-full grid-cols-2 mb-4 bg-comic-purple rounded-full overflow-hidden'>
+              <TabsList className='grid w-full grid-cols-2 mb-4 bg-comic-purple overflow-hidden'>
                 <TabsTrigger
                   value='upload'
-                  className='text-lg font-bold text-white hover:bg-comic-blue transition-colors duration-300'
+                  className='text-lg font-bold text-white data-[state=active]:bg-comic-blue transition-colors duration-300'
                 >
                   📤 Upload
                 </TabsTrigger>
                 <TabsTrigger
                   value='generate'
-                  className='text-lg font-bold text-white hover:bg-comic-blue transition-colors duration-300'
+                  className='text-lg font-bold text-white data-[state=active]:bg-comic-green transition-colors duration-300'
                 >
                   ✨ Generate
                 </TabsTrigger>
@@ -426,29 +426,31 @@ const AIFriendList: React.FC<AIFriendListProps> = React.memo(
                 </div>
               )}
             </div>
-            <DialogFooter className='mt-4 space-x-2'>
-              <Button
-                onClick={() => {
-                  setIsAvatarDialogOpen(false);
-                  setPreviewImage(null);
-                }}
-                variant='outline'
-                className='bg-comic-red text-white hover:bg-comic-purple transition-all duration-300 comic-border comic-shadow text-lg font-bold rounded-full'
-              >
-                🚫 Cancel
-              </Button>
-              <Button
-                onClick={saveAvatar}
-                disabled={!previewImage || isSaving}
-                className='bg-comic-green text-black hover:bg-comic-blue hover:text-white transition-all duration-300 comic-border comic-shadow text-lg font-bold rounded-full'
-              >
-                {isSaving ? (
-                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                ) : (
-                  <Sparkles className='mr-2 h-4 w-4' />
-                )}
-                {isSaving ? '💾 Saving...' : '✅ Save Avatar'}
-              </Button>
+            <DialogFooter className='mt-4'>
+              <div className='w-full flex justify-between space-x-2'>
+                <Button
+                  onClick={() => {
+                    setIsAvatarDialogOpen(false);
+                    setPreviewImage(null);
+                  }}
+                  variant='outline'
+                  className='w-1/2 bg-comic-red text-white hover:bg-comic-purple transition-all duration-300 comic-border comic-shadow text-lg font-bold rounded-full'
+                >
+                  🚫 Cancel
+                </Button>
+                <Button
+                  onClick={saveAvatar}
+                  disabled={!previewImage || isSaving}
+                  className='w-1/2 bg-comic-green text-black hover:bg-comic-blue hover:text-white transition-all duration-300 comic-border comic-shadow text-lg font-bold rounded-full'
+                >
+                  {isSaving ? (
+                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                  ) : (
+                    <Sparkles className='mr-2 h-4 w-4' />
+                  )}
+                  {isSaving ? '💾 Saving...' : '✅ Save Avatar'}
+                </Button>
+              </div>
             </DialogFooter>
           </DialogContent>
         </Dialog>

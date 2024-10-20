@@ -291,33 +291,23 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
             </div>
           </div>
           <DialogFooter>
-            <motion.div className='w-full space-y-2'>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+            <div className='w-full flex justify-between space-x-2'>
+              <Button
+                onClick={() => setIsOpen(false)}
+                variant='outline'
+                className='w-1/2 bg-comic-red text-white hover:bg-comic-purple transition-colors duration-300 comic-border comic-shadow text-lg font-bold'
               >
-                <Button
-                  onClick={() => setIsOpen(false)}
-                  variant='outline'
-                  className='w-full bg-comic-red text-white hover:bg-comic-purple transition-colors duration-300 comic-border comic-shadow text-lg font-bold'
-                >
-                  Cancel
-                </Button>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSave}
+                disabled={updateUserMutation.isPending}
+                className='w-1/2 bg-comic-green text-black hover:bg-comic-blue hover:text-white transition-colors duration-300 comic-border comic-shadow text-lg font-bold'
               >
-                <Button
-                  onClick={handleSave}
-                  disabled={updateUserMutation.isPending}
-                  className='w-full bg-comic-green text-black hover:bg-comic-blue hover:text-white transition-colors duration-300 comic-border comic-shadow text-lg font-bold'
-                >
-                  <Save className='mr-2 h-5 w-5' />
-                  {updateUserMutation.isPending ? 'Saving...' : 'Save Changes'}
-                </Button>
-              </motion.div>
-            </motion.div>
+                <Save className='mr-2 h-5 w-5' />
+                {updateUserMutation.isPending ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -325,7 +315,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
         open={isAvatarDialogOpen}
         onOpenChange={setIsAvatarDialogOpen}
       >
-        <DialogContent className='sm:max-w-[500px] bg-gradient-to-br from-comic-yellow via-comic-green to-comic-blue comic-bg rounded-xl comic-border comic-shadow'>
+        <DialogContent className='sm:max-w-[500px] bg-gradient-to-br to-comic-blue comic-bg rounded-xl comic-border comic-shadow'>
           <DialogHeader>
             <DialogTitle className='text-3xl font-bold text-comic-purple mb-4'>
               🎨 Update Your Avatar 🖼️
@@ -418,29 +408,31 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
               </div>
             )}
           </div>
-          <DialogFooter className='mt-4 space-x-2'>
-            <Button
-              onClick={() => {
-                setIsAvatarDialogOpen(false);
-                setPreviewImage(null);
-              }}
-              variant='outline'
-              className='bg-comic-red text-white hover:bg-comic-purple transition-all duration-300 comic-border comic-shadow text-lg font-bold rounded-full'
-            >
-              🚫 Cancel
-            </Button>
-            <Button
-              onClick={saveAvatar}
-              disabled={!previewImage || isSaving}
-              className='bg-comic-green text-black hover:bg-comic-blue hover:text-white transition-all duration-300 comic-border comic-shadow text-lg font-bold rounded-full'
-            >
-              {isSaving ? (
-                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-              ) : (
-                <Sparkles className='mr-2 h-4 w-4' />
-              )}
-              {isSaving ? '💾 Saving...' : '✅ Save Avatar'}
-            </Button>
+          <DialogFooter className='mt-4'>
+            <div className='w-full flex justify-between space-x-2'>
+              <Button
+                onClick={() => {
+                  setIsAvatarDialogOpen(false);
+                  setPreviewImage(null);
+                }}
+                variant='outline'
+                className='w-1/2 bg-comic-red text-white hover:bg-comic-purple transition-all duration-300 comic-border comic-shadow text-lg font-bold rounded-full'
+              >
+                🚫 Cancel
+              </Button>
+              <Button
+                onClick={saveAvatar}
+                disabled={!previewImage || isSaving}
+                className='w-1/2 bg-comic-green text-black hover:bg-comic-blue hover:text-white transition-all duration-300 comic-border comic-shadow text-lg font-bold rounded-full'
+              >
+                {isSaving ? (
+                  <Loader2 className='h-4 w-4 animate-spin' />
+                ) : (
+                  <Sparkles className='h-4 w-4' />
+                )}
+                {isSaving ? '💾 Saving...' : '✅ Save Avatar'}
+              </Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
