@@ -163,18 +163,18 @@ const AIFriendEditor: React.FC<AIFriendEditorProps> = ({
               rows={2}
             />
           </div>
-          <DialogFooter>
+          <DialogFooter className='flex flex-row justify-between'>
             <Button
               type='button'
               variant='outline'
               onClick={() => setIsOpen(false)}
-              className='bg-comic-red text-white hover:bg-comic-purple transition-colors duration-300 comic-border comic-shadow'
+              className='w-1/2 bg-comic-red text-white hover:bg-comic-purple transition-colors duration-300 comic-border comic-shadow'
             >
               Cancel
             </Button>
             <Button
               type='submit'
-              className='bg-comic-green text-black hover:bg-comic-blue hover:text-white transition-colors duration-300 comic-border comic-shadow'
+              className='w-1/2 bg-comic-green text-black hover:bg-comic-blue hover:text-white transition-colors duration-300 comic-border comic-shadow'
             >
               <Save className='mr-2 h-4 w-4' /> Save
             </Button>

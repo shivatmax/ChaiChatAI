@@ -83,20 +83,20 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
       open={isOpen}
       onOpenChange={onClose}
     >
-      <DialogContent className='sm:max-w-[425px] bg-comic-yellow comic-bg rounded-xl comic-border comic-shadow'>
+      <DialogContent className='sm:max-w-[425px] bg-comic-yellow comic-bg rounded-xl comic-border comic-shadow max-h-[96vh]'>
         <DialogHeader>
-          <DialogTitle className='text-4xl font-bold text-comic-purple'>
+          <DialogTitle className='text-3xl sm:text-4xl font-bold text-comic-purple'>
             Create New Session
           </DialogTitle>
         </DialogHeader>
         <form
           onSubmit={handleSubmit}
-          className='space-y-6'
+          className='space-y-4 sm:space-y-6'
         >
           <div className='flex items-center justify-between'>
             <Label
               htmlFor='advanced-mode'
-              className='text-xl font-medium text-comic-darkblue'
+              className='text-lg sm:text-xl font-medium text-comic-darkblue'
             >
               Advanced Mode
             </Label>
@@ -109,7 +109,7 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
           <div>
             <Label
               htmlFor='title'
-              className='text-xl font-medium text-comic-darkblue'
+              className='text-lg sm:text-xl font-medium text-comic-darkblue'
             >
               Title
             </Label>
@@ -119,7 +119,7 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
               onChange={(e) => setTitle(e.target.value)}
               placeholder='Enter session title'
               required
-              className='mt-1 text-xl p-4 comic-border comic-shadow'
+              className='mt-1 text-lg sm:text-xl p-3 sm:p-4 comic-border comic-shadow'
             />
           </div>
           <AnimatePresence>
@@ -131,7 +131,7 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
                 transition={{ duration: 0.3 }}
               >
                 <div>
-                  <Label className='text-xl font-medium text-comic-darkblue'>
+                  <Label className='text-lg sm:text-xl font-medium text-comic-darkblue'>
                     Session Type
                   </Label>
                   <div className='mt-2 space-y-2'>
@@ -143,13 +143,14 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
                           ? 'default'
                           : 'outline'
                       }
-                      className={`w-full text-xl p-4 ${
+                      className={`w-full text-lg sm:text-xl p-3 sm:p-4 ${
                         sessionType === SessionType.StoryMode
                           ? 'bg-comic-green text-black'
                           : 'bg-white text-comic-darkblue'
                       } comic-border comic-shadow transition-colors duration-300`}
                     >
-                      <Book className='w-8 h-8 mr-2' /> Story Mode 📚
+                      <Book className='w-6 h-6 sm:w-8 sm:h-8 mr-2' /> Story Mode
+                      📚
                     </Button>
                     <Button
                       type='button'
@@ -161,13 +162,14 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
                           ? 'default'
                           : 'outline'
                       }
-                      className={`w-full text-xl p-4 ${
+                      className={`w-full text-lg sm:text-xl p-3 sm:p-4 ${
                         sessionType === SessionType.ResearchCreateMode
                           ? 'bg-comic-blue text-white'
                           : 'bg-white text-comic-darkblue'
                       } comic-border comic-shadow transition-colors duration-300`}
                     >
-                      <Microscope className='w-8 h-8 mr-2' /> Research Mode 🔬
+                      <Microscope className='w-6 h-6 sm:w-8 sm:h-8 mr-2' />{' '}
+                      Research Mode 🔬
                     </Button>
                   </div>
                 </div>
@@ -182,7 +184,7 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
                     >
                       <Label
                         htmlFor='charactersAndRelationships'
-                        className='text-xl font-medium text-comic-darkblue'
+                        className='text-lg sm:text-xl font-medium text-comic-darkblue'
                       >
                         Characters & Relationships
                       </Label>
@@ -193,8 +195,8 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
                           setCharactersAndRelationships(e.target.value)
                         }
                         placeholder='Describe characters and their relationships'
-                        rows={4}
-                        className='mt-1 text-xl p-4 comic-border comic-shadow'
+                        rows={3}
+                        className='mt-1 text-lg sm:text-xl p-3 sm:p-4 comic-border comic-shadow'
                       />
                     </motion.div>
                   )}
@@ -209,7 +211,7 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
                       <div>
                         <Label
                           htmlFor='teamMembers'
-                          className='text-xl font-medium text-comic-darkblue'
+                          className='text-lg sm:text-xl font-medium text-comic-darkblue'
                         >
                           Team Members
                         </Label>
@@ -218,13 +220,13 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
                           value={teamMembers}
                           onChange={(e) => setTeamMembers(e.target.value)}
                           placeholder='Enter team members'
-                          className='mt-1 text-xl p-4 comic-border comic-shadow'
+                          className='mt-1 text-lg sm:text-xl p-3 sm:p-4 comic-border comic-shadow'
                         />
                       </div>
                       <div>
                         <Label
                           htmlFor='projectDescription'
-                          className='text-xl font-medium text-comic-darkblue'
+                          className='text-lg sm:text-xl font-medium text-comic-darkblue'
                         >
                           Project Description
                         </Label>
@@ -235,8 +237,8 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
                             setProjectDescription(e.target.value)
                           }
                           placeholder='Describe the research project'
-                          rows={4}
-                          className='mt-1 text-xl p-4 comic-border comic-shadow'
+                          rows={3}
+                          className='mt-1 text-lg sm:text-xl p-3 sm:p-4 comic-border comic-shadow'
                         />
                       </div>
                     </motion.div>
@@ -252,7 +254,7 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
               >
                 <Label
                   htmlFor='description'
-                  className='text-xl font-medium text-comic-darkblue'
+                  className='text-lg sm:text-xl font-medium text-comic-darkblue'
                 >
                   Description
                 </Label>
@@ -261,24 +263,24 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder='Enter session description'
-                  rows={4}
-                  className='mt-1 text-xl p-4 comic-border comic-shadow'
+                  rows={3}
+                  className='mt-1 text-lg sm:text-xl p-3 sm:p-4 comic-border comic-shadow'
                 />
               </motion.div>
             )}
           </AnimatePresence>
-          <DialogFooter>
+          <DialogFooter className='flex flex-row justify-between'>
             <Button
               type='button'
               variant='outline'
               onClick={onClose}
-              className='mr-2 bg-comic-red text-white hover:bg-comic-purple transition-colors duration-300 comic-border comic-shadow'
+              className='w-1/2 bg-comic-red text-white hover:bg-comic-purple transition-colors duration-300 comic-border comic-shadow'
             >
               Cancel
             </Button>
             <Button
               type='submit'
-              className='bg-comic-green text-black hover:bg-comic-blue hover:text-white transition-colors duration-300 comic-border comic-shadow'
+              className='w-1/2 bg-comic-green text-black hover:bg-comic-blue hover:text-white transition-colors duration-300 comic-border comic-shadow'
             >
               Create Session 🚀
             </Button>

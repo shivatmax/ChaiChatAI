@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -24,52 +24,52 @@ const SessionEditDialog: React.FC<SessionEditDialogProps> = ({
   session,
   onUpdate,
 }) => {
+  const [sessionData, setSessionData] = useState<{
+    title: string;
+    description?: string;
+    charactersAndRelationships?: string;
+    teamMembers?: string;
+    projectDescription?: string;
+  }>({
+    title: '',
+  });
+
+  useEffect(() => {
+    if (session) {
+      const parsedDescription =
+        typeof session.description === 'string'
+          ? JSON.parse(session.description)
+          : session.description;
+
+      setSessionData({
+        title: session.title,
+        description: parsedDescription.description || '',
+        charactersAndRelationships:
+          parsedDescription.charactersAndRelationships || '',
+        teamMembers: parsedDescription.teamMembers || '',
+        projectDescription: parsedDescription.projectDescription || '',
+      });
+    }
+  }, [session]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!session) return;
 
-    const formData = new FormData(e.target as HTMLFormElement);
-    const sessionData: {
-      title: string;
-      [key: string]: string | null;
-    } = {
-      title: formData.get('title') as string,
-    };
-
-    if (session.session_type === SessionType.StoryMode) {
-      sessionData.charactersAndRelationships = formData.get(
-        'characters_and_relationships'
-      ) as string;
-    } else if (session.session_type === SessionType.ResearchCreateMode) {
-      sessionData.teamMembers = formData.get('team_members') as string;
-      sessionData.projectDescription = formData.get(
-        'project_description'
-      ) as string;
-    } else {
-      sessionData.description = formData.get('description') as string;
-    }
-
     const updates: Partial<Session> = {
       title: sessionData.title,
-      description: JSON.stringify(sessionData),
+      description: JSON.stringify({
+        description: sessionData.description,
+        charactersAndRelationships: sessionData.charactersAndRelationships,
+        teamMembers: sessionData.teamMembers,
+        projectDescription: sessionData.projectDescription,
+      }),
     };
 
     onUpdate(updates);
   };
 
   if (!session) return null;
-
-  const getDescriptionValue = (key: string): string => {
-    if (
-      typeof session.description === 'object' &&
-      session.description !== null
-    ) {
-      return (
-        ((session.description as Record<string, unknown>)[key] as string) || ''
-      );
-    }
-    return typeof session.description === 'string' ? session.description : '';
-  };
 
   return (
     <Dialog
@@ -97,7 +97,10 @@ const SessionEditDialog: React.FC<SessionEditDialogProps> = ({
               <Input
                 id='title'
                 name='title'
-                defaultValue={session.title}
+                value={sessionData.title}
+                onChange={(e) =>
+                  setSessionData({ ...sessionData, title: e.target.value })
+                }
                 required
                 className='mt-1 text-xl p-4 comic-border comic-shadow'
               />
@@ -113,7 +116,13 @@ const SessionEditDialog: React.FC<SessionEditDialogProps> = ({
                 <Textarea
                   id='description'
                   name='description'
-                  defaultValue={getDescriptionValue('description')}
+                  value={sessionData.description}
+                  onChange={(e) =>
+                    setSessionData({
+                      ...sessionData,
+                      description: e.target.value,
+                    })
+                  }
                   rows={3}
                   className='mt-1 text-xl p-4 comic-border comic-shadow'
                 />
@@ -130,9 +139,13 @@ const SessionEditDialog: React.FC<SessionEditDialogProps> = ({
                 <Textarea
                   id='characters_and_relationships'
                   name='characters_and_relationships'
-                  defaultValue={getDescriptionValue(
-                    'charactersAndRelationships'
-                  )}
+                  value={sessionData.charactersAndRelationships}
+                  onChange={(e) =>
+                    setSessionData({
+                      ...sessionData,
+                      charactersAndRelationships: e.target.value,
+                    })
+                  }
                   rows={3}
                   className='mt-1 text-xl p-4 comic-border comic-shadow'
                 />
@@ -150,7 +163,13 @@ const SessionEditDialog: React.FC<SessionEditDialogProps> = ({
                   <Input
                     id='team_members'
                     name='team_members'
-                    defaultValue={getDescriptionValue('teamMembers')}
+                    value={sessionData.teamMembers}
+                    onChange={(e) =>
+                      setSessionData({
+                        ...sessionData,
+                        teamMembers: e.target.value,
+                      })
+                    }
                     className='mt-1 text-xl p-4 comic-border comic-shadow'
                   />
                 </div>
@@ -164,7 +183,13 @@ const SessionEditDialog: React.FC<SessionEditDialogProps> = ({
                   <Textarea
                     id='project_description'
                     name='project_description'
-                    defaultValue={getDescriptionValue('projectDescription')}
+                    value={sessionData.projectDescription}
+                    onChange={(e) =>
+                      setSessionData({
+                        ...sessionData,
+                        projectDescription: e.target.value,
+                      })
+                    }
                     rows={3}
                     className='mt-1 text-xl p-4 comic-border comic-shadow'
                   />
