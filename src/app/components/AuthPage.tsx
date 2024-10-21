@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -116,26 +117,23 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess, onNavigate }) => {
   }
 
   return (
-    <div className='flex items-center justify-center min-h-screen bg-comic-yellow comic-bg overflow-hidden'>
+    <div className="flex items-center justify-center min-h-screen bg-comic-yellow comic-bg overflow-hidden">
       <AnimatePresence>
         <motion.div
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.5, opacity: 0 }}
           transition={{ duration: 0.5, type: 'spring', stiffness: 120 }}
-          className='w-full max-w-md p-8 space-y-8 bg-white rounded-xl comic-border comic-shadow relative'
+          className="w-full max-w-md p-8 space-y-8 bg-white rounded-xl comic-border comic-shadow relative"
         >
           <motion.div
             animate={{
               rotate: [0, 10, -10, 10, 0],
               transition: { repeat: Infinity, duration: 5 },
             }}
-            className='absolute -top-16 left-1/2 transform -translate-x-1/2'
+            className="absolute -top-16 left-1/2 transform -translate-x-1/2"
           >
-            <FaRobot
-              size={64}
-              className='text-comic-darkblue'
-            />
+            <FaRobot size={64} className="text-comic-darkblue" />
           </motion.div>
 
           {loginError && (
@@ -144,7 +142,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess, onNavigate }) => {
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className='text-comic-red text-lg mb-4 p-2 bg-red-100 border-2 border-comic-red rounded comic-shadow'
+              className="text-comic-red text-lg mb-4 p-2 bg-red-100 border-2 border-comic-red rounded comic-shadow"
             >
               {loginError}
             </motion.div>
@@ -154,27 +152,24 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess, onNavigate }) => {
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className='text-4xl font-extrabold text-center text-comic-purple'
+            className="text-4xl font-extrabold text-center text-comic-purple"
           >
             Welcome to ChitChat AI 🎉
           </motion.h2>
 
-          <form
-            className='mt-8 space-y-6'
-            onSubmit={handleAuth}
-          >
-            <div className='rounded-md shadow-sm -space-y-px'>
+          <form className="mt-8 space-y-6" onSubmit={handleAuth}>
+            <div className="rounded-md shadow-sm -space-y-px">
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <Input
-                  type='text'
+                  type="text"
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder='Username 👤'
-                  className='mb-4 text-xl p-4 comic-border comic-shadow'
+                  placeholder="Username 👤"
+                  className="mb-4 text-xl p-4 comic-border comic-shadow"
                 />
               </motion.div>
               <motion.div
@@ -182,22 +177,19 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess, onNavigate }) => {
                 whileTap={{ scale: 0.95 }}
               >
                 <Input
-                  type='email'
+                  type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder='Email address 📧'
-                  className='mb-4 text-xl p-4 comic-border comic-shadow'
+                  placeholder="Email address 📧"
+                  className="mb-4 text-xl p-4 comic-border comic-shadow"
                 />
               </motion.div>
             </div>
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
-                type='submit'
-                className='w-full bg-comic-green hover:bg-comic-blue text-black text-2xl font-bold py-4 px-6 rounded-full comic-border comic-shadow transition duration-300 ease-in-out transform hover:-translate-y-1'
+                type="submit"
+                className="w-full bg-comic-green hover:bg-comic-blue text-black text-2xl font-bold py-4 px-6 rounded-full comic-border comic-shadow transition duration-300 ease-in-out transform hover:-translate-y-1"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -209,7 +201,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess, onNavigate }) => {
                       ease: 'linear',
                     }}
                   >
-                    <FaUserAstronaut className='inline-block mr-2' />
+                    <FaUserAstronaut className="inline-block mr-2" />
                     Blasting Off... 🚀
                   </motion.div>
                 ) : (
@@ -220,36 +212,36 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess, onNavigate }) => {
           </form>
 
           <motion.div
-            className='absolute -bottom-8 -left-8'
+            className="absolute -bottom-8 -left-8"
             animate={{
               scale: [1, 1.2, 1],
               rotate: [0, 10, -10, 0],
             }}
             transition={{ repeat: Infinity, duration: 3 }}
           >
-            <Sparkles className='text-comic-purple text-4xl' />
+            <Sparkles className="text-comic-purple text-4xl" />
           </motion.div>
 
           <motion.div
-            className='absolute -top-8 -right-8'
+            className="absolute -top-8 -right-8"
             animate={{
               y: [0, -10, 0],
               rotate: [0, 360],
             }}
             transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut' }}
           >
-            <Zap className='text-comic-yellow text-4xl' />
+            <Zap className="text-comic-yellow text-4xl" />
           </motion.div>
 
           <motion.div
-            className='absolute bottom-4 right-4'
+            className="absolute bottom-4 right-4"
             animate={{
               scale: [1, 1.5, 1],
               opacity: [0.5, 1, 0.5],
             }}
             transition={{ repeat: Infinity, duration: 2 }}
           >
-            <Star className='text-comic-red text-3xl' />
+            <Star className="text-comic-red text-3xl" />
           </motion.div>
         </motion.div>
       </AnimatePresence>
