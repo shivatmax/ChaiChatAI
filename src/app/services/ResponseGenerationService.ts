@@ -1,17 +1,12 @@
-import OpenAI from 'openai';
+/* eslint-disable no-undef */
+// import OpenAI from 'openai';
 import { AIFriend } from '../types/AIFriend';
 import { User } from '../types/SupabaseTypes';
 import { getSessionData } from '../services/SessionService';
 import { SessionType } from '../types/Session';
-import { llamaVisionChat, openaiChat, unifyAgentChat } from '../utils/models';
-import {
-  systemPromptGeneral,
-  systemPromptStoryMode,
-  systemPromptResearchCreateMode,
-} from '../utils/prompts/Response';
 
-const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY || '';
-const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
+// const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY || '';
+// const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
 
 const getSessionDescription = async (
   sessionId: string
@@ -72,83 +67,64 @@ export const generateAIResponse = async (
     limit: number
   ) => Promise<string[]>
 ): Promise<string> => {
-  // console.log('lastConversations', lastConversations);
-  if (!openai) {
-    console.error('OpenAI API key not found');
-    return "Sorry, I'm not configured properly. Please check the API key.";
-  }
-  // console.log('sessionId', conversationId);
-
   // Fetch additional conversations from Supabase if needed
   if (lastConversations.length < 20) {
     const additionalConversations = await fetchConversationsFromSupabase(
       conversationId,
       20
     );
-    // console.log('additionalConversations', additionalConversations);
     lastConversations = [...additionalConversations].slice(-20);
   }
 
-  const { descriptionString, sessionType } = await getSessionDescription(
-    conversationId
-  );
-  // console.log('sessionDescription', { descriptionString, sessionType });
+  const { descriptionString, sessionType } =
+    await getSessionDescription(conversationId);
 
-  let systemPrompt = '';
+  const response = await fetch('/api/llms/ai-friend-response', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      userPrompt: prompt,
+      dataObject: {
+        aiFriend: {
+          name: aiFriend.name || '',
+          persona: aiFriend.persona || '',
+          about: aiFriend.about || '',
+          knowledge_base: aiFriend.knowledge_base || '',
+        },
+        user: {
+          name: user.name || '',
+          persona: user.persona || '',
+          about: user.about || '',
+          knowledge_base: user.knowledge_base || '',
+        },
+        friendsSummary: friendsSummary || '',
+      },
+      sessionType: sessionType || '',
+      sessionDescription: descriptionString || '',
+      lastConversation: lastConversations || [],
+    }),
+  });
 
-  if (sessionType === SessionType.General) {
-    systemPrompt = systemPromptGeneral
-      .replace('{aiFriendName}', aiFriend.name)
-      .replace('{aiFriendPersona}', aiFriend.persona)
-      .replace('{aiFriendAbout}', aiFriend.about)
-      .replace('{aiFriendKnowledgeBase}', aiFriend.knowledge_base)
-      .replace('{userName}', user.name)
-      .replace('{userPersona}', user.persona)
-      .replace('{userAbout}', user.about)
-      .replace('{userKnowledgeBase}', user.knowledge_base || '')
-      .replace('{friendsSummary}', friendsSummary)
-      .replace('{descriptionString}', descriptionString)
-      .replace('{lastConversations}', lastConversations.join('\n'));
-  } else if (sessionType === SessionType.StoryMode) {
-    systemPrompt = systemPromptStoryMode
-      .replace('{aiFriendName}', aiFriend.name)
-      .replace('{descriptionString}', descriptionString)
-      .replace('{friendsSummary}', friendsSummary)
-      .replace('{lastConversations}', lastConversations.join('\n'));
-  } else if (sessionType === SessionType.ResearchCreateMode) {
-    systemPrompt = systemPromptResearchCreateMode
-      .replace('{aiFriendName}', aiFriend.name)
-      .replace('{descriptionString}', descriptionString)
-      .replace('{aiFriendPersona}', aiFriend.persona)
-      .replace('{aiFriendAbout}', aiFriend.about)
-      .replace('{aiFriendKnowledgeBase}', aiFriend.knowledge_base)
-      .replace('{userName}', user.name)
-      .replace('{friendsSummary}', friendsSummary)
-      .replace('{lastConversations}', lastConversations.join('\n'));
+  console.log('response', response);
+
+  if (!response.ok) {
+    console.error(
+      'Error in AI response:',
+      response.status,
+      response.statusText
+    );
+    return 'Sorry, there was an error generating the response.';
   }
 
-  let response = await openaiChat(prompt, systemPrompt);
-  // let response = 'I am busy now, I will respond later.';
+  const responseText = await response.text();
+  console.log('responseText', responseText);
 
-  if (!response || response === 'I am busy now, I will respond later.') {
-    // Fallback to unifyAgentChat
-    response = await unifyAgentChat(prompt, systemPrompt);
-
-    if (!response || response === 'I am busy now, I will respond later.') {
-      // Fallback to openaiChat
-      response = await llamaVisionChat(prompt, systemPrompt);
-
-      if (!response || response === 'I am busy now, I will respond later.') {
-        // console.log('No model responded correctly');
-      } else {
-        // console.log('OpenAI model responded correctly');
-      }
-    } else {
-      // console.log('Unify model responded correctly');
-    }
-  } else {
-    // console.log('LlamaVision model responded correctly');
+  try {
+    return responseText || 'I am busy now, I will respond later.';
+  } catch (error) {
+    console.error('Error parsing JSON:', error);
+    return responseText || 'Error parsing the response.';
   }
-
-  return response || 'I am busy now, I will respond later.';
 };

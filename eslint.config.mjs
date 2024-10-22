@@ -23,6 +23,7 @@ export default [
         ecmaFeatures: {
           jsx: true,
         },
+        lib: ['esnext', 'dom'],
       },
     },
     rules: {
@@ -34,7 +35,8 @@ export default [
       '@typescript-eslint/no-unused-vars': 'error',
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
-      '@next/next/no-duplicate-head': 'off', // Disable the rule causing the error
+      '@next/next/no-duplicate-head': 'off',
+      'no-undef': 'off',
     },
     settings: {
       react: {
