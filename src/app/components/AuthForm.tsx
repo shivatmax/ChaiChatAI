@@ -9,12 +9,17 @@ import { motion } from 'framer-motion';
 import { FaUserAstronaut } from 'react-icons/fa';
 import { rateLimiter } from '../utils/rateLimiter';
 import { sanitizeInput } from '../utils/sanitize';
+import { validateEmail } from '../utils/email_valid';
 
 interface AuthFormProps {
   onAuthSuccess: () => void;
+  onEmailValidation?: (email: string) => Promise<void>;
 }
 
-const AuthForm: React.FC<AuthFormProps> = ({ onAuthSuccess }) => {
+const AuthForm: React.FC<AuthFormProps> = ({
+  onAuthSuccess,
+  // onEmailValidation,
+}) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -26,6 +31,12 @@ const AuthForm: React.FC<AuthFormProps> = ({ onAuthSuccess }) => {
     e.preventDefault();
     const sanitizedUsername = sanitizeInput(username);
     const sanitizedEmail = sanitizeInput(email);
+
+    if (!(await validateEmail(sanitizedEmail))) {
+      console.log('Invalid email address. Please enter a valid email.');
+      setLoginError('Invalid email address. Please enter a valid email.');
+      return;
+    }
 
     setIsLoading(true);
     setLoginError(null);
@@ -39,6 +50,14 @@ const AuthForm: React.FC<AuthFormProps> = ({ onAuthSuccess }) => {
       setIsLoading(false);
       return;
     }
+
+    // // Validate email
+    // const isEmailValid = await validateEmail(sanitizedEmail);
+    // if (!isEmailValid) {
+    //   setLoginError('Invalid email address. Please enter a valid email.');
+    //   setIsLoading(false);
+    //   return;
+    // }
 
     try {
       const { data: existingUser, error: fetchError } = await supabase
@@ -59,6 +78,9 @@ const AuthForm: React.FC<AuthFormProps> = ({ onAuthSuccess }) => {
           return;
         }
         userId = existingUser.id;
+      } else if (!(await validateEmail(sanitizedEmail))) {
+        setLoginError('Invalid email address. Please enter a valid email.');
+        return;
       } else {
         // Create new user
         const newUser = {
@@ -103,58 +125,60 @@ const AuthForm: React.FC<AuthFormProps> = ({ onAuthSuccess }) => {
     }
   };
 
+  const handleEmailChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('handleEmailChange');
+    const email = e.target.value;
+    console.log('email', email);
+
+    if (!(await validateEmail(email))) {
+      console.log('Invalid email address. Please enter a valid email.');
+      setLoginError('Invalid email address. Please enter a valid email.');
+      return;
+    }
+    console.log('Valid email address. Setting email.');
+    setEmail(email);
+  };
+
   return (
-    <form
-      className='mt-8 space-y-6'
-      onSubmit={handleAuth}
-    >
+    <form className="mt-8 space-y-6" onSubmit={handleAuth}>
       {loginError && (
         <motion.div
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: 'auto', opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className='text-comic-red text-lg mb-4 p-2 bg-red-100 border-2 border-comic-red rounded comic-shadow'
+          className="text-comic-red text-lg mb-4 p-2 bg-red-100 border-2 border-comic-red rounded comic-shadow"
         >
           {loginError}
         </motion.div>
       )}
 
-      <div className='rounded-md shadow-sm -space-y-px'>
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
+      <div className="rounded-md shadow-sm -space-y-px">
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           <Input
-            type='text'
+            type="text"
             required
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder='Username 👤'
-            className='mb-4 text-xl p-4 comic-border comic-shadow'
+            placeholder="Username 👤"
+            className="mb-4 text-xl p-4 comic-border comic-shadow"
           />
         </motion.div>
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           <Input
-            type='email'
+            type="email"
             required
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder='Email address 📧'
-            className='mb-4 text-xl p-4 comic-border comic-shadow'
+            onChange={(e) => handleEmailChange(e)}
+            placeholder="Email address 📧"
+            className="mb-4 text-xl p-4 comic-border comic-shadow"
           />
         </motion.div>
       </div>
-      <motion.div
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-      >
+      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
         <Button
-          type='submit'
-          className='w-full bg-comic-green hover:bg-comic-blue text-black text-2xl font-bold py-4 px-6 rounded-full comic-border comic-shadow transition duration-300 ease-in-out transform hover:-translate-y-1'
+          type="submit"
+          className="w-full bg-comic-green hover:bg-comic-blue text-black text-2xl font-bold py-4 px-6 rounded-full comic-border comic-shadow transition duration-300 ease-in-out transform hover:-translate-y-1"
           disabled={isLoading}
         >
           {isLoading ? (
@@ -166,7 +190,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onAuthSuccess }) => {
                 ease: 'linear',
               }}
             >
-              <FaUserAstronaut className='inline-block mr-2' />
+              <FaUserAstronaut className="inline-block mr-2" />
               Blasting Off... 🚀
             </motion.div>
           ) : (

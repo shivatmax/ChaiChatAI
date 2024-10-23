@@ -35,36 +35,36 @@ const LogoutButton: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
         <motion.div
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className='flex justify-center'
+          className="flex justify-center"
         >
           <Button
-            variant='outline'
-            className='w-[90%] bg-comic-red hover:bg-comic-purple text-white font-bold py-3 px-6 rounded-full comic-border comic-shadow transition-all duration-300 ease-in-out text-xl'
+            variant="outline"
+            className="w-[90%] bg-comic-red hover:bg-comic-purple text-white font-bold py-3 px-6 rounded-full comic-border comic-shadow transition-all duration-300 ease-in-out text-xl"
           >
-            <LogOut className='mr-2 h-6 w-6' /> Logout
+            <LogOut className="mr-2 h-6 w-6" /> Logout
           </Button>
         </motion.div>
       </AlertDialogTrigger>
-      <AlertDialogContent className='bg-comic-yellow comic-bg rounded-xl comic-border comic-shadow'>
+      <AlertDialogContent className="bg-comic-yellow comic-bg rounded-xl comic-border comic-shadow">
         <AlertDialogHeader>
-          <AlertDialogTitle className='text-3xl font-bold text-comic-purple'>
+          <AlertDialogTitle className="text-3xl font-bold text-comic-purple">
             Are you sure you want to logout?
           </AlertDialogTitle>
-          <AlertDialogDescription className='text-xl text-comic-darkblue'>
+          <AlertDialogDescription className="text-xl text-comic-darkblue">
             This action will end your current session and return you to the
             login page.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter className='space-x-4'>
-          <AlertDialogCancel className='bg-comic-green text-black hover:bg-comic-blue hover:text-white transition-colors duration-300 comic-border comic-shadow text-xl font-bold'>
-            Cancel
-          </AlertDialogCancel>
+        <AlertDialogFooter className="flex flex-col items-center space-y-4">
           <AlertDialogAction
             onClick={handleLogout}
-            className='bg-comic-red text-white hover:bg-comic-purple transition-colors duration-300 comic-border comic-shadow text-xl font-bold'
+            className="w-3/4 bg-comic-red text-white hover:bg-comic-purple transition-colors duration-300 comic-border comic-shadow text-xl font-bold"
           >
             Logout
           </AlertDialogAction>
+          <AlertDialogCancel className="w-3/4 bg-comic-green text-black hover:bg-comic-blue hover:text-white transition-colors duration-300 comic-border comic-shadow text-xl font-bold">
+            Cancel
+          </AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

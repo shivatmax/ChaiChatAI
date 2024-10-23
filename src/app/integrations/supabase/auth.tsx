@@ -16,6 +16,7 @@ export const SupabaseAuthProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  // eslint-disable-next-line react/react-in-jsx-scope
   return <SupabaseAuthProviderInner>{children}</SupabaseAuthProviderInner>;
 };
 
@@ -101,6 +102,7 @@ export const SupabaseAuthProviderInner = ({
   };
 
   return (
+    // eslint-disable-next-line react/react-in-jsx-scope
     <SupabaseAuthContext.Provider value={{ session, loading, logout }}>
       {children}
     </SupabaseAuthContext.Provider>
@@ -112,10 +114,11 @@ export const useSupabaseAuth = () => {
 };
 
 export const SupabaseAuthUI = () => (
+  // eslint-disable-next-line react/react-in-jsx-scope
   <Auth
     supabaseClient={supabase}
     appearance={{ theme: ThemeSupa }}
-    theme='default'
+    theme="default"
     providers={[]}
   />
 );

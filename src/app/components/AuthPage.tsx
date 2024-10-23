@@ -158,10 +158,11 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess, onNavigate }) => {
           </motion.h2>
 
           <form className="mt-8 space-y-6" onSubmit={handleAuth}>
-            <div className="rounded-md shadow-sm -space-y-px">
+            <div className="rounded-md shadow-sm space-y-4">
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                className="flex justify-center"
               >
                 <Input
                   type="text"
@@ -169,12 +170,13 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess, onNavigate }) => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Username 👤"
-                  className="mb-4 text-xl p-4 comic-border comic-shadow"
+                  className="w-full text-xl p-4 comic-border comic-shadow"
                 />
               </motion.div>
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                className="flex justify-center"
               >
                 <Input
                   type="email"
@@ -182,7 +184,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess, onNavigate }) => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Email address 📧"
-                  className="mb-4 text-xl p-4 comic-border comic-shadow"
+                  className="w-full text-xl p-4 comic-border comic-shadow"
                 />
               </motion.div>
             </div>
