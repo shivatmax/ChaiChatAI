@@ -1,7 +1,5 @@
 import { AIFriend } from '../types/AIFriend';
 import { User } from '../types/User';
-import { openaiChat, unifyAgentChat } from '../utils/models';
-import { systemPromptFriendSummary } from '../utils/prompts/Summary';
 interface RouterData {
   user: Partial<User>;
   activeFriends: Partial<AIFriend>[];
@@ -77,20 +75,32 @@ export const generateFriendsSummary = async (
   }
 
   try {
-    const friendsInfo = aiFriends.map(
-      (friend) => `${friend.name}: ${friend.persona}, about: ${friend.about}`
-    );
-    const systemPrompt = systemPromptFriendSummary;
-    const userPrompt = `AI Friends:\n${friendsInfo.join(
-      '\n'
-    )}\n\nPlease provide a brief summary of these AI friends, highlighting their key characteristics and how they might interact in a group chat.`;
+    const response = await fetch('/api/llms/generate-friend-summary', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        friendsData: {
+          friends: aiFriends.map((friend) => ({
+            name: friend.name,
+            persona: friend.persona,
+            about: friend.about,
+            knowledge_base: friend.knowledge_base,
+          })),
+        },
+      }),
+    });
 
-    let summary = await unifyAgentChat(userPrompt, systemPrompt);
-    if (summary === 'I am busy now, I will respond later.') {
-      // console.log('Falling back to openaiChat for summary generation');
-      summary = await openaiChat(userPrompt, systemPrompt);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-    // console.log('Generated summary:', summary);
+
+    const summary = await response.text();
+
+    if (typeof summary !== 'string') {
+      throw new Error('Unexpected response format');
+    }
 
     localStorage.setItem(cacheKey, summary);
     localStorage.setItem('cachedAIFriendsData', JSON.stringify(aiFriends));
