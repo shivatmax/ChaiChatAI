@@ -1,114 +1,57 @@
-import OpenAI from 'openai';
 import { AIFriend } from '../types/AIFriend';
 import { User } from '../types/User';
-import { z } from 'zod';
-import { zodResponseFormat } from 'openai/helpers/zod';
-import {
-  openaiChat,
-  unifyAgentChat,
-  unifyAgentChatWithResponseFormat,
-} from '../utils/models';
-import { systemPromptMessageRoute } from '../utils/prompts/MessageRoute';
+import { openaiChat, unifyAgentChat } from '../utils/models';
 import { systemPromptFriendSummary } from '../utils/prompts/Summary';
-
-const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY || '';
-const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
-
+interface RouterData {
+  user: Partial<User>;
+  activeFriends: Partial<AIFriend>[];
+}
 export const routeMessage = async (
   message: string,
   user: User,
   aiFriends: AIFriend[]
 ): Promise<string[] | null> => {
   const activeFriends = aiFriends.filter((friend) => friend.status);
-
-  const RespondingFriends = z.object({
-    friends: z.array(z.string()),
-  });
-
-  const systemPrompt = systemPromptMessageRoute;
-
-  const userPrompt = `
-User: ${user.name}
-User persona: ${user.persona}
-
-Active Friends:
-${activeFriends.map((f) => `- ${f.name} (${f.persona})`).join('\n')}
-
-Friend Profiles:
-${JSON.stringify(
-  activeFriends.map((f) => ({
-    name: f.name,
-    persona: f.persona,
-    about: f.about,
-  })),
-  null,
-  2
-)}
-
-Latest Message: "${message}"
-
-Based on the provided information, determine which 1-3 friends should respond to this message. Consider the message content, the user's profile, and the friends' personalities and about. Provide your response as an array of friend names.`;
-  //Json schema
-  const jsonSchema = {
-    type: 'object',
-    properties: {
-      friends: {
-        type: 'array',
-        items: { type: 'string' },
-      },
+  const routerData: RouterData = {
+    user: {
+      name: user.name,
+      persona: user.persona,
+      about: user.about,
+      knowledge_base: user.knowledge_base,
     },
-    required: ['friends'],
+    activeFriends: activeFriends.map((friend) => ({
+      name: friend.name,
+      persona: friend.persona,
+      about: friend.about,
+      knowledge_base: friend.knowledge_base,
+    })),
   };
-  const responseFormat = JSON.stringify({
-    schema: jsonSchema,
-    name: 'respondingFriends',
-  });
-
+  // console.log('routerData', JSON.stringify(routerData, null, 2));
   try {
-    const result = await unifyAgentChatWithResponseFormat(
-      userPrompt,
-      systemPrompt,
-      responseFormat
-    );
-    const parsedResult = JSON.parse(result);
-    if (parsedResult && Array.isArray(parsedResult.friends)) {
-      return parsedResult.friends;
-    }
-    // console.log(
-    //   'parsedResult from unifyAgentChatWithResponseFormat',
-    //   parsedResult
-    // );
-    throw new Error(
-      'Invalid response format from unifyAgentChatWithResponseFormat'
-    );
-  } catch (error) {
-    console.error(
-      'Error in unifyAgentChatWithResponseFormat, falling back to openaiChat:',
-      error
-    );
-    try {
-      const completion = await openai.beta.chat.completions.parse({
-        model: 'gpt-4o-mini',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt },
-        ],
-        response_format: zodResponseFormat(
-          RespondingFriends,
-          'respondingFriends'
-        ),
-      });
+    const response = await fetch('/api/llms/message-router', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: message,
+        routerData: routerData,
+      }),
+    });
 
-      const respondingFriends = completion.choices[0].message.parsed?.friends;
-      // console.log('respondingFriends from openaiChat', respondingFriends);
-      return respondingFriends || null;
-    } catch (openaiError) {
-      console.error('Error in openaiChat fallback:', openaiError);
-      return activeFriends
-        .sort(() => 0.5 - Math.random())
-        .slice(0, Math.floor(Math.random() * 3) + 1)
-        .map((f) => f.name);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
+
+    const data = await response.json();
+    console.log('data', data);
+    return data;
+  } catch (error) {
+    console.error('Error in message routing:', error);
+    return activeFriends
+      .sort(() => 0.5 - Math.random())
+      .slice(0, Math.floor(Math.random() * 3) + 1)
+      .map((f) => f.name);
   }
 };
 
