@@ -87,6 +87,8 @@ export const generateAIResponse = async (
     body: JSON.stringify({
       userPrompt: prompt,
       dataObject: {
+        userId: user.id,
+        sessionId: conversationId,
         aiFriend: {
           name: aiFriend.name || '',
           persona: aiFriend.persona || '',
