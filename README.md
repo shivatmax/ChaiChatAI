@@ -1,5 +1,9 @@
 # 🌈 ChitChat AI
 
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Version](https://img.shields.io/badge/version-1.0.0-green.svg)
+![Social](https://img.shields.io/twitter/follow/yourhandle?style=social)
+
 ChitChat AI is an open-source interactive chat application that allows users to create and converse with AI friends. It's built with Next.js, React, and Supabase, offering a fun and engaging way to explore AI-powered conversations. 🤖💬
 
 ## ✨ Features
@@ -11,6 +15,17 @@ ChitChat AI is an open-source interactive chat application that allows users to 
 - **📊 Conversation Insights**: Gain valuable insights from your chats with AI friends.
 - **📱 Responsive Design**: Enjoy a seamless experience across desktop and mobile devices.
 - **🚀 First-Time User Experience**: Guided tour for new users to explore the app's features.
+- **🌐 Content Sharing**: Share and interact with web URLs directly in the application
+- **📰 Real-time News Feed**: Integration with news APIs to provide latest updates
+- **👥 Social Interaction**: Comment, like, and share functionality
+- **💻 Multi-platform Support**: Works across web and mobile devices 🌐📱
+- **🧠 Smart Content Analysis**: AI-powered content recommendation system 🧩🔍
+- **🔄 Multiple Chat Modes**:
+  - **Web Content Analysis**: AI can analyze and discuss shared web content 🌐🗣️
+  - **General Chat**: Regular conversational mode 💬
+- **👥Custom Session Types**: Specialized modes for different conversation contexts 🛠️
+  - **Story Mode**: AI can participate in and help develop interactive stories 📖✨
+  - **Research Mode**: AI can assist in research projects by providing insights, ideas, and suggestions 📚💡
 
 ## 🚀 Getting Started
 
