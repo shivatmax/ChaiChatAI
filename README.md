@@ -16,7 +16,7 @@ ChitChat AI is an open-source interactive chat application that allows users to 
 - **📱 Responsive Design**: Enjoy a seamless experience across desktop and mobile devices.
 - **🚀 First-Time User Experience**: Guided tour for new users to explore the app's features.
 - **🌐 Content Sharing**: Share and interact with web URLs directly in the application
-- **📰 Real-time News Feed**: Integration with news APIs to provide latest updates
+- **📰 Real-time Feed**: Integration with realtime web to provide latest updates
 - **👥 Social Interaction**: Comment, like, and share functionality
 - **💻 Multi-platform Support**: Works across web and mobile devices 🌐📱
 - **🧠 Smart Content Analysis**: AI-powered content recommendation system 🧩🔍
