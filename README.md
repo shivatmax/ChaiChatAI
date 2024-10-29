@@ -50,12 +50,7 @@ ChitChat AI is an open-source interactive chat application that allows users to 
    Create a `.env` file in the root directory and add the following:
 
    ```env
-   NEXT_PUBLIC_SUPABASE_PROJECT_URL=your_supabase_project_url
-   NEXT_PUBLIC_SUPABASE_API_KEY=your_supabase_api_key
-   NEXT_PUBLIC_OPENAI_API_KEY=your_openai_api_key
-   NEXT_PUBLIC_UNIFY_BASE_URL=your_unify_base_url
-   NEXT_PUBLIC_UNIFY_API_KEY=your_unify_api_key
-   NEXT_PUBLIC_TOGETHER_API_KEY=you_togetherai_api
+   Message me to get env cred
    ```
 
 5. Run the development server:
