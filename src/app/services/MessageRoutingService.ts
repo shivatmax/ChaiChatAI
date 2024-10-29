@@ -7,8 +7,13 @@ interface RouterData {
 export const routeMessage = async (
   message: string,
   user: User,
-  aiFriends: AIFriend[]
-): Promise<string[] | null> => {
+  aiFriends: AIFriend[],
+  lastConversations: string[],
+  fetchConversationsFromSupabase: (
+    sessionId: string,
+    limit: number
+  ) => Promise<string[]>
+): Promise<{ friends: string[]; mode: string; webContent?: string } | null> => {
   const activeFriends = aiFriends.filter((friend) => friend.status);
   const routerData: RouterData = {
     user: {
@@ -24,7 +29,18 @@ export const routeMessage = async (
       knowledge_base: friend.knowledge_base,
     })),
   };
-  // console.log('routerData', JSON.stringify(routerData, null, 2));
+
+  // Fetch additional conversations from Supabase if needed
+  if (lastConversations.length < 10) {
+    const additionalConversations = await fetchConversationsFromSupabase(
+      message,
+      10
+    );
+    lastConversations = [...additionalConversations].slice(-10);
+  }
+
+  const finalMessage = `lastConversations: ${lastConversations} and lastMessage of user ${user.name}: ${message}`;
+
   try {
     const response = await fetch('/api/llms/message-router', {
       method: 'POST',
@@ -32,8 +48,9 @@ export const routeMessage = async (
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        message: message,
+        message: finalMessage,
         routerData: routerData,
+        lastConversations: lastConversations || [],
       }),
     });
 
@@ -43,13 +60,21 @@ export const routeMessage = async (
 
     const data = await response.json();
     console.log('data', data);
-    return data;
+    return {
+      friends: data.friends,
+      mode: data.mode,
+      webContent: data.webContent,
+    };
   } catch (error) {
     console.error('Error in message routing:', error);
-    return activeFriends
-      .sort(() => 0.5 - Math.random())
-      .slice(0, Math.floor(Math.random() * 3) + 1)
-      .map((f) => f.name);
+    return {
+      friends: activeFriends
+        .sort(() => 0.5 - Math.random())
+        .slice(0, Math.floor(Math.random() * 3) + 1)
+        .map((f) => f.name),
+      mode: 'normal',
+      webContent: 'no additional content',
+    };
   }
 };
 

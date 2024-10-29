@@ -36,6 +36,8 @@ interface Message {
   sender: string;
   content: string;
   timestamp: Date;
+  mode?: string;
+  webContent?: string;
 }
 
 interface ChatInterfaceProps {
@@ -46,6 +48,7 @@ interface ChatInterfaceProps {
 }
 
 const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
+  // eslint-disable-next-line react/prop-types
   ({ selectedSession, onSelectSession, isGlowing, isSessionsGlowing }) => {
     const [inputMessage, setInputMessage] = useState('');
     const [messages, setMessages] = useState<Message[]>([]);
@@ -135,7 +138,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
 
       setMessages((prevMessages) => [...prevMessages, newMessage]);
       setInputMessage('');
-
       try {
         if (!aiFriends || aiFriends.length === 0) {
           throw new Error('No AI friends found');
@@ -157,11 +159,22 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
 
         setIsTyping(true);
         const friendsSummary = await generateFriendsSummary(aiFriends);
-        const respondingFriends = await routeMessage(
+        const lastConversationsForRoute = getLastConversations(
+          selectedSession || ''
+        );
+        const routeData = await routeMessage(
           sanitizedMessage,
           user,
-          aiFriends
+          aiFriends,
+          lastConversationsForRoute,
+          fetchConversationsFromSupabase
         );
+
+        if (!routeData) {
+          throw new Error('No route data returned');
+        }
+
+        const { friends: respondingFriends, mode, webContent } = routeData;
 
         for (const friendName of respondingFriends || []) {
           const aiFriend = aiFriends.find(
@@ -179,21 +192,28 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
               friendsSummary,
               selectedSession || '',
               lastConversations,
-              fetchConversationsFromSupabase
+              fetchConversationsFromSupabase,
+              mode,
+              webContent
             );
 
             const sentences = aiResponse.split(/(?<=[.!?])\s+/);
             for (const sentence of sentences) {
               await new Promise<void>((resolve) => {
-                timeoutRef.current = setTimeout(() => {
-                  const aiMessage: Message = {
-                    sender: aiFriend.name,
-                    content: sentence,
-                    timestamp: new Date(),
-                  };
-                  setMessages((prevMessages) => [...prevMessages, aiMessage]);
-                  resolve();
-                }, Math.random() * 2000 + 1000);
+                timeoutRef.current = setTimeout(
+                  () => {
+                    const aiMessage: Message = {
+                      sender: aiFriend.name,
+                      content: sentence,
+                      timestamp: new Date(),
+                      mode: mode,
+                      webContent: webContent,
+                    };
+                    setMessages((prevMessages) => [...prevMessages, aiMessage]);
+                    resolve();
+                  },
+                  Math.random() * 2000 + 1000
+                );
               });
 
               await addConversationHistory.mutateAsync({
@@ -233,46 +253,32 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
       toast,
     ]);
 
-    // const handleKeyPress = useCallback(
-    //   (e: React.KeyboardEvent<HTMLInputElement>) => {
-    //     if (e.key === 'Enter') {
-    //       handleSendMessage();
-    //     }
-    //   },
-    //   [handleSendMessage]
-    // );
-
     const memoizedMessageList = useMemo(
-      () => (
-        <MessageList
-          messages={messages}
-          user={user}
-        />
-      ),
+      () => <MessageList messages={messages} user={user} />,
       [messages, user]
     );
 
     return (
-      <div className='flex flex-col h-[calc(100vh-9rem)] lg:h-[calc(100vh-5.5rem)] bg-comic-yellow comic-bg'>
+      <div className="flex flex-col h-[calc(100vh-9rem)] lg:h-[calc(100vh-5.5rem)] bg-comic-yellow comic-bg">
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.3 }}
-          className='flex flex-col p-3 lg:p-4 bg-comic-blue comic-border'
+          className="flex flex-col p-3 lg:p-4 bg-comic-blue comic-border"
         >
-          <div className='flex items-center justify-center mb-4'>
-            <div className='flex items-center space-x-2 sm:space-x-3'>
-              <MessageCircle className='h-6 w-6 sm:h-7 sm:w-7 text-white' />
-              <h1 className='text-xl sm:text-2xl font-extrabold text-white'>
+          <div className="flex items-center justify-center mb-4">
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <MessageCircle className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
+              <h1 className="text-xl sm:text-2xl font-extrabold text-white">
                 Chat Interface
               </h1>
             </div>
           </div>
-          <div className='flex items-center space-x-1 sm:space-x-2 w-full'>
-            <span className='text-sm sm:text-base font-medium text-white'>
+          <div className="flex items-center space-x-1 sm:space-x-2 w-full">
+            <span className="text-sm sm:text-base font-medium text-white">
               Active Session:
             </span>
-            <div className='flex-grow'>
+            <div className="flex-grow">
               <SessionsDropdown
                 selectedSession={selectedSession}
                 onSelectSession={onSelectSession}
@@ -281,14 +287,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
             </div>
           </div>
         </motion.div>
-        <ScrollArea className='flex-grow p-2 sm:p-3 h-[calc(100vh-14rem)] sm:h-[calc(100vh-18rem)] '>
+        <ScrollArea className="flex-grow p-2 sm:p-3 h-[calc(100vh-14rem)] sm:h-[calc(100vh-18rem)] ">
           {memoizedMessageList}
           {isTyping && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className='text-sm sm:text-base text-comic-purple italic animate-pulse text-center mt-2'
+              className="text-sm sm:text-base text-comic-purple italic animate-pulse text-center mt-2"
             >
               {typingFriend
                 ? `${typingFriend} is typing... 💭`
@@ -297,7 +303,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
           )}
           <div ref={messagesEndRef} />
         </ScrollArea>
-        <div className='mt-auto'>
+        <div className="mt-auto">
           <ChatInputArea
             inputMessage={inputMessage}
             setInputMessage={setInputMessage}
