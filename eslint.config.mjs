@@ -37,6 +37,7 @@ export default [
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@next/next/no-duplicate-head': 'off',
       'no-undef': 'off',
+      'react/prop-types': 'off',
     },
     settings: {
       react: {

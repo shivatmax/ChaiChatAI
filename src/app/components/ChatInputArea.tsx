@@ -13,6 +13,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from './ui/tooltip';
+import { detectUrls } from '../utils/urlDetector';
 
 interface ChatInputAreaProps {
   inputMessage: string;
@@ -82,6 +83,21 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = React.memo(
       [setInputMessage]
     );
 
+    const renderInputWithHighlightedUrls = (text: string) => {
+      const urls = detectUrls(text);
+      if (urls.length === 0) return text;
+
+      let highlightedText = text;
+      urls.forEach((url) => {
+        const span = document.createElement('span');
+        span.className = 'text-blue-600 underline';
+        span.textContent = url;
+        highlightedText = highlightedText.replace(url, span.outerHTML);
+      });
+
+      return highlightedText;
+    };
+
     return (
       <div className="relative w-full flex justify-center items-center">
         <AnimatePresence>
@@ -145,7 +161,16 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = React.memo(
                         adjustTextareaHeight();
                       }}
                       onKeyDown={handleKeyPress}
-                      className="w-full max-w-full rounded-full bg-white comic-border focus:ring-2 focus:ring-comic-purple text-sm sm:text-base py-2 px-3 resize-none overflow-y-auto scrollbar-thin scrollbar-thumb-comic-transparent scrollbar-track-transparent"
+                      onPaste={(e) => {
+                        const pastedText = e.clipboardData.getData('text');
+                        const urls = detectUrls(pastedText);
+                        if (urls.length > 0) {
+                          e.preventDefault();
+                          const newText = inputMessage + pastedText;
+                          setInputMessage(newText);
+                        }
+                      }}
+                      className="w-full max-w-full rounded-full bg-white comic-border focus:ring-2 focus:ring-comic-purple text-sm sm:text-base py-2 px-3 resize-none overflow-y-auto scrollbar-thin scrollbar-thumb-comic-transparent scrollbar-track-transparent url-highlight"
                       disabled={isDisabled}
                       style={{
                         minHeight: '40px',

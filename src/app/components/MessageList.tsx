@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User } from '../types/User';
+import { detectUrls } from '../utils/urlDetector';
 
 interface Message {
   sender: string;
@@ -21,6 +22,21 @@ const MessageList: React.FC<MessageListProps> = React.memo(
         minute: '2-digit',
         hour12: true,
       });
+    };
+
+    const renderMessageContent = (content: string) => {
+      const urls = detectUrls(content);
+      if (urls.length === 0) return content;
+
+      let renderedContent = content;
+      urls.forEach((url) => {
+        renderedContent = renderedContent.replace(
+          url,
+          `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline break-all">${url}</a>`
+        );
+      });
+
+      return <span dangerouslySetInnerHTML={{ __html: renderedContent }} />;
     };
 
     return (
@@ -44,13 +60,13 @@ const MessageList: React.FC<MessageListProps> = React.memo(
                   : 'bg-white text-black'
               }`}
             >
-              <p className='font-bold text-xs sm:text-sm mb-0.5 sm:mb-1'>
+              <p className="font-bold text-xs sm:text-sm mb-0.5 sm:mb-1">
                 {message.sender}
               </p>
-              <p className='text-xs sm:text-sm leading-relaxed break-words'>
-                {message.content}
+              <p className="text-xs sm:text-sm leading-relaxed break-words url-highlight message-url url-container">
+                {renderMessageContent(message.content)}
               </p>
-              <p className='text-[10px] sm:text-xs mt-0.5 sm:mt-1 opacity-70'>
+              <p className="text-[10px] sm:text-xs mt-0.5 sm:mt-1 opacity-70">
                 {formatTime(message.timestamp)}
               </p>
             </motion.div>

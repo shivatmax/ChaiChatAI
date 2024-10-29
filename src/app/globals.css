@@ -140,6 +140,91 @@
         -130px -100px;
     }
   }
+
+  .url-highlight {
+    a,
+    .url-link {
+      @apply text-blue-600 underline break-all transition-all duration-200 relative;
+      text-underline-offset: 2px;
+      text-decoration-thickness: 1px;
+      word-wrap: break-word;
+      display: inline-block;
+    }
+
+    a:hover,
+    .url-link:hover {
+      @apply text-blue-800;
+      text-decoration-thickness: 2px;
+      transform: translateY(-1px);
+    }
+
+    a:active,
+    .url-link:active {
+      transform: translateY(0px);
+    }
+
+    /* Add a subtle highlight effect */
+    a::before,
+    .url-link::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: theme('colors.blue.600');
+      transform: scaleX(0);
+      transition: transform 0.2s ease;
+      transform-origin: right;
+    }
+
+    a:hover::before,
+    .url-link:hover::before {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    /* Style for URLs in messages */
+    &.message-url {
+      a,
+      .url-link {
+        @apply px-1 py-0.5 rounded;
+        background-color: rgba(59, 130, 246, 0.1);
+      }
+
+      a:hover,
+      .url-link:hover {
+        background-color: rgba(59, 130, 246, 0.2);
+      }
+    }
+
+    /* Style for URLs in input area */
+    &.input-url {
+      a,
+      .url-link {
+        @apply font-medium;
+      }
+    }
+  }
+
+  /* Add smooth scrolling for URL overflow */
+  .url-container {
+    @apply overflow-x-auto;
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.blue.400') transparent;
+  }
+
+  .url-container::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .url-container::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .url-container::-webkit-scrollbar-thumb {
+    @apply bg-blue-400 rounded-full;
+  }
 }
 
 @layer utilities {

@@ -48,7 +48,6 @@ interface ChatInterfaceProps {
 }
 
 const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
-  // eslint-disable-next-line react/prop-types
   ({ selectedSession, onSelectSession, isGlowing, isSessionsGlowing }) => {
     const [inputMessage, setInputMessage] = useState('');
     const [messages, setMessages] = useState<Message[]>([]);
