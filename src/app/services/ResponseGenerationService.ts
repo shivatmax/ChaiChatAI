@@ -65,7 +65,9 @@ export const generateAIResponse = async (
   fetchConversationsFromSupabase: (
     sessionId: string,
     limit: number
-  ) => Promise<string[]>
+  ) => Promise<string[]>,
+  mode?: string,
+  webContent?: string
 ): Promise<string> => {
   // Fetch additional conversations from Supabase if needed
   if (lastConversations.length < 20) {
@@ -79,6 +81,9 @@ export const generateAIResponse = async (
   const { descriptionString, sessionType } =
     await getSessionDescription(conversationId);
 
+  console.log('mode', mode);
+  console.log('webContent', webContent);
+
   const response = await fetch('/api/llms/ai-friend-response', {
     method: 'POST',
     headers: {
@@ -86,6 +91,10 @@ export const generateAIResponse = async (
     },
     body: JSON.stringify({
       userPrompt: prompt,
+      modeData: {
+        mode: mode,
+        webContent: webContent,
+      },
       dataObject: {
         userId: user.id,
         sessionId: conversationId,
