@@ -52,10 +52,14 @@ ChitChat AI is an open-source interactive chat application that allows users to 
    ```env
    NEXT_PUBLIC_SUPABASE_PROJECT_URL=your_supabase_project_url
    NEXT_PUBLIC_SUPABASE_API_KEY=your_supabase_api_key
-   NEXT_PUBLIC_OPENAI_API_KEY=your_openai_api_key
-   NEXT_PUBLIC_UNIFY_BASE_URL=your_unify_base_url
+   NEXT_PUBLIC_OPENAI_API_KEY=your_openai_api_key (optional)
    NEXT_PUBLIC_UNIFY_API_KEY=your_unify_api_key
-   NEXT_PUBLIC_TOGETHER_API_KEY=you_togetherai_api
+   NEXT_PUBLIC_TOGETHER_API_KEY=your_togetherai_api_key (if you want image Generation)
+   DATABASE_URL=your_database_url (for prisma)
+   DIRECT_URL=your_direct_url (for prisma)
+   NEXT_PUBLIC_UNIFY_BASE_URL=https://api.unify.ai/v0/chat/completions
+   NEXT_PUBLIC_UNIFY_OPENAI_COMPLETIONS_URL=https://api.unify.ai/v0/
+   NEXT_PUBLIC_CHITCHATBACKEND=You need to host the backend (i have hosted it)
    ```
 
 5. Run the development server:
