@@ -31,6 +31,8 @@ import {
 import { supabase } from '../integrations/supabase/supabase';
 import { AIFriend } from '../types/AIFriend';
 import { ConversationHistory } from '../types/ConversationHistory';
+import { FriendsMemory } from '../services/MessageRoutingService';
+import { storageWithExpiry } from '../utils/localStorage';
 
 interface Message {
   sender: string;
@@ -228,6 +230,44 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
                 selectedSession || '',
                 `${aiFriend.name}: ${sentence}`
               );
+
+              // Check localStorage first
+              const todaysSummaryDone = storageWithExpiry.getItem(
+                `todays_summarys_${user.id}`
+              );
+
+              if (!todaysSummaryDone) {
+                // Only check database if not in localStorage
+                const { data: userData } = await supabase
+                  .from('User')
+                  .select('todaysSummary')
+                  .eq('id', user.id)
+                  .single();
+
+                if (userData && !userData.todaysSummary) {
+                  // Run FriendsMemory
+                  await FriendsMemory(
+                    aiFriends || [],
+                    user.id,
+                    selectedSession || '',
+                    await generateFriendsSummary(aiFriends, user),
+                    fetchConversationsFromSupabase
+                  );
+
+                  // Update todaysSummary in database
+                  await supabase
+                    .from('User')
+                    .update({ todaysSummary: true })
+                    .eq('id', user.id);
+
+                  // Store in localStorage with 1 hour expiry
+                  storageWithExpiry.setItem(
+                    `todaysSummary_${user.id}`,
+                    true,
+                    3600000
+                  );
+                }
+              }
             }
           }
         }

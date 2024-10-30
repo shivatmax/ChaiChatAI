@@ -82,6 +82,7 @@ export const generateFriendsSummary = async (
   aiFriends: AIFriend[] | undefined,
   user: User
 ): Promise<string> => {
+  // Early return if aiFriends is undefined or empty
   if (!aiFriends || aiFriends.length === 0) {
     return 'No AI friends available yet.';
   }
@@ -90,13 +91,19 @@ export const generateFriendsSummary = async (
   const cachedSummary = localStorage.getItem(cacheKey);
   const cachedFriendsData = localStorage.getItem('cachedAIFriendsData');
 
+  // Check cache validity
   if (cachedSummary && cachedFriendsData) {
-    const parsedCachedFriends = JSON.parse(cachedFriendsData);
-    if (
-      JSON.stringify(aiFriends) === JSON.stringify(parsedCachedFriends) &&
-      aiFriends.every((friend) => friend.status)
-    ) {
-      return cachedSummary;
+    try {
+      const parsedCachedFriends = JSON.parse(cachedFriendsData);
+      if (
+        JSON.stringify(aiFriends) === JSON.stringify(parsedCachedFriends) &&
+        aiFriends.every((friend) => friend.status)
+      ) {
+        return cachedSummary;
+      }
+    } catch (error) {
+      console.error('Error parsing cached friends data:', error);
+      // Continue with generating new summary if cache parsing fails
     }
   }
 
@@ -134,8 +141,11 @@ export const generateFriendsSummary = async (
       throw new Error('Unexpected response format');
     }
 
-    localStorage.setItem(cacheKey, summary);
-    localStorage.setItem('cachedAIFriendsData', JSON.stringify(aiFriends));
+    // Only cache if we have valid data
+    if (summary && aiFriends.length > 0) {
+      localStorage.setItem(cacheKey, summary);
+      localStorage.setItem('cachedAIFriendsData', JSON.stringify(aiFriends));
+    }
 
     return summary;
   } catch (error) {
@@ -159,19 +169,17 @@ export const FriendsMemory = async (
     // Fetch last 30 conversations from Supabase
     const lastConversations = await fetchConversationsFromSupabase(
       conversationId,
-      30
+      50
     );
 
-    const finalConversation = `lastConversations: ${lastConversations}`;
-
-    const response = await fetch('/api/llms/generate-friend-summary', {
+    const response = await fetch('/api/vector/create-memory-summary', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         dataInfo: {
-          friends: activeFriends.map((friend) => ({
+          aiFriends: activeFriends.map((friend) => ({
             aiFriendId: friend.id,
             aiFriendName: friend.name,
             aiFriendPersona: friend.persona,
@@ -182,7 +190,7 @@ export const FriendsMemory = async (
         friendsSummary: friendsSummary,
         userId: userId,
         conversationId: conversationId,
-        lastConversations: finalConversation,
+        lastConversations: lastConversations.join('\n'),
       }),
     });
 
