@@ -1,5 +1,8 @@
 {
   "name": "chitchatai",
+  "sideEffects": [
+    "./src/trigger/*.ts"
+  ],
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -53,6 +56,8 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.4.3",
+    "@trigger.dev/nextjs": "^3.1.0",
+    "@trigger.dev/sdk": "^3.1.0",
     "@types/dompurify": "^3.0.5",
     "@types/jest": "^29.5.0",
     "@types/js-cookie": "^3.0.6",
@@ -109,6 +114,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.4.3",
+    "@trigger.dev/build": "^3.1.0",
     "@types/jest": "^29.5.0",
     "@types/node": "^20.16.12",
     "@types/react": "^18.3.11",
@@ -137,5 +143,8 @@
       "eslint --fix",
       "prettier --write"
     ]
+  },
+  "trigger.dev": {
+    "endpointId": "chitchatai"
   }
 }

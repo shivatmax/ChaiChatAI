@@ -21,6 +21,7 @@ model User {
   conversation_history ConversationHistory[]
   sessions             Session[]
   user_knowledge_base  UserKnowledgeBase[]
+  TodaysSummary        Boolean               @default(true)
 }
 
 model AIFriend {

@@ -55,16 +55,16 @@ const LogoutButton: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
             login page.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter className="flex flex-col items-center space-y-4">
+        <AlertDialogFooter className="flex flex-row items-center justify-center space-x-4">
+          <AlertDialogCancel className="w-1/3 bg-comic-green text-black hover:bg-comic-blue hover:text-white transition-colors duration-300 comic-border comic-shadow text-xl font-bold">
+            Cancel
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleLogout}
-            className="w-3/4 bg-comic-red text-white hover:bg-comic-purple transition-colors duration-300 comic-border comic-shadow text-xl font-bold"
+            className="w-1/3 bg-comic-red text-white hover:bg-comic-purple transition-colors duration-300 comic-border comic-shadow text-xl font-bold"
           >
             Logout
           </AlertDialogAction>
-          <AlertDialogCancel className="w-3/4 bg-comic-green text-black hover:bg-comic-blue hover:text-white transition-colors duration-300 comic-border comic-shadow text-xl font-bold">
-            Cancel
-          </AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -157,7 +157,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
         );
 
         setIsTyping(true);
-        const friendsSummary = await generateFriendsSummary(aiFriends);
+        const friendsSummary = await generateFriendsSummary(aiFriends, user);
         const lastConversationsForRoute = getLastConversations(
           selectedSession || ''
         );

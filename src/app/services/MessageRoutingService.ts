@@ -79,7 +79,8 @@ export const routeMessage = async (
 };
 
 export const generateFriendsSummary = async (
-  aiFriends: AIFriend[] | undefined
+  aiFriends: AIFriend[] | undefined,
+  user: User
 ): Promise<string> => {
   if (!aiFriends || aiFriends.length === 0) {
     return 'No AI friends available yet.';
@@ -107,6 +108,12 @@ export const generateFriendsSummary = async (
       },
       body: JSON.stringify({
         friendsData: {
+          user: {
+            name: user.name,
+            persona: user.persona,
+            about: user.about,
+            knowledge_base: user.knowledge_base,
+          },
           friends: aiFriends.map((friend) => ({
             name: friend.name,
             persona: friend.persona,
@@ -134,5 +141,61 @@ export const generateFriendsSummary = async (
   } catch (error) {
     console.error('Error generating friends summary:', error);
     return 'Error occurred while generating friends summary.';
+  }
+};
+
+export const FriendsMemory = async (
+  aiFriends: AIFriend[],
+  userId: string,
+  conversationId: string,
+  friendsSummary: string,
+  fetchConversationsFromSupabase: (
+    sessionId: string,
+    limit: number
+  ) => Promise<string[]>
+): Promise<void> => {
+  try {
+    const activeFriends = aiFriends.filter((friend) => friend.status);
+    // Fetch last 30 conversations from Supabase
+    const lastConversations = await fetchConversationsFromSupabase(
+      conversationId,
+      30
+    );
+
+    const finalConversation = `lastConversations: ${lastConversations}`;
+
+    const response = await fetch('/api/llms/generate-friend-summary', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        dataInfo: {
+          friends: activeFriends.map((friend) => ({
+            aiFriendId: friend.id,
+            aiFriendName: friend.name,
+            aiFriendPersona: friend.persona,
+            aiFriendAbout: friend.about,
+            aiFriendKnowledgeBase: friend.knowledge_base,
+          })),
+        },
+        friendsSummary: friendsSummary,
+        userId: userId,
+        conversationId: conversationId,
+        lastConversations: finalConversation,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const summary = await response.text();
+
+    if (typeof summary !== 'string') {
+      throw new Error('Unexpected response format');
+    }
+  } catch (error) {
+    console.error('Error fetching conversation history:', error);
   }
 };

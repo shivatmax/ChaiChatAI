@@ -50,6 +50,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [currentAvatar, setCurrentAvatar] = useState(user?.avatar_url || '');
 
   const handleSave = async () => {
     if (editedUser) {
@@ -122,6 +123,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
           title: 'Avatar Updated',
           description: 'Your avatar has been successfully updated.',
         });
+        setCurrentAvatar(previewImage); // Update the current avatar immediately
         setIsAvatarDialogOpen(false);
         setPreviewImage(null);
         queryClient.invalidateQueries({ queryKey: ['user', user.id] });
@@ -147,288 +149,276 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
   if (!user) return null;
 
   return (
-    <div className='bg-comic-yellow comic-bg p-4 rounded-lg comic-border comic-shadow max-h-screen overflow-y-auto'>
-      <div className='flex flex-col items-center mb-3 relative'>
-        <div className='relative'>
-          <Avatar className='w-20 h-20 mb-3 ring-3 ring-comic-purple'>
+    <div className="bg-comic-yellow comic-bg p-4 rounded-lg comic-border comic-shadow max-h-screen overflow-y-auto">
+      <div className="flex flex-col items-center mb-3 relative">
+        <div className="relative">
+          <Avatar className="w-20 h-20 mb-3 ring-3 ring-comic-purple">
             <AvatarImage
-              src={user.avatar_url}
+              src={currentAvatar}
               alt={user.name}
               onError={(e) => {
                 console.error('Error loading avatar image:', e);
                 e.currentTarget.src = '/path/to/fallback/image.png';
               }}
             />
-            <AvatarFallback className='bg-comic-blue text-white text-2xl font-bold'>
+            <AvatarFallback className="bg-comic-blue text-white text-2xl font-bold">
               {user.name.charAt(0)}
             </AvatarFallback>
           </Avatar>
           <Button
-            variant='outline'
-            size='sm'
-            className='absolute bottom-0 right-0 rounded-full bg-comic-blue'
+            variant="outline"
+            size="sm"
+            className="absolute bottom-0 right-0 rounded-full bg-comic-blue"
             onClick={() => setIsAvatarDialogOpen(true)}
           >
-            <Camera className='h-4 w-4' />
+            <Camera className="h-4 w-4" />
           </Button>
         </div>
-        <h2 className='text-2xl font-bold text-comic-purple mb-1'>
+        <h2 className="text-2xl font-bold text-comic-purple mb-1">
           {truncateName(user.name, 12)}
         </h2>
-        <p className='text-base text-comic-darkblue text-center mb-3 font-medium'>
+        <p className="text-base text-comic-darkblue text-center mb-3 font-medium">
           {user.persona.slice(0, 80)}...
         </p>
         <GlowingComponent isGlowing={isGlowing}>
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button
-              variant='outline'
-              size='sm'
+              variant="outline"
+              size="sm"
               onClick={() => {
                 setEditedUser(user);
                 setIsOpen(true);
               }}
-              className='w-full bg-comic-green hover:bg-comic-blue text-black hover:text-white transition-colors duration-200 comic-border comic-shadow text-lg font-bold'
+              className="w-full bg-comic-green hover:bg-comic-blue text-black hover:text-white transition-colors duration-200 comic-border comic-shadow text-lg font-bold"
             >
-              <Pencil className='mr-2 h-5 w-5' />
+              <Pencil className="mr-2 h-5 w-5" />
               Edit Profile
             </Button>
           </motion.div>
         </GlowingComponent>
       </div>
-      <Dialog
-        open={isOpen}
-        onOpenChange={setIsOpen}
-      >
-        <DialogContent className='sm:max-w-[375px] max-h-[91vh] bg-comic-yellow comic-bg rounded-xl comic-border comic-shadow'>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent className="sm:max-w-[375px] max-h-[91vh] bg-comic-yellow comic-bg rounded-xl comic-border comic-shadow">
           <DialogHeader>
-            <DialogTitle className='text-2xl font-bold text-comic-purple'>
+            <DialogTitle className="text-2xl font-bold text-comic-purple">
               Edit Profile
             </DialogTitle>
           </DialogHeader>
-          <div className='grid gap-4 py-3'>
+          <div className="grid gap-4 py-3">
             {/* Name input */}
-            <div className='relative'>
+            <div className="relative">
               <label
-                htmlFor='name'
-                className='block text-lg font-medium text-comic-darkblue mb-1'
+                htmlFor="name"
+                className="block text-lg font-medium text-comic-darkblue mb-1"
               >
                 Name (max 12 characters)
               </label>
-              <div className='relative'>
-                <UserIcon className='absolute left-3 top-1/2 transform -translate-y-1/2 text-comic-purple text-xl' />
+              <div className="relative">
+                <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-comic-purple text-xl" />
                 <Input
-                  id='name'
-                  placeholder='Name'
+                  id="name"
+                  placeholder="Name"
                   value={editedUser?.name || ''}
                   onChange={handleNameChange}
                   maxLength={12}
-                  className='w-full pl-10 pr-3 py-2 text-lg bg-white bg-opacity-50 rounded-md comic-border comic-shadow'
+                  className="w-full pl-10 pr-3 py-2 text-lg bg-white bg-opacity-50 rounded-md comic-border comic-shadow"
                 />
               </div>
             </div>
             {/* Persona textarea */}
             <div>
               <label
-                htmlFor='persona'
-                className='block text-lg font-medium text-comic-darkblue mb-1'
+                htmlFor="persona"
+                className="block text-lg font-medium text-comic-darkblue mb-1"
               >
                 Persona
               </label>
               <Textarea
-                id='persona'
-                placeholder='Persona'
+                id="persona"
+                placeholder="Persona"
                 value={editedUser?.persona || ''}
                 onChange={(e) =>
                   setEditedUser((prev) =>
                     prev ? { ...prev, persona: e.target.value } : null
                   )
                 }
-                className='w-full px-3 py-2 text-lg bg-white bg-opacity-50 rounded-md min-h-[80px] resize-y comic-border comic-shadow'
+                className="w-full px-3 py-2 text-lg bg-white bg-opacity-50 rounded-md min-h-[80px] resize-y comic-border comic-shadow"
               />
             </div>
             {/* About textarea */}
             <div>
               <label
-                htmlFor='about'
-                className='block text-lg font-medium text-comic-darkblue mb-1'
+                htmlFor="about"
+                className="block text-lg font-medium text-comic-darkblue mb-1"
               >
                 About
               </label>
               <Textarea
-                id='about'
-                placeholder='About'
+                id="about"
+                placeholder="About"
                 value={(editedUser?.about as string) || ''}
                 onChange={(e) =>
                   setEditedUser((prev) =>
                     prev ? { ...prev, about: e.target.value } : null
                   )
                 }
-                className='w-full px-3 py-2 text-lg bg-white bg-opacity-50 rounded-md min-h-[80px] resize-y comic-border comic-shadow'
+                className="w-full px-3 py-2 text-lg bg-white bg-opacity-50 rounded-md min-h-[80px] resize-y comic-border comic-shadow"
               />
             </div>
             {/* Knowledge Base textarea */}
             <div>
               <label
-                htmlFor='knowledgeBase'
-                className='block text-lg font-medium text-comic-darkblue mb-1'
+                htmlFor="knowledgeBase"
+                className="block text-lg font-medium text-comic-darkblue mb-1"
               >
                 Knowledge Base
               </label>
               <Textarea
-                id='knowledgeBase'
-                placeholder='Knowledge Base'
+                id="knowledgeBase"
+                placeholder="Knowledge Base"
                 value={editedUser?.knowledge_base || ''}
                 onChange={(e) =>
                   setEditedUser((prev) =>
                     prev ? { ...prev, knowledge_base: e.target.value } : null
                   )
                 }
-                className='w-full px-3 py-2 text-lg bg-white bg-opacity-50 rounded-md min-h-[80px] resize-y comic-border comic-shadow'
+                className="w-full px-3 py-2 text-lg bg-white bg-opacity-50 rounded-md min-h-[80px] resize-y comic-border comic-shadow"
               />
             </div>
           </div>
           <DialogFooter>
-            <div className='w-full flex justify-between space-x-2'>
+            <div className="w-full flex justify-between space-x-2">
               <Button
                 onClick={() => setIsOpen(false)}
-                variant='outline'
-                className='w-1/2 bg-comic-red text-white hover:bg-comic-purple transition-colors duration-300 comic-border comic-shadow text-lg font-bold'
+                variant="outline"
+                className="w-1/2 bg-comic-red text-white hover:bg-comic-purple transition-colors duration-300 comic-border comic-shadow text-lg font-bold"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleSave}
                 disabled={updateUserMutation.isPending}
-                className='w-1/2 bg-comic-green text-black hover:bg-comic-blue hover:text-white transition-colors duration-300 comic-border comic-shadow text-lg font-bold'
+                className="w-1/2 bg-comic-green text-black hover:bg-comic-blue hover:text-white transition-colors duration-300 comic-border comic-shadow text-lg font-bold"
               >
-                <Save className='mr-2 h-5 w-5' />
+                <Save className="mr-2 h-5 w-5" />
                 {updateUserMutation.isPending ? 'Saving...' : 'Save Changes'}
               </Button>
             </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <Dialog
-        open={isAvatarDialogOpen}
-        onOpenChange={setIsAvatarDialogOpen}
-      >
-        <DialogContent className='sm:max-w-[500px] bg-gradient-to-br to-comic-blue comic-bg rounded-xl comic-border comic-shadow'>
+      <Dialog open={isAvatarDialogOpen} onOpenChange={setIsAvatarDialogOpen}>
+        <DialogContent className="sm:max-w-[500px] bg-gradient-to-br to-comic-blue comic-bg rounded-xl comic-border comic-shadow">
           <DialogHeader>
-            <DialogTitle className='text-3xl font-bold text-comic-purple mb-4'>
+            <DialogTitle className="text-3xl font-bold text-comic-purple mb-4">
               🎨 Update Your Avatar 🖼️
             </DialogTitle>
           </DialogHeader>
-          <Tabs
-            defaultValue='upload'
-            className='w-full'
-          >
-            <TabsList className='grid w-full grid-cols-2 mb-4 bg-comic-purple'>
+          <Tabs defaultValue="upload" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-4 bg-comic-purple">
               <TabsTrigger
-                value='upload'
-                className='text-lg font-bold text-white data-[state=active]:bg-comic-blue'
+                value="upload"
+                className="text-lg font-bold text-white data-[state=active]:bg-comic-blue"
               >
                 📤 Upload
               </TabsTrigger>
               <TabsTrigger
-                value='generate'
-                className='text-lg font-bold text-white data-[state=active]:bg-comic-green'
+                value="generate"
+                className="text-lg font-bold text-white data-[state=active]:bg-comic-green"
               >
                 🪄 Generate
               </TabsTrigger>
             </TabsList>
-            <TabsContent value='upload'>
-              <div className='space-y-4'>
+            <TabsContent value="upload">
+              <div className="space-y-4">
                 <Button
                   onClick={() => fileInputRef.current?.click()}
-                  className='w-full bg-comic-red text-white hover:bg-comic-purple transition-all duration-300 comic-border comic-shadow text-lg font-bold transform hover:scale-105'
+                  className="w-full bg-comic-red text-white hover:bg-comic-purple transition-all duration-300 comic-border comic-shadow text-lg font-bold transform hover:scale-105"
                   disabled={isUploading}
                 >
                   {isUploading ? (
-                    <Loader2 className='mr-2 h-6 w-6 animate-spin' />
+                    <Loader2 className="mr-2 h-6 w-6 animate-spin" />
                   ) : (
-                    <Upload className='mr-2 h-6 w-6' />
+                    <Upload className="mr-2 h-6 w-6" />
                   )}
                   {isUploading ? '📤 Uploading...' : '📁 Choose Your Avatar'}
                 </Button>
                 <input
-                  type='file'
+                  type="file"
                   ref={fileInputRef}
                   onChange={handleAvatarUpload}
-                  accept='image/*'
-                  className='hidden'
+                  accept="image/*"
+                  className="hidden"
                 />
               </div>
             </TabsContent>
-            <TabsContent value='generate'>
-              <div className='space-y-4'>
-                <div className='grid w-full items-center gap-1.5'>
+            <TabsContent value="generate">
+              <div className="space-y-4">
+                <div className="grid w-full items-center gap-1.5">
                   <Label
-                    htmlFor='imagePrompt'
-                    className='text-lg font-bold text-comic-purple'
+                    htmlFor="imagePrompt"
+                    className="text-lg font-bold text-comic-purple"
                   >
                     🎭 Describe Your Dream Avatar
                   </Label>
                   <Input
-                    id='imagePrompt'
-                    placeholder='E.g., A superhero cat with laser eyes'
+                    id="imagePrompt"
+                    placeholder="E.g., A superhero cat with laser eyes"
                     value={imagePrompt}
                     onChange={(e) => setImagePrompt(e.target.value)}
-                    className='mb-2 bg-white bg-opacity-70 comic-border'
+                    className="mb-2 bg-white bg-opacity-70 comic-border"
                   />
                 </div>
                 <Button
                   onClick={handleGenerateAvatar}
-                  className='w-full bg-comic-purple text-white hover:bg-comic-blue transition-all duration-300 comic-border comic-shadow text-lg font-bold transform hover:scale-105'
+                  className="w-full bg-comic-purple text-white hover:bg-comic-blue transition-all duration-300 comic-border comic-shadow text-lg font-bold transform hover:scale-105"
                   disabled={isGenerating}
                 >
                   {isGenerating ? (
-                    <Loader2 className='mr-2 h-6 w-6 animate-spin' />
+                    <Loader2 className="mr-2 h-6 w-6 animate-spin" />
                   ) : (
-                    <Wand2 className='mr-2 h-6 w-6' />
+                    <Wand2 className="mr-2 h-6 w-6" />
                   )}
                   {isGenerating ? '🎭 Conjuring...' : '🎨 Create Magic Avatar'}
                 </Button>
               </div>
             </TabsContent>
           </Tabs>
-          <div className='mt-4 h-64 w-full bg-white/70 rounded-lg overflow-hidden comic-border relative'>
+          <div className="mt-4 h-64 w-full bg-white/70 rounded-lg overflow-hidden comic-border relative">
             {previewImage ? (
               <Image
                 src={previewImage}
-                alt='Preview'
-                layout='fill'
-                objectFit='contain'
+                alt="Preview"
+                layout="fill"
+                objectFit="contain"
               />
             ) : (
-              <div className='w-full h-full flex items-center justify-center text-comic-purple text-lg font-bold'>
-                <ImageIcon className='w-16 h-16 text-comic-purple/50 animate-pulse' />
+              <div className="w-full h-full flex items-center justify-center text-comic-purple text-lg font-bold">
+                <ImageIcon className="w-16 h-16 text-comic-purple/50 animate-pulse" />
               </div>
             )}
           </div>
-          <DialogFooter className='mt-4'>
-            <div className='w-full flex justify-between space-x-2'>
+          <DialogFooter className="mt-4">
+            <div className="w-full flex justify-between space-x-2">
               <Button
                 onClick={() => {
                   setIsAvatarDialogOpen(false);
                   setPreviewImage(null);
                 }}
-                variant='outline'
-                className='w-1/2 bg-comic-red text-white hover:bg-comic-purple transition-all duration-300 comic-border comic-shadow text-lg font-bold rounded-full'
+                variant="outline"
+                className="w-1/2 bg-comic-red text-white hover:bg-comic-purple transition-all duration-300 comic-border comic-shadow text-lg font-bold rounded-full"
               >
                 🚫 Cancel
               </Button>
               <Button
                 onClick={saveAvatar}
                 disabled={!previewImage || isSaving}
-                className='w-1/2 bg-comic-green text-black hover:bg-comic-blue hover:text-white transition-all duration-300 comic-border comic-shadow text-lg font-bold rounded-full'
+                className="w-1/2 bg-comic-green text-black hover:bg-comic-blue hover:text-white transition-all duration-300 comic-border comic-shadow text-lg font-bold rounded-full"
               >
                 {isSaving ? (
-                  <Loader2 className='h-4 w-4 animate-spin' />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <Sparkles className='h-4 w-4' />
+                  <Sparkles className="h-4 w-4" />
                 )}
                 {isSaving ? '💾 Saving...' : '✅ Save Avatar'}
               </Button>
