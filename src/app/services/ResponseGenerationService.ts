@@ -98,6 +98,7 @@ export const generateAIResponse = async (
       dataObject: {
         userId: user.id,
         sessionId: conversationId,
+        aiFriendId: aiFriend.id,
         aiFriend: {
           name: aiFriend.name || '',
           persona: aiFriend.persona || '',

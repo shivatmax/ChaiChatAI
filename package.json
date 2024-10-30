@@ -7,12 +7,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev -H 192.168.29.196",
-    "build": "next build && prisma generate && npx trigger.dev deploy ",
+    "build": "next build && prisma generate",
     "start": "next start && prisma generate",
     "lint": "next lint && eslint . --ext .js,.jsx,.ts,.tsx --config eslint.config.mjs",
     "prepare": "husky install",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "trigger:deploy": "npx trigger.dev deploy"
   },
   "dependencies": {
     "@babel/core": "^7.25.8",
