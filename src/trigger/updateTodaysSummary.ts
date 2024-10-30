@@ -12,19 +12,19 @@ export const updateTodaysSummaryTask = schedules.task({
     try {
       const result = await prisma.user.updateMany({
         where: {
-          TodaysSummary: true,
+          todaysSummary: true,
         },
         data: {
-          TodaysSummary: false,
+          todaysSummary: false,
         },
       });
 
-      logger.log('Updated TodaysSummary for users', {
+      logger.log('Updated todaysSummary for users', {
         updatedCount: result.count,
         timestamp: payload.timestamp,
       });
     } catch (error) {
-      logger.error('Error updating TodaysSummary', { error });
+      logger.error('Error updating todaysSummary', { error });
       throw error;
     } finally {
       await prisma.$disconnect();
