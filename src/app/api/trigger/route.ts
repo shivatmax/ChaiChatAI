@@ -1,4 +1,4 @@
-// import { createAppRoute } from '@trigger.dev/nextjs';
-// import { client } from '@/trigger/trigger';
+import { createAppRoute } from '@trigger.dev/nextjs';
+import { client } from '../../../trigger';
 
-// export const { POST, dynamic } = createAppRoute(client);
+export const { POST } = createAppRoute(client);
