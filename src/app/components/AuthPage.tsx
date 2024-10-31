@@ -70,7 +70,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess, onNavigate }) => {
       if (existingUser) {
         try {
           const key = Buffer.from(existingUser.encryption_key, 'hex');
-          logger.info('Encryption details:', {
+          logger.debug('Encryption details:', {
             storedKey: existingUser.encryption_key,
             iv: existingUser.iv,
             tag: existingUser.tag,
@@ -84,7 +84,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess, onNavigate }) => {
             existingUser.tag
           );
 
-          logger.info('Decryption result:', {
+          logger.debug('Decryption result:', {
             decryptedUsername,
             providedUsername: username,
             match: decryptedUsername.toLowerCase() === username.toLowerCase(),

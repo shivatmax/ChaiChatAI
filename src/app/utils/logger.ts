@@ -3,22 +3,22 @@ type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 interface LoggerOptions {
   level: LogLevel;
   prefix?: string;
-  enabled: boolean;
 }
 
 class Logger {
   private options: LoggerOptions;
+  private isDevelopment: boolean;
 
   constructor(options: Partial<LoggerOptions> = {}) {
     this.options = {
       level: options.level || 'info',
       prefix: options.prefix,
-      enabled: options.enabled ?? process.env.NODE_ENV !== 'production',
     };
+    this.isDevelopment = process.env.NODE_ENV === 'development';
   }
 
   private shouldLog(level: LogLevel): boolean {
-    if (!this.options.enabled) return false;
+    if (!this.isDevelopment) return false;
 
     const levels: LogLevel[] = ['debug', 'info', 'warn', 'error'];
     return levels.indexOf(level) >= levels.indexOf(this.options.level);
@@ -37,27 +37,27 @@ class Logger {
 
   debug(message: string, data?: unknown): void {
     if (this.shouldLog('debug')) {
-      logger.debug(this.formatMessage('debug', message, data));
+      console.debug(this.formatMessage('debug', message, data));
     }
   }
 
   info(message: string, data?: unknown): void {
     if (this.shouldLog('info')) {
-      logger.info(this.formatMessage('info', message, data));
+      console.info(this.formatMessage('info', message, data));
     }
   }
 
   warn(message: string, data?: unknown): void {
     if (this.shouldLog('warn')) {
-      logger.warn(this.formatMessage('warn', message, data));
+      console.warn(this.formatMessage('warn', message, data));
     }
   }
 
   error(message: string, error?: unknown): void {
     if (this.shouldLog('error')) {
-      logger.error(this.formatMessage('error', message, error));
+      console.error(this.formatMessage('error', message, error));
       if (error instanceof Error && error.stack) {
-        logger.error(error.stack);
+        console.error(error.stack);
       }
     }
   }

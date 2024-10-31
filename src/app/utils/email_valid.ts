@@ -8,7 +8,7 @@ const verifalia = new VerifaliaRestClient({
 export async function validateEmail(email: string): Promise<boolean> {
   try {
     const job = await verifalia.emailValidations.submit(email);
-    logger.log(job);
+    logger.debug(job);
     return job?.entries[0].status === 'Success';
   } catch (error) {
     // eslint-disable-next-line no-undef

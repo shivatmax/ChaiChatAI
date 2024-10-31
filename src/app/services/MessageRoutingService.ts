@@ -1,5 +1,6 @@
 import { AIFriend } from '../types/AIFriend';
 import { User } from '../types/SupabaseTypes';
+import { logger } from '../utils/logger';
 interface RouterData {
   user: Partial<User>;
   activeFriends: Partial<AIFriend>[];
@@ -59,7 +60,7 @@ export const routeMessage = async (
     }
 
     const data = await response.json();
-    logger.log('data', data);
+    logger.debug('data', data);
     return {
       friends: data.friends,
       mode: data.mode,

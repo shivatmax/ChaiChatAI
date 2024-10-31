@@ -95,7 +95,7 @@ export async function unifyAgentChatWithResponseFormat(
     }
 
     const data = await response.json();
-    // logger.log(
+    // logger.debug(
     //   'data from unifyAgentChatWithResponseFormat',
     //   data.choices[0].message.content
     // );
@@ -163,7 +163,7 @@ export async function imageGen(prompt: string) {
 // const b64Image = await imageGen(
 //   'Create a realistic red dragon with blue-white flames from mouth'
 // );
-// logger.log(b64Image);
+// logger.debug(b64Image);
 export async function llamaVisionChat(
   userPrompt: string,
   systemPrompt: string,
@@ -202,7 +202,7 @@ export async function llamaVisionChat(
       messages: messages,
     });
 
-    // logger.log(response);
+    // logger.debug(response);
 
     return (
       response.choices[0]?.message?.content ||

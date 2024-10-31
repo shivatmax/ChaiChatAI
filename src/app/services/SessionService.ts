@@ -2,7 +2,7 @@ import { Session, SessionType } from '../types/Session';
 import { supabase } from '../integrations/supabase';
 import { v4 as uuidv4 } from 'uuid';
 import { clearStoredSessionDescription } from './ResponseGenerationService';
-
+import { logger } from '../utils/logger';
 interface SessionData {
   title: string;
   description: string;
@@ -19,7 +19,7 @@ export const createNewSession = async (
     const newSessionId = uuidv4();
     const now = new Date().toISOString();
     const dataString = JSON.stringify(sessionData);
-    logger.log('dataString', dataString);
+    logger.debug('dataString', dataString);
     const { data, error } = await supabase
       .from('Session')
       .insert([
@@ -148,6 +148,6 @@ export const getSessionData = async (
     .eq('id', sessionId)
     .single();
   if (error) throw error;
-  // logger.log('data', data);
+  // logger.debug('data', data);
   return data;
 };

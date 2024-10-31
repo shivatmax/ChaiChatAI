@@ -38,6 +38,14 @@ export const generateEncryptionKey = (
 
 export const encrypt = (text: string, key: Buffer): EncryptedData => {
   try {
+    if (!text || !key) {
+      logger.error('Missing encrypt parameters:', {
+        hasText: !!text,
+        hasKey: !!key,
+      });
+      throw new Error('Missing required encryption parameters');
+    }
+
     const iv = crypto.randomBytes(IV_LENGTH);
     const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
 
@@ -48,13 +56,19 @@ export const encrypt = (text: string, key: Buffer): EncryptedData => {
 
     const tag = cipher.getAuthTag();
 
+    // Ensure consistent format
     return {
       encryptedData: encrypted.toString('hex'),
       iv: iv.toString('hex'),
       tag: tag.toString('hex'),
     };
   } catch (error) {
-    logger.error('Encryption failed:', error);
+    logger.error('Encryption failed:', {
+      error,
+      textLength: text?.length,
+      keyLength: key?.length,
+      errorMessage: error instanceof Error ? error.message : String(error),
+    });
     throw new Error('Failed to encrypt data');
   }
 };
@@ -65,61 +79,70 @@ export const decrypt = (
   iv: string,
   tag: string
 ): string => {
-  try {
-    if (!encryptedData || !key || !iv || !tag) {
-      logger.error('Missing decrypt parameters:', {
-        hasEncryptedData: !!encryptedData,
-        hasKey: !!key,
-        hasIv: !!iv,
-        hasTag: !!tag,
-      });
-      throw new Error('Missing required encryption parameters');
-    }
-
-    const encryptedBuffer = Buffer.from(encryptedData, 'hex');
-    const ivBuffer = Buffer.from(iv, 'hex');
-    const tagBuffer = Buffer.from(tag, 'hex');
-
-    const decipher = crypto.createDecipheriv(ALGORITHM, key, ivBuffer);
-    decipher.setAuthTag(tagBuffer);
-
-    const decrypted = Buffer.concat([
-      decipher.update(encryptedBuffer),
-      decipher.final(),
-    ]);
-
-    return decrypted.toString('utf8');
-  } catch (error) {
-    logger.error('Decryption failed:', {
-      error,
-      encryptedDataLength: encryptedData?.length,
-      keyLength: key?.length,
-      ivLength: iv?.length,
-      tagLength: tag?.length,
+  if (!encryptedData || !key || !iv || !tag) {
+    logger.error('Missing decrypt parameters:', {
+      hasEncryptedData: !!encryptedData,
+      hasKey: !!key,
+      hasIv: !!iv,
+      hasTag: !!tag,
     });
-    throw new Error('Failed to decrypt data');
+    throw new Error('Missing required encryption parameters');
   }
+
+  logger.debug('Decryption attempt:', {
+    encryptedDataLength: encryptedData.length,
+    keyLength: key.length,
+    ivLength: iv.length,
+    tagLength: tag.length,
+  });
+
+  const encryptedBuffer = Buffer.from(encryptedData, 'hex');
+  const ivBuffer = Buffer.from(iv, 'hex');
+  const tagBuffer = Buffer.from(tag, 'hex');
+
+  const decipher = crypto.createDecipheriv(ALGORITHM, key, ivBuffer);
+  decipher.setAuthTag(tagBuffer);
+
+  const decrypted = Buffer.concat([
+    decipher.update(encryptedBuffer),
+    decipher.final(),
+  ]);
+
+  return decrypted.toString('utf8');
 };
 
 export const createEncryptedUser = (
   username: string = 'Anonymous',
   email: string = 'anonymous@user.com'
 ) => {
-  const salt = generateSalt();
-  const emailHash = hashEmail(email);
+  try {
+    const salt = generateSalt();
+    const emailHash = hashEmail(email);
 
-  const combinedString = `${email.toLowerCase().trim()}:${username.trim()}`;
-  const encryptionKey = generateEncryptionKey(combinedString, salt);
+    // Ensure consistent string format for key generation
+    const combinedString = `${email.toLowerCase().trim()}:${username.trim()}`;
+    const encryptionKey = generateEncryptionKey(combinedString, salt);
 
-  const encryptedUsername = encrypt(username, encryptionKey);
+    // Encrypt username first to use its IV and tag
+    const encryptedUsername = encrypt(username, encryptionKey);
+    const encryptedEmail = encrypt(email, encryptionKey);
 
-  return {
-    encrypted_name: encryptedUsername.encryptedData,
-    encrypted_email: encrypt(email, encryptionKey).encryptedData,
-    email_hash: emailHash,
-    encryption_salt: salt,
-    encryption_key: encryptionKey.toString('hex'),
-    iv: encryptedUsername.iv,
-    tag: encryptedUsername.tag,
-  };
+    return {
+      encrypted_name: encryptedUsername.encryptedData,
+      encrypted_email: encryptedEmail.encryptedData,
+      email_hash: emailHash,
+      encryption_salt: salt,
+      encryption_key: encryptionKey.toString('hex'),
+      iv: encryptedUsername.iv,
+      tag: encryptedUsername.tag,
+    };
+  } catch (error) {
+    logger.error('Failed to create encrypted user:', {
+      error,
+      username,
+      emailLength: email?.length,
+      errorMessage: error instanceof Error ? error.message : String(error),
+    });
+    throw new Error('Failed to create encrypted user');
+  }
 };

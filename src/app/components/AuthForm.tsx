@@ -60,7 +60,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
     setLoginError(null);
 
     try {
-      logger.info('Authentication attempt:', {
+      logger.debug('Authentication attempt:', {
         username: sanitizedUsername,
         emailHash: hashEmail(sanitizedEmail),
       });
@@ -86,7 +86,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
         try {
           const key = Buffer.from(existingUser.encryption_key, 'hex');
 
-          logger.info('Encryption details:', {
+          logger.debug('Encryption details:', {
             storedKey: existingUser.encryption_key,
             iv: existingUser.iv,
             tag: existingUser.tag,
@@ -100,7 +100,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
             existingUser.tag
           );
 
-          logger.info('Authentication comparison:', {
+          logger.debug('Authentication comparison:', {
             decryptedUsername,
             sanitizedUsername,
             match:

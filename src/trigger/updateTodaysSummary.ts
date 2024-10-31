@@ -19,7 +19,7 @@ export const updateTodaysSummaryTask = schedules.task({
         },
       });
 
-      logger.log('Updated todaysSummary for users', {
+      logger.debug('Updated todaysSummary for users', {
         updatedCount: result.count,
         timestamp: payload.timestamp,
       });

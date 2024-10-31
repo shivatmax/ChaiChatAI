@@ -4,7 +4,7 @@ import { AIFriend } from '../types/AIFriend';
 import { User } from '../types/SupabaseTypes';
 import { getSessionData } from '../services/SessionService';
 import { SessionType } from '../types/Session';
-
+import { logger } from '../utils/logger';
 // const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY || '';
 // const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
 
@@ -24,7 +24,7 @@ const getSessionDescription = async (
 
   try {
     const session = await getSessionData(sessionId);
-    // logger.log('session', session);
+    // logger.debug('session', session);
     if (session && session.description && session.session_type) {
       const sessionType = session.session_type;
       const description = {
@@ -81,8 +81,8 @@ export const generateAIResponse = async (
   const { descriptionString, sessionType } =
     await getSessionDescription(conversationId);
 
-  logger.log('mode', mode);
-  logger.log('webContent', webContent);
+  logger.debug('mode', mode);
+  logger.debug('webContent', webContent);
 
   const response = await fetch('/api/llms/ai-friend-response', {
     method: 'POST',
@@ -119,15 +119,18 @@ export const generateAIResponse = async (
     }),
   });
 
-  logger.log('response', response);
+  logger.debug('response', response);
 
   if (!response.ok) {
-    logger.error('Error in AI response:', response.status, response.statusText);
+    logger.error('Error in AI response:', {
+      status: response.status,
+      statusText: response.statusText,
+    });
     return 'Sorry, there was an error generating the response.';
   }
 
   const responseText = await response.text();
-  logger.log('responseText', responseText);
+  logger.debug('responseText', responseText);
 
   try {
     return responseText || 'I am busy now, I will respond later.';

@@ -19,6 +19,15 @@ export const useUser = (id: string) =>
 
       if (data) {
         try {
+          if (!data.encryption_key || !data.iv || !data.tag) {
+            logger.error('Missing encryption data:', {
+              hasKey: !!data.encryption_key,
+              hasIv: !!data.iv,
+              hasTag: !!data.tag,
+            });
+            return data;
+          }
+
           const key = Buffer.from(data.encryption_key, 'hex');
           return {
             ...data,
@@ -30,7 +39,10 @@ export const useUser = (id: string) =>
               : data.email,
           };
         } catch (error) {
-          logger.error('Failed to decrypt user data:', error);
+          logger.debug('Failed to decrypt user data:', {
+            error,
+            userId: id,
+          });
           return data;
         }
       }
