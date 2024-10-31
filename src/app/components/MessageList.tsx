@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { motion } from 'framer-motion';
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { User } from '../types/SupabaseTypes';
 import { detectUrls } from '../utils/urlDetector';
 import { decrypt } from '../utils/encryption';
@@ -18,8 +18,6 @@ interface MessageListProps {
 
 const MessageList: React.FC<MessageListProps> = React.memo(
   ({ messages, user }) => {
-    const messagesList = useMemo(() => messages, [messages]);
-
     const formatTime = (date: Date) => {
       return date.toLocaleTimeString('en-US', {
         hour: 'numeric',
@@ -71,17 +69,14 @@ const MessageList: React.FC<MessageListProps> = React.memo(
     };
 
     return (
-      <div className="flex flex-col space-y-2">
-        {messagesList.map((message, index) => (
+      <AnimatePresence>
+        {messages.map((message, index) => (
           <motion.div
-            key={`${message.sender}-${message.timestamp.getTime()}-${index}`}
+            key={index}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            transition={{
-              duration: 0.2,
-              ease: 'easeOut',
-            }}
+            transition={{ duration: 0.3 }}
             className={`flex ${
               message.sender === getDisplayName(user)
                 ? 'justify-end'
@@ -89,8 +84,7 @@ const MessageList: React.FC<MessageListProps> = React.memo(
             } mb-1 sm:mb-2`}
           >
             <motion.div
-              initial={false}
-              animate={{ scale: 1 }}
+              whileHover={{ scale: 1.02 }}
               className={`max-w-[90%] p-1 sm:p-2 rounded-lg sm:rounded-xl comic-border comic-shadow ${
                 message.sender === getDisplayName(user)
                   ? 'bg-comic-blue text-white'
@@ -109,22 +103,8 @@ const MessageList: React.FC<MessageListProps> = React.memo(
             </motion.div>
           </motion.div>
         ))}
-      </div>
+      </AnimatePresence>
     );
-  },
-  (prevProps, nextProps) => {
-    if (prevProps.messages.length !== nextProps.messages.length) {
-      return false;
-    }
-
-    return prevProps.messages.every((msg, index) => {
-      const nextMsg = nextProps.messages[index];
-      return (
-        msg.sender === nextMsg.sender &&
-        msg.content === nextMsg.content &&
-        msg.timestamp.getTime() === nextMsg.timestamp.getTime()
-      );
-    });
   }
 );
 
