@@ -65,24 +65,35 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+    // Add a stable reference for messages
+    const messagesRef = useRef<Message[]>([]);
+
+    // Modify how we add messages to prevent double renders
+    const addMessage = useCallback((newMessage: Message) => {
+      messagesRef.current = [...messagesRef.current, newMessage];
+      setMessages([...messagesRef.current]);
+    }, []);
+
     const scrollToBottom = useCallback(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, []);
 
     useEffect(() => {
       if (conversationHistories && selectedSession) {
-        const sessionMessages = conversationHistories.filter(
-          (history: ConversationHistory) =>
-            history.conversation_id === selectedSession
-        );
-        const formattedMessages = sessionMessages.map(
-          (history: ConversationHistory) => ({
+        const sessionMessages = conversationHistories
+          .filter(
+            (history: ConversationHistory) =>
+              history.conversation_id === selectedSession
+          )
+          .map((history: ConversationHistory) => ({
             sender: history.sender,
             content: history.message,
             timestamp: new Date(history.created_at),
-          })
-        );
-        setMessages(formattedMessages);
+          }))
+          .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+
+        messagesRef.current = sessionMessages;
+        setMessages(sessionMessages);
       }
     }, [conversationHistories, selectedSession]);
 
@@ -138,8 +149,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
         timestamp: new Date(),
       };
 
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      // Use addMessage instead of direct setState
+      addMessage(newMessage);
       setInputMessage('');
+
       try {
         if (!aiFriends || aiFriends.length === 0) {
           throw new Error('No AI friends found');
@@ -211,7 +224,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
                       mode: mode,
                       webContent: webContent,
                     };
-                    setMessages((prevMessages) => [...prevMessages, aiMessage]);
+                    addMessage(aiMessage);
                     resolve();
                   },
                   Math.random() * 2000 + 1000
@@ -287,10 +300,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
     }, [
       inputMessage,
       user,
-      aiFriends,
-      selectedSession,
-      addConversationHistory,
+      addMessage,
       toast,
+      aiFriends,
+      addConversationHistory,
+      selectedSession,
     ]);
 
     const memoizedMessageList = useMemo(
