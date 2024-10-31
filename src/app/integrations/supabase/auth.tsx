@@ -6,6 +6,7 @@ import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { Session } from '@supabase/supabase-js';
 import { v4 as uuidv4 } from 'uuid';
 import { createEncryptedUser } from '@/app/utils/encryption';
+import { logger } from '@/app/utils/logger';
 
 const SupabaseAuthContext = createContext<
   | { session: Session | null; loading: boolean; logout: () => Promise<void> }
@@ -62,7 +63,7 @@ export const SupabaseAuthProviderInner = ({
               .single();
 
             if (error) {
-              console.error('Error creating new user:', error);
+              logger.error('Error creating new user:', error);
               throw error;
             }
 
@@ -74,7 +75,7 @@ export const SupabaseAuthProviderInner = ({
           }
         }
       } catch (error) {
-        console.error('Error in getSession:', error);
+        logger.error('Error in getSession:', error);
       } finally {
         setLoading(false);
       }

@@ -18,6 +18,7 @@ import {
   generateSalt,
   generateEncryptionKey,
 } from '../utils/encryption';
+import { logger } from '../utils/logger';
 
 interface AuthPageProps {
   onAuthSuccess: () => void;
@@ -69,6 +70,13 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess, onNavigate }) => {
       if (existingUser) {
         try {
           const key = Buffer.from(existingUser.encryption_key, 'hex');
+          logger.info('Encryption details:', {
+            storedKey: existingUser.encryption_key,
+            iv: existingUser.iv,
+            tag: existingUser.tag,
+            encryptedName: existingUser.encrypted_name,
+          });
+
           const decryptedUsername = decrypt(
             existingUser.encrypted_name,
             key,
@@ -76,20 +84,33 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess, onNavigate }) => {
             existingUser.tag
           );
 
-          if (decryptedUsername !== username) {
+          logger.info('Decryption result:', {
+            decryptedUsername,
+            providedUsername: username,
+            match: decryptedUsername.toLowerCase() === username.toLowerCase(),
+          });
+
+          if (decryptedUsername.toLowerCase() !== username.toLowerCase()) {
             setLoginError('Username does not match the existing email.');
             return;
           }
           userId = existingUser.id;
         } catch (error) {
+          logger.error('Decryption failed:', error);
           throw new Error('Failed to decrypt user data');
         }
       } else {
         // Create new user with encryption
         const salt = generateSalt();
-        const encryptionKey = generateEncryptionKey(email + username, salt);
+        const encryptionKey = generateEncryptionKey(
+          sanitizedEmail + username,
+          salt
+        );
         const encryptedEmail = encrypt(sanitizedEmail, encryptionKey);
         const encryptedUsername = encrypt(username, encryptionKey);
+
+        // Store the encryption key in hex format
+        const keyHex = encryptionKey.toString('hex');
 
         const newUser = {
           id: uuidv4(),
@@ -97,9 +118,9 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess, onNavigate }) => {
           encrypted_email: encryptedEmail.encryptedData,
           email_hash: emailHash,
           encryption_salt: salt,
-          encryption_key: encryptionKey.toString('hex'),
-          iv: encryptedEmail.iv,
-          tag: encryptedEmail.tag,
+          encryption_key: keyHex,
+          iv: encryptedUsername.iv,
+          tag: encryptedUsername.tag,
           persona: 'Energetic and tech-savvy',
           about: '23-year-old guy who loves gaming and coding',
           knowledge_base: 'Extensive knowledge of latest tech trends',

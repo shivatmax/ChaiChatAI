@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { User } from '../types/SupabaseTypes';
 import { detectUrls } from '../utils/urlDetector';
 import { decrypt } from '../utils/encryption';
+import { logger } from '../utils/logger';
 
 interface Message {
   sender: string;
@@ -41,7 +42,6 @@ const MessageList: React.FC<MessageListProps> = React.memo(
     };
 
     const getDisplayName = (user: User) => {
-      console.log('user', user);
       if (!user) return 'You';
 
       // First try to get name
@@ -62,7 +62,7 @@ const MessageList: React.FC<MessageListProps> = React.memo(
           return decryptedName;
         }
       } catch (error) {
-        console.error('Error decrypting name:', error);
+        logger.error('Error decrypting name:', error);
       }
 
       return 'Unknown User';

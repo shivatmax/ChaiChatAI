@@ -3,6 +3,7 @@ import { supabase } from '../supabase';
 import { User } from '../../../types/SupabaseTypes';
 import { v4 as uuidv4 } from 'uuid';
 import { decrypt } from '../../../utils/encryption';
+import { logger } from '@/app/utils/logger';
 
 export const useUser = (id: string) =>
   useQuery({
@@ -29,7 +30,7 @@ export const useUser = (id: string) =>
               : data.email,
           };
         } catch (error) {
-          console.error('Failed to decrypt user data:', error);
+          logger.error('Failed to decrypt user data:', error);
           return data;
         }
       }

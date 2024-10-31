@@ -17,6 +17,7 @@ import { useAIFriends } from '../integrations/supabase/hooks/useAIFriend';
 import GlowingComponent from './GlowingComponent';
 import { useQueryClient } from '@tanstack/react-query';
 import { handleError } from '../utils/errorHandling';
+import { logger } from '../utils/logger';
 
 const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
   user,
@@ -65,7 +66,7 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
           setShowFirstTimeExperience(true);
         }
       } catch (error) {
-        console.error('Error checking first-time user status:', error);
+        logger.error('Error checking first-time user status:', error);
       }
     };
 

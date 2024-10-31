@@ -6,6 +6,7 @@ import MainContent from '../components/MainContent';
 import ComicBackground from '../components/ComicBackground';
 import { motion } from 'framer-motion';
 import { createEncryptedUser } from '../utils/encryption';
+import { logger } from '../utils/logger';
 
 interface IndexProps {
   onLogout: () => void;
@@ -70,7 +71,7 @@ const Index: React.FC<IndexProps> = ({ onLogout, onNavigate }) => {
           setUser(data);
         }
       } catch (error) {
-        console.error('Error fetching or creating user:', error);
+        logger.error('Error fetching or creating user:', error);
         onLogout();
         onNavigate('/');
       } finally {

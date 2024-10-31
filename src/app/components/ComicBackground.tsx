@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 
 const ComicBackground: React.FC = () => {
@@ -87,7 +88,7 @@ const ComicBackground: React.FC = () => {
         const img = new Image();
         img.onload = () => resolve(img);
         img.onerror = () => {
-          console.warn(`Failed to load image: ${src}`);
+          logger.warn(`Failed to load image: ${src}`);
         };
         img.src = src;
       });
@@ -110,7 +111,7 @@ const ComicBackground: React.FC = () => {
             mass: Math.random() * 0.5 + 0.5,
           });
         } catch (error) {
-          console.error(`Failed to load image: ${imagePath}`, error);
+          logger.error(`Failed to load image: ${imagePath}`, error);
         }
       }
       animate();
@@ -250,10 +251,7 @@ const ComicBackground: React.FC = () => {
   }
 
   return (
-    <canvas
-      ref={canvasRef}
-      className='fixed top-0 left-0 w-full h-full z-0'
-    />
+    <canvas ref={canvasRef} className="fixed top-0 left-0 w-full h-full z-0" />
   );
 };
 

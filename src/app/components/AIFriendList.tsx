@@ -102,8 +102,8 @@ const AIFriendList: React.FC<AIFriendListProps> = React.memo(
           });
           invalidateFriendsSummaryCache();
           setFriendToDelete(null);
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
-          console.error('Error deleting AI Friend:', error);
           toast({
             title: 'Error',
             description: 'Failed to delete AI Friend. Please try again.',
@@ -138,8 +138,8 @@ const AIFriendList: React.FC<AIFriendListProps> = React.memo(
       try {
         const b64Image = await imageGen(imagePrompt);
         setPreviewImage(`data:image/png;base64,${b64Image}`);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        console.error('Error generating avatar:', error);
         toast({
           title: 'Error',
           description: 'Failed to generate avatar. Please try again.',
@@ -164,8 +164,8 @@ const AIFriendList: React.FC<AIFriendListProps> = React.memo(
           });
           setIsAvatarDialogOpen(false);
           setPreviewImage(null);
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
-          console.error('Error saving avatar:', error);
           toast({
             title: 'Error',
             description: 'Failed to save avatar. Please try again.',

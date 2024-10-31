@@ -1,9 +1,15 @@
 // src/utils/errorHandling.ts
 
 import { toast } from '../hooks/use-toast';
+import { logger } from './logger';
 
 export const handleAuthError = (error: unknown) => {
-  console.error('Authentication error:', error);
+  logger.error('Authentication error details:', {
+    error,
+    type: error instanceof Error ? error.constructor.name : typeof error,
+    message: error instanceof Error ? error.message : String(error),
+    stack: error instanceof Error ? error.stack : undefined,
+  });
 
   let errorMessage = 'An unexpected error occurred. Please try again.';
   let errorTitle = 'Authentication Error';
@@ -13,6 +19,12 @@ export const handleAuthError = (error: unknown) => {
       case 'Failed to decrypt data':
         errorMessage =
           'Invalid credentials. Please check your username and email.';
+        break;
+      case 'Invalid credentials':
+        errorMessage = 'Username does not match the registered email.';
+        break;
+      case 'Missing required encryption parameters':
+        errorMessage = 'Authentication failed. Missing required data.';
         break;
       case 'Invalid email':
         errorMessage = 'Please enter a valid email address.';
@@ -27,6 +39,7 @@ export const handleAuthError = (error: unknown) => {
         if (error.message.includes('duplicate key')) {
           errorMessage = 'This email is already registered. Please log in.';
         }
+        logger.error('Unhandled auth error:', error);
     }
   }
 
@@ -40,15 +53,9 @@ export const handleAuthError = (error: unknown) => {
 };
 
 export const handleError = (error: unknown, context?: string) => {
-  if (process.env.NODE_ENV === 'production') {
-    // Silently handle errors in production
-    return;
-  }
-
   if (error instanceof Error) {
-    // Only log in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error(`${context ? `[${context}] ` : ''}`, error.message);
-    }
+    logger.error(`${context ? `[${context}] ` : ''}${error.message}`, error);
+  } else {
+    logger.error(`${context ? `[${context}] ` : ''}Unknown error`, error);
   }
 };

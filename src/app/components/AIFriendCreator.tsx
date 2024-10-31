@@ -73,9 +73,9 @@ const AIFriendCreator: React.FC<AIFriendCreatorProps> = ({
           } else {
             throw new Error('Failed to create AI Friend');
           }
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
           // eslint-disable-next-line no-undef
-          console.error('Error creating AI Friend:', error);
           toast({
             title: 'Error',
             description: 'Failed to create AI Friend. Please try again.',

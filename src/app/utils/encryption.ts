@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { logger } from './logger';
 
 const ALGORITHM = 'aes-256-gcm';
 const KEY_LENGTH = 32;
@@ -26,21 +27,36 @@ export const generateEncryptionKey = (
   password: string,
   salt: string
 ): Buffer => {
-  return crypto.pbkdf2Sync(password, salt, 100000, KEY_LENGTH, 'sha512');
+  return crypto.pbkdf2Sync(
+    Buffer.from(password, 'utf8'),
+    Buffer.from(salt, 'hex'),
+    100000,
+    KEY_LENGTH,
+    'sha512'
+  );
 };
 
 export const encrypt = (text: string, key: Buffer): EncryptedData => {
-  const iv = crypto.randomBytes(IV_LENGTH);
-  const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
+  try {
+    const iv = crypto.randomBytes(IV_LENGTH);
+    const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
 
-  let encryptedData = cipher.update(text, 'utf8', 'hex');
-  encryptedData += cipher.final('hex');
+    const encrypted = Buffer.concat([
+      cipher.update(text, 'utf8'),
+      cipher.final(),
+    ]);
 
-  return {
-    encryptedData,
-    iv: iv.toString('hex'),
-    tag: cipher.getAuthTag().toString('hex'),
-  };
+    const tag = cipher.getAuthTag();
+
+    return {
+      encryptedData: encrypted.toString('hex'),
+      iv: iv.toString('hex'),
+      tag: tag.toString('hex'),
+    };
+  } catch (error) {
+    logger.error('Encryption failed:', error);
+    throw new Error('Failed to encrypt data');
+  }
 };
 
 export const decrypt = (
@@ -50,19 +66,37 @@ export const decrypt = (
   tag: string
 ): string => {
   try {
-    const decipher = crypto.createDecipheriv(
-      ALGORITHM,
-      key,
-      Buffer.from(iv, 'hex')
-    );
-    decipher.setAuthTag(Buffer.from(tag, 'hex'));
+    if (!encryptedData || !key || !iv || !tag) {
+      logger.error('Missing decrypt parameters:', {
+        hasEncryptedData: !!encryptedData,
+        hasKey: !!key,
+        hasIv: !!iv,
+        hasTag: !!tag,
+      });
+      throw new Error('Missing required encryption parameters');
+    }
 
-    let decrypted = decipher.update(encryptedData, 'hex', 'utf8');
-    decrypted += decipher.final('utf8');
+    const encryptedBuffer = Buffer.from(encryptedData, 'hex');
+    const ivBuffer = Buffer.from(iv, 'hex');
+    const tagBuffer = Buffer.from(tag, 'hex');
 
-    return decrypted;
+    const decipher = crypto.createDecipheriv(ALGORITHM, key, ivBuffer);
+    decipher.setAuthTag(tagBuffer);
+
+    const decrypted = Buffer.concat([
+      decipher.update(encryptedBuffer),
+      decipher.final(),
+    ]);
+
+    return decrypted.toString('utf8');
   } catch (error) {
-    console.error('Decryption error:', error);
+    logger.error('Decryption failed:', {
+      error,
+      encryptedDataLength: encryptedData?.length,
+      keyLength: key?.length,
+      ivLength: iv?.length,
+      tagLength: tag?.length,
+    });
     throw new Error('Failed to decrypt data');
   }
 };
@@ -73,17 +107,19 @@ export const createEncryptedUser = (
 ) => {
   const salt = generateSalt();
   const emailHash = hashEmail(email);
-  const encryptionKey = generateEncryptionKey(email + username, salt);
-  const encryptedEmail = encrypt(email, encryptionKey);
+
+  const combinedString = `${email.toLowerCase().trim()}:${username.trim()}`;
+  const encryptionKey = generateEncryptionKey(combinedString, salt);
+
   const encryptedUsername = encrypt(username, encryptionKey);
 
   return {
     encrypted_name: encryptedUsername.encryptedData,
-    encrypted_email: encryptedEmail.encryptedData,
+    encrypted_email: encrypt(email, encryptionKey).encryptedData,
     email_hash: emailHash,
     encryption_salt: salt,
     encryption_key: encryptionKey.toString('hex'),
-    iv: encryptedEmail.iv,
-    tag: encryptedEmail.tag,
+    iv: encryptedUsername.iv,
+    tag: encryptedUsername.tag,
   };
 };

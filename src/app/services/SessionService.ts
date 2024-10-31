@@ -19,7 +19,7 @@ export const createNewSession = async (
     const newSessionId = uuidv4();
     const now = new Date().toISOString();
     const dataString = JSON.stringify(sessionData);
-    console.log('dataString', dataString);
+    logger.log('dataString', dataString);
     const { data, error } = await supabase
       .from('Session')
       .insert([
@@ -40,7 +40,7 @@ export const createNewSession = async (
     if (error) throw error;
     return data;
   } catch (error) {
-    console.error('Error creating new session:', error);
+    logger.error('Error creating new session:', error);
     throw error;
   }
 };
@@ -61,7 +61,7 @@ export const getSessions = async (userId: string): Promise<Session[]> => {
       updated_at: session.updated_at,
     }));
   } catch (error) {
-    console.error('Error fetching sessions:', error);
+    logger.error('Error fetching sessions:', error);
     throw error;
   }
 };
@@ -70,7 +70,7 @@ const parseDescription = (description: string): unknown => {
   try {
     return JSON.parse(description);
   } catch (error) {
-    console.error('Error parsing description:', error);
+    logger.error('Error parsing description:', error);
     return { description };
   }
 };
@@ -99,7 +99,7 @@ export const getLatestSession = async (
       updated_at: data.updated_at,
     };
   } catch (error) {
-    console.error('Error fetching latest session:', error);
+    logger.error('Error fetching latest session:', error);
     throw error;
   }
 };
@@ -119,7 +119,7 @@ export const updateSession = async (
     clearStoredSessionDescription(sessionId);
     return data;
   } catch (error) {
-    console.error('Error updating session:', error);
+    logger.error('Error updating session:', error);
     throw error;
   }
 };
@@ -133,7 +133,7 @@ export const deleteSession = async (sessionId: string): Promise<void> => {
     if (error) throw error;
     clearStoredSessionDescription(sessionId);
   } catch (error) {
-    console.error('Error deleting session:', error);
+    logger.error('Error deleting session:', error);
     throw error;
   }
 };
@@ -148,6 +148,6 @@ export const getSessionData = async (
     .eq('id', sessionId)
     .single();
   if (error) throw error;
-  // console.log('data', data);
+  // logger.log('data', data);
   return data;
 };

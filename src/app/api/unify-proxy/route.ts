@@ -20,8 +20,6 @@ export async function POST(req: Request) {
   }
 
   try {
-    // console.log('Sending request to Unify API:', body);
-
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
@@ -33,7 +31,7 @@ export async function POST(req: Request) {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      // console.error('Unify API error:', errorData);
+      // .error('Unify API error:', errorData);
       return NextResponse.json(
         { error: `Unify API error: ${response.status}`, details: errorData },
         { status: response.status }

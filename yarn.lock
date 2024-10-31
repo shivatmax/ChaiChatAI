@@ -1156,9 +1156,9 @@
   resolved "https://registry.npmjs.org/@istanbuljs/schema/-/schema-0.1.3.tgz"
   integrity sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==
 
-"@jest/console@^29.7.0":
+"@jest/logger@^29.7.0":
   version "29.7.0"
-  resolved "https://registry.npmjs.org/@jest/console/-/console-29.7.0.tgz"
+  resolved "https://registry.npmjs.org/@jest/logger/-/logger-29.7.0.tgz"
   integrity sha512-5Ni4CU7XHQi32IJ398EEP4RrB8eV09sXP2ROqD4bksHrnTree52PsxvX8tpL8LvTZ3pFzXyPbNQReSN41CAhOg==
   dependencies:
     "@jest/types" "^29.6.3"
@@ -1173,7 +1173,7 @@
   resolved "https://registry.npmjs.org/@jest/core/-/core-29.7.0.tgz"
   integrity sha512-n7aeXWKMnGtDA48y8TLWJPJmLmmZ642Ceo78cYWEpiD7FzDgmNDV/GCVRorPABdXLJZ/9wzzgZAlHjXjxDHGsg==
   dependencies:
-    "@jest/console" "^29.7.0"
+    "@jest/logger" "^29.7.0"
     "@jest/reporters" "^29.7.0"
     "@jest/test-result" "^29.7.0"
     "@jest/transform" "^29.7.0"
@@ -1255,7 +1255,7 @@
   integrity sha512-DApq0KJbJOEzAFYjHADNNxAE3KbhxQB1y5Kplb5Waqw6zVbuWatSnMjE5gs8FUgEPmNsnZA3NCWl9NG0ia04Pg==
   dependencies:
     "@bcoe/v8-coverage" "^0.2.3"
-    "@jest/console" "^29.7.0"
+    "@jest/logger" "^29.7.0"
     "@jest/test-result" "^29.7.0"
     "@jest/transform" "^29.7.0"
     "@jest/types" "^29.6.3"
@@ -1300,7 +1300,7 @@
   resolved "https://registry.npmjs.org/@jest/test-result/-/test-result-29.7.0.tgz"
   integrity sha512-Fdx+tv6x1zlkJPcWXmMDAG2HBnaR9XPSd5aDWQVsfrZmLVT3lU1cwyxLgRmXR9yrq4NBoEm9BMsfgFzTQAbJYA==
   dependencies:
-    "@jest/console" "^29.7.0"
+    "@jest/logger" "^29.7.0"
     "@jest/types" "^29.6.3"
     "@types/istanbul-lib-coverage" "^2.0.0"
     collect-v8-coverage "^1.0.0"
@@ -5979,7 +5979,7 @@ jest-runner@^29.7.0:
   resolved "https://registry.npmjs.org/jest-runner/-/jest-runner-29.7.0.tgz"
   integrity sha512-fsc4N6cPCAahybGBfTRcq5wFR6fpLznMg47sY5aDpsoejOcVYFb07AHuSnR0liMcPTgBsA3ZJL6kFOjPdoNipQ==
   dependencies:
-    "@jest/console" "^29.7.0"
+    "@jest/logger" "^29.7.0"
     "@jest/environment" "^29.7.0"
     "@jest/test-result" "^29.7.0"
     "@jest/transform" "^29.7.0"

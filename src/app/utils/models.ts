@@ -1,5 +1,6 @@
 import Together from 'together-ai';
 import { OpenAI } from 'openai';
+import { logger } from './logger';
 
 let together: Together | null = null;
 let openai: OpenAI | null = null;
@@ -9,7 +10,7 @@ try {
     apiKey: process.env.NEXT_PUBLIC_TOGETHER_API_KEY || '',
   });
 } catch (error) {
-  console.error('Error initializing Together client:', error);
+  logger.error('Error initializing Together client:', error);
 }
 
 try {
@@ -18,7 +19,7 @@ try {
     dangerouslyAllowBrowser: true,
   });
 } catch (error) {
-  console.error('Error initializing OpenAI client:', error);
+  logger.error('Error initializing OpenAI client:', error);
 }
 
 export async function unifyAgentChat(userPrompt: string, systemPrompt: string) {
@@ -45,14 +46,14 @@ export async function unifyAgentChat(userPrompt: string, systemPrompt: string) {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error('Unify proxy error:', errorData);
+      logger.error('Unify proxy error:', errorData);
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
     return data.choices[0].message.content;
   } catch (error) {
-    console.error('Error in unifyAgentChat:', error);
+    logger.error('Error in unifyAgentChat:', error);
     return 'I am busy now, I will respond later.';
   }
 }
@@ -89,18 +90,18 @@ export async function unifyAgentChatWithResponseFormat(
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error('Unify proxy error:', errorData);
+      logger.error('Unify proxy error:', errorData);
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
-    // console.log(
+    // logger.log(
     //   'data from unifyAgentChatWithResponseFormat',
     //   data.choices[0].message.content
     // );
     return data.choices[0].message.content;
   } catch (error) {
-    console.error('Error in unifyAgentChatWithResponseFormat:', error);
+    logger.error('Error in unifyAgentChatWithResponseFormat:', error);
     return 'I am busy now, I will respond later.';
   }
 }
@@ -128,7 +129,7 @@ export async function openaiChat(
       'I am busy now, I will respond later.'
     );
   } catch (error) {
-    console.error('Error in openaiChat:', error);
+    logger.error('Error in openaiChat:', error);
     return 'I am busy now, I will respond later.';
   }
 }
@@ -162,7 +163,7 @@ export async function imageGen(prompt: string) {
 // const b64Image = await imageGen(
 //   'Create a realistic red dragon with blue-white flames from mouth'
 // );
-// console.log(b64Image);
+// logger.log(b64Image);
 export async function llamaVisionChat(
   userPrompt: string,
   systemPrompt: string,
@@ -201,14 +202,14 @@ export async function llamaVisionChat(
       messages: messages,
     });
 
-    // console.log(response);
+    // logger.log(response);
 
     return (
       response.choices[0]?.message?.content ||
       'I am busy now, I will respond later.'
     );
   } catch (error) {
-    console.error('Error in llamaVisionChat:', error);
+    logger.error('Error in llamaVisionChat:', error);
     return 'I am busy now, I will respond later.';
   }
 }

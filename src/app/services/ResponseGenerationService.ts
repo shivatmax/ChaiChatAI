@@ -24,7 +24,7 @@ const getSessionDescription = async (
 
   try {
     const session = await getSessionData(sessionId);
-    // console.log('session', session);
+    // logger.log('session', session);
     if (session && session.description && session.session_type) {
       const sessionType = session.session_type;
       const description = {
@@ -42,7 +42,7 @@ const getSessionDescription = async (
       return { descriptionString, sessionType };
     }
   } catch (error) {
-    console.error('Error fetching session description:', error);
+    logger.error('Error fetching session description:', error);
   }
 
   return {
@@ -81,8 +81,8 @@ export const generateAIResponse = async (
   const { descriptionString, sessionType } =
     await getSessionDescription(conversationId);
 
-  console.log('mode', mode);
-  console.log('webContent', webContent);
+  logger.log('mode', mode);
+  logger.log('webContent', webContent);
 
   const response = await fetch('/api/llms/ai-friend-response', {
     method: 'POST',
@@ -119,24 +119,20 @@ export const generateAIResponse = async (
     }),
   });
 
-  console.log('response', response);
+  logger.log('response', response);
 
   if (!response.ok) {
-    console.error(
-      'Error in AI response:',
-      response.status,
-      response.statusText
-    );
+    logger.error('Error in AI response:', response.status, response.statusText);
     return 'Sorry, there was an error generating the response.';
   }
 
   const responseText = await response.text();
-  console.log('responseText', responseText);
+  logger.log('responseText', responseText);
 
   try {
     return responseText || 'I am busy now, I will respond later.';
   } catch (error) {
-    console.error('Error parsing JSON:', error);
+    logger.error('Error parsing JSON:', error);
     return responseText || 'Error parsing the response.';
   }
 };

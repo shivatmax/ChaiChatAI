@@ -1,5 +1,6 @@
 import { supabase } from '../integrations/supabase/supabase';
 import { v4 as uuidv4 } from 'uuid';
+import { logger } from '../utils/logger';
 
 export const saveConversationHistory = async (
   userId: string,
@@ -26,6 +27,6 @@ export const saveConversationHistory = async (
       throw error;
     }
   } catch (error) {
-    console.error('Error saving conversation history:', error);
+    logger.error('Error saving conversation history:', error);
   }
 };

@@ -59,14 +59,14 @@ export const routeMessage = async (
     }
 
     const data = await response.json();
-    console.log('data', data);
+    logger.log('data', data);
     return {
       friends: data.friends,
       mode: data.mode,
       webContent: data.webContent,
     };
   } catch (error) {
-    console.error('Error in message routing:', error);
+    logger.error('Error in message routing:', error);
     return {
       friends: activeFriends
         .sort(() => 0.5 - Math.random())
@@ -102,7 +102,7 @@ export const generateFriendsSummary = async (
         return cachedSummary;
       }
     } catch (error) {
-      console.error('Error parsing cached friends data:', error);
+      logger.error('Error parsing cached friends data:', error);
       // Continue with generating new summary if cache parsing fails
     }
   }
@@ -149,7 +149,7 @@ export const generateFriendsSummary = async (
 
     return summary;
   } catch (error) {
-    console.error('Error generating friends summary:', error);
+    logger.error('Error generating friends summary:', error);
     return 'Error occurred while generating friends summary.';
   }
 };
@@ -204,6 +204,6 @@ export const FriendsMemory = async (
       throw new Error('Unexpected response format');
     }
   } catch (error) {
-    console.error('Error fetching conversation history:', error);
+    logger.error('Error fetching conversation history:', error);
   }
 };

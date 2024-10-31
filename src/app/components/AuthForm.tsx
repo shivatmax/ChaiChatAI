@@ -18,6 +18,7 @@ import {
   generateEncryptionKey,
 } from '../utils/encryption';
 import { handleAuthError } from '../utils/errorHandling';
+import { logger } from '../utils/logger';
 
 interface AuthFormProps {
   onAuthSuccess: () => void;
@@ -45,6 +46,11 @@ const AuthForm: React.FC<AuthFormProps> = ({
       return;
     }
 
+    if (sanitizedUsername.length < 2 || sanitizedUsername.length > 50) {
+      setLoginError('Username must be between 2 and 50 characters');
+      return;
+    }
+
     if (!(await validateEmail(sanitizedEmail))) {
       setLoginError('Invalid email address');
       return;
@@ -54,6 +60,11 @@ const AuthForm: React.FC<AuthFormProps> = ({
     setLoginError(null);
 
     try {
+      logger.info('Authentication attempt:', {
+        username: sanitizedUsername,
+        emailHash: hashEmail(sanitizedEmail),
+      });
+
       // Generate encryption materials
       const salt = generateSalt();
       const emailHash = hashEmail(sanitizedEmail);
@@ -73,28 +84,50 @@ const AuthForm: React.FC<AuthFormProps> = ({
 
       if (existingUser) {
         try {
-          // Verify existing user
-          const storedKey = generateEncryptionKey(
-            sanitizedEmail + sanitizedUsername,
-            existingUser.encryption_salt
-          );
+          const key = Buffer.from(existingUser.encryption_key, 'hex');
+
+          logger.info('Encryption details:', {
+            storedKey: existingUser.encryption_key,
+            iv: existingUser.iv,
+            tag: existingUser.tag,
+            encryptedName: existingUser.encrypted_name,
+          });
 
           const decryptedUsername = decrypt(
             existingUser.encrypted_name,
-            storedKey,
+            key,
             existingUser.iv,
             existingUser.tag
           );
 
-          if (decryptedUsername !== sanitizedUsername) {
+          logger.info('Authentication comparison:', {
+            decryptedUsername,
+            sanitizedUsername,
+            match:
+              decryptedUsername.toLowerCase() ===
+              sanitizedUsername.toLowerCase(),
+          });
+
+          if (
+            decryptedUsername.toLowerCase() !== sanitizedUsername.toLowerCase()
+          ) {
+            logger.error('Username mismatch:', {
+              decrypted: decryptedUsername,
+              provided: sanitizedUsername,
+            });
             throw new Error('Invalid credentials');
           }
 
           userId = existingUser.id;
         } catch (error) {
-          console.error('Decryption error:', error);
-          setLoginError('Invalid username or email combination');
-          return;
+          logger.error('Decryption error details:', {
+            error,
+            providedUsername: sanitizedUsername,
+            encryptedName: existingUser.encrypted_name,
+            iv: existingUser.iv,
+            tag: existingUser.tag,
+          });
+          throw new Error('Failed to decrypt data');
         }
       } else {
         // Create new user
@@ -142,24 +175,23 @@ const AuthForm: React.FC<AuthFormProps> = ({
       onAuthSuccess();
       navigate('/');
     } catch (error) {
+      logger.error('Auth error:', error);
       const errorMessage = handleAuthError(error);
       setLoginError(errorMessage);
+      setIsLoading(false);
+      return;
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleEmailChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('handleEmailChange');
     const email = e.target.value;
-    console.log('email', email);
 
     if (!(await validateEmail(email))) {
-      console.log('Invalid email address. Please enter a valid email.');
       setLoginError('Invalid email address. Please enter a valid email.');
       return;
     }
-    console.log('Valid email address. Setting email.');
     setEmail(email);
   };
 

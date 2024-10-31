@@ -12,6 +12,7 @@ import { Textarea } from './ui/textarea';
 import { useToast } from '../hooks/use-toast';
 import { createNewSession } from '../services/SessionService';
 import { SessionType } from '../types/Session';
+import { logger } from '../utils/logger';
 
 interface SessionCreationPopupProps {
   isOpen: boolean;
@@ -39,8 +40,8 @@ const SessionCreationPopup: React.FC<SessionCreationPopupProps> = ({
         mode === 'Story'
           ? SessionType.StoryMode
           : mode === 'Research'
-          ? SessionType.ResearchCreateMode
-          : SessionType.General;
+            ? SessionType.ResearchCreateMode
+            : SessionType.General;
 
       const sessionData = {
         title,
@@ -59,7 +60,7 @@ const SessionCreationPopup: React.FC<SessionCreationPopupProps> = ({
       onSessionCreated();
       onClose();
     } catch (error) {
-      console.error('Error creating session:', error);
+      logger.error('Error creating session:', error);
       toast({
         title: 'Error',
         description: 'Failed to create session',
@@ -69,74 +70,68 @@ const SessionCreationPopup: React.FC<SessionCreationPopupProps> = ({
   };
 
   return (
-    <Dialog
-      open={isOpen}
-      onOpenChange={onClose}
-    >
-      <DialogContent className='sm:max-w-[425px] max-w-[85%] w-full'>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[425px] max-w-[85%] w-full">
         <DialogHeader>
-          <DialogTitle className='text-base sm:text-lg'>
+          <DialogTitle className="text-base sm:text-lg">
             {mode ? `Create ${mode} Mode Session` : 'Create New Session'}
           </DialogTitle>
         </DialogHeader>
-        <form
-          onSubmit={handleSubmit}
-          className='space-y-2 sm:space-y-3'
-        >
+        <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-3">
           <div>
             <label
-              htmlFor='title'
-              className='block text-xs sm:text-sm font-medium text-gray-700'
+              htmlFor="title"
+              className="block text-xs sm:text-sm font-medium text-gray-700"
             >
               Title
             </label>
             <Input
-              id='title'
+              id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder='Enter session title'
+              placeholder="Enter session title"
               required
-              className='mt-1 text-sm'
+              className="mt-1 text-sm"
             />
           </div>
           <div>
             <label
-              htmlFor='description'
-              className='block text-xs sm:text-sm font-medium text-gray-700'
+              htmlFor="description"
+              className="block text-xs sm:text-sm font-medium text-gray-700"
             >
               {mode === 'Story'
                 ? 'Characters & Relationships'
                 : mode === 'Research'
-                ? 'Project Description'
-                : 'Description'}
+                  ? 'Project Description'
+                  : 'Description'}
             </label>
             <Textarea
-              id='description'
+              id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder={
                 mode === 'Story'
                   ? 'Describe characters and their relationships'
                   : mode === 'Research'
-                  ? 'Describe the research project'
-                  : 'Enter session description'
+                    ? 'Describe the research project'
+                    : 'Enter session description'
               }
               rows={2}
-              className='mt-1 text-sm'
+              className="mt-1 text-sm"
             />
           </div>
-          <DialogFooter className='mt-3 sm:mt-4'>
+          <DialogFooter className="mt-3 sm:mt-4">
             <Button
-              type='button'
-              variant='outline'
+              type="button"
+              variant="outline"
               onClick={onClose}
-              className='w-full sm:w-auto text-xs sm:text-sm'
+              className="w-full sm:w-auto text-xs sm:text-sm"
             >
               Cancel
             </Button>
             <Button
-              type='submit'
-              className='w-full sm:w-auto text-xs sm:text-sm'
+              type="submit"
+              className="w-full sm:w-auto text-xs sm:text-sm"
             >
               Create Session
             </Button>

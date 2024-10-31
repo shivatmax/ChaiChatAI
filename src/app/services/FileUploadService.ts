@@ -1,4 +1,5 @@
 import { supabase } from '../integrations/supabase/supabase';
+import { logger } from '../utils/logger';
 
 export const uploadFile = async (
   file: File,
@@ -11,7 +12,7 @@ export const uploadFile = async (
       .upload(path, file);
 
     if (error) {
-      console.error('Error uploading file:', error);
+      logger.error('Error uploading file:', error);
       throw error;
     }
 
@@ -22,7 +23,7 @@ export const uploadFile = async (
 
     return publicUrlData.publicUrl;
   } catch (error) {
-    console.error('Error uploading file:', error);
+    logger.error('Error uploading file:', error);
     return null;
   }
 };
@@ -40,7 +41,7 @@ export const deleteFile = async (
 
     return true;
   } catch (error) {
-    console.error('Error deleting file:', error);
+    logger.error('Error deleting file:', error);
     return false;
   }
 };
@@ -55,7 +56,7 @@ export const getPublicUrl = async (
       .getPublicUrl(path);
     return publicUrlData.publicUrl;
   } catch (error) {
-    console.error('Error getting public URL:', error);
+    logger.error('Error getting public URL:', error);
     return null;
   }
 };
@@ -75,7 +76,7 @@ export const getSignedUrl = async (
 
     return data.signedUrl;
   } catch (error) {
-    console.error('Error getting signed URL:', error);
+    logger.error('Error getting signed URL:', error);
     return null;
   }
 };
@@ -107,7 +108,7 @@ export const getFileMetadata = async (
 
     return null;
   } catch (error) {
-    console.error('Error getting file metadata:', error);
+    logger.error('Error getting file metadata:', error);
     return null;
   }
 };
@@ -126,7 +127,7 @@ export const uploadAvatar = async (
       });
 
     if (error) {
-      console.error('Error uploading avatar:', error);
+      logger.error('Error uploading avatar:', error);
       throw error;
     }
 
@@ -136,7 +137,7 @@ export const uploadAvatar = async (
 
     return publicUrlData.publicUrl;
   } catch (error) {
-    console.error('Error in uploadAvatar:', error);
+    logger.error('Error in uploadAvatar:', error);
     return null;
   }
 };

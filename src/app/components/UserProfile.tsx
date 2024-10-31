@@ -32,6 +32,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs';
 import { Label } from './ui/label';
 import { imageGen } from '../utils/models';
 import { decrypt } from '../utils/encryption';
+import { logger } from '../utils/logger';
 
 interface UserProfileProps {
   user: User | null;
@@ -70,7 +71,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
           Object.assign(user, editedUser);
         }
       } catch (error) {
-        console.error('Error updating user:', error);
+        logger.error('Error updating user:', error);
       }
     }
   };
@@ -108,7 +109,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
       const b64Image = await imageGen(imagePrompt);
       setPreviewImage(`data:image/png;base64,${b64Image}`);
     } catch (error) {
-      console.error('Error generating avatar:', error);
+      logger.error('Error generating avatar:', error);
       toast({
         title: 'Error',
         description: 'Failed to generate avatar. Please try again.',
@@ -136,7 +137,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
         setPreviewImage(null);
         queryClient.invalidateQueries({ queryKey: ['user', user.id] });
       } catch (error) {
-        console.error('Error saving avatar:', error);
+        logger.error('Error saving avatar:', error);
         toast({
           title: 'Error',
           description: 'Failed to save avatar. Please try again.',
@@ -175,7 +176,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
         return decryptedName;
       }
     } catch (error) {
-      console.error('Error decrypting name:', error);
+      logger.error('Error decrypting name:', error);
     }
 
     return 'New User';

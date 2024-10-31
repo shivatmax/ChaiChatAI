@@ -33,6 +33,7 @@ import { AIFriend } from '../types/AIFriend';
 import { ConversationHistory } from '../types/ConversationHistory';
 import { FriendsMemory } from '../services/MessageRoutingService';
 import { storageWithExpiry } from '../utils/localStorage';
+import { logger } from '../utils/logger';
 
 interface Message {
   sender: string;
@@ -111,7 +112,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
         .limit(limit);
 
       if (error) {
-        console.error('Error fetching conversations from Supabase:', error);
+        logger.error('Error fetching conversations from Supabase:', error);
         return [];
       }
 
@@ -274,7 +275,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
         setIsTyping(false);
         setTypingFriend('');
       } catch (error) {
-        console.error('Error in handleSendMessage:', error);
+        logger.error('Error in handleSendMessage:', error);
         toast({
           title: 'Error',
           description: 'Failed to send message. Please try again.',
@@ -292,7 +293,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
       toast,
     ]);
 
-    console.log('user', user);
     const memoizedMessageList = useMemo(
       () => <MessageList messages={messages} user={user} />,
       [messages, user]

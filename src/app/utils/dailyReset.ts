@@ -11,6 +11,6 @@ export const resetTodaysSummary = async (): Promise<void> => {
       throw error;
     }
   } catch (error) {
-    console.error('Error resetting todaysSummary:', error);
+    logger.error('Error resetting todaysSummary:', error);
   }
 };
