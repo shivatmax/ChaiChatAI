@@ -70,12 +70,13 @@ export const generateAIResponse = async (
   webContent?: string
 ): Promise<string> => {
   // Fetch additional conversations from Supabase if needed
-  if (lastConversations.length < 20) {
+
+  if (lastConversations.length < 6) {
     const additionalConversations = await fetchConversationsFromSupabase(
       conversationId,
-      20
+      6
     );
-    lastConversations = [...additionalConversations].slice(-20);
+    lastConversations = [...additionalConversations].slice(-6);
   }
 
   const { descriptionString, sessionType } =
