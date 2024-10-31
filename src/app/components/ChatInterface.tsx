@@ -31,9 +31,9 @@ import {
 import { supabase } from '../integrations/supabase/supabase';
 import { AIFriend } from '../types/AIFriend';
 import { ConversationHistory } from '../types/ConversationHistory';
-import { FriendsMemory } from '../services/MessageRoutingService';
-import { storageWithExpiry } from '../utils/localStorage';
 import { logger } from '../utils/logger';
+import { storageWithExpiry } from '../utils/localStorage';
+import { FriendsMemory } from '../services/MessageRoutingService';
 
 interface Message {
   sender: string;
@@ -64,27 +64,43 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
     const { toast } = useToast();
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const isInitialLoad = useRef(true);
 
     const scrollToBottom = useCallback(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, []);
 
     useEffect(() => {
-      if (conversationHistories && selectedSession) {
+      if (conversationHistories && selectedSession && isInitialLoad.current) {
         const sessionMessages = conversationHistories.filter(
           (history: ConversationHistory) =>
             history.conversation_id === selectedSession
         );
         const formattedMessages = sessionMessages
-          .map((history: ConversationHistory) => ({
-            sender: history.sender,
-            content: history.message,
-            timestamp: new Date(history.created_at),
-          }))
+          .flatMap((history: ConversationHistory) => {
+            if (history.sender === user?.name) {
+              return [
+                {
+                  sender: history.sender,
+                  content: history.message,
+                  timestamp: new Date(history.created_at),
+                },
+              ];
+            } else {
+              const sentences = history.message.split(/(?<=[.!?])\s+/);
+              return sentences.map((sentence) => ({
+                sender: history.sender,
+                content: sentence,
+                timestamp: new Date(history.created_at),
+              }));
+            }
+          })
           .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+
         setMessages(formattedMessages);
+        isInitialLoad.current = false;
       }
-    }, [conversationHistories, selectedSession]);
+    }, [conversationHistories, selectedSession, user?.name]);
 
     useEffect(() => {
       if (messages.length > 0) {
@@ -95,6 +111,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
     useEffect(() => {
       return () => {
         if (timeoutRef.current) {
+          // eslint-disable-next-line react-hooks/exhaustive-deps
           clearTimeout(timeoutRef.current);
         }
       };
@@ -119,6 +136,18 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
       return data.map((entry) => `${entry.sender}: ${entry.message}`).reverse();
     };
 
+    const addMessageWithDelay = async (message: Message) => {
+      return new Promise<void>((resolve) => {
+        setTimeout(
+          () => {
+            setMessages((prevMessages) => [...prevMessages, message]);
+            resolve();
+          },
+          Math.random() * 1000 + 1000
+        );
+      });
+    };
+
     const handleSendMessage = useCallback(async () => {
       if (inputMessage.trim() === '') return;
       const sanitizedMessage = sanitizeInput(inputMessage);
@@ -140,6 +169,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
 
       setMessages((prevMessages) => [...prevMessages, newMessage]);
       setInputMessage('');
+      setIsTyping(true); // Set typing state immediately after sending message
+
       try {
         if (!aiFriends || aiFriends.length === 0) {
           throw new Error('No AI friends found');
@@ -153,13 +184,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
           conversation_id: selectedSession || '',
         });
 
-        // Add the user's message to the conversation storage
         addConversation(
           selectedSession || '',
           `${user.name}: ${sanitizedMessage}`
         );
 
-        setIsTyping(true);
         const friendsSummary = await generateFriendsSummary(aiFriends, user);
         const lastConversationsForRoute = getLastConversations(
           selectedSession || ''
@@ -199,75 +228,60 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
               webContent
             );
 
+            await addConversationHistory.mutateAsync({
+              user_id: user.id,
+              ai_friend_id: aiFriend.id,
+              message: aiResponse,
+              sender: aiFriend.name,
+              conversation_id: selectedSession || '',
+            });
+
+            addConversation(
+              selectedSession || '',
+              `${aiFriend.name}: ${aiResponse}`
+            );
+
             const sentences = aiResponse.split(/(?<=[.!?])\s+/);
             for (const sentence of sentences) {
-              await new Promise<void>((resolve) => {
-                timeoutRef.current = setTimeout(
-                  () => {
-                    const aiMessage: Message = {
-                      sender: aiFriend.name,
-                      content: sentence,
-                      timestamp: new Date(),
-                      mode: mode,
-                      webContent: webContent,
-                    };
-                    setMessages((prevMessages) => [...prevMessages, aiMessage]);
-                    resolve();
-                  },
-                  Math.random() * 2000 + 1000
-                );
-              });
-
-              await addConversationHistory.mutateAsync({
-                user_id: user.id,
-                ai_friend_id: aiFriend.id,
-                message: sentence,
+              await addMessageWithDelay({
                 sender: aiFriend.name,
-                conversation_id: selectedSession || '',
+                content: sentence,
+                timestamp: new Date(),
+                mode,
+                webContent,
               });
+            }
 
-              // Add the AI's response to the conversation storage
-              addConversation(
-                selectedSession || '',
-                `${aiFriend.name}: ${sentence}`
-              );
+            const todaysSummaryDone = storageWithExpiry.getItem(
+              `todays_summarys_${user.id}`
+            );
 
-              // Check localStorage first
-              const todaysSummaryDone = storageWithExpiry.getItem(
-                `todays_summarys_${user.id}`
-              );
+            if (!todaysSummaryDone) {
+              const { data: userData } = await supabase
+                .from('User')
+                .select('todaysSummary')
+                .eq('id', user.id)
+                .single();
 
-              if (!todaysSummaryDone) {
-                // Only check database if not in localStorage
-                const { data: userData } = await supabase
+              if (userData && !userData.todaysSummary) {
+                await FriendsMemory(
+                  aiFriends || [],
+                  user.id,
+                  selectedSession || '',
+                  await generateFriendsSummary(aiFriends, user),
+                  fetchConversationsFromSupabase
+                );
+
+                await supabase
                   .from('User')
-                  .select('todaysSummary')
-                  .eq('id', user.id)
-                  .single();
+                  .update({ todaysSummary: true })
+                  .eq('id', user.id);
 
-                if (userData && !userData.todaysSummary) {
-                  // Run FriendsMemory
-                  await FriendsMemory(
-                    aiFriends || [],
-                    user.id,
-                    selectedSession || '',
-                    await generateFriendsSummary(aiFriends, user),
-                    fetchConversationsFromSupabase
-                  );
-
-                  // Update todaysSummary in database
-                  await supabase
-                    .from('User')
-                    .update({ todaysSummary: true })
-                    .eq('id', user.id);
-
-                  // Store in localStorage with 1 hour expiry
-                  storageWithExpiry.setItem(
-                    `todaysSummary_${user.id}`,
-                    true,
-                    3600000
-                  );
-                }
+                storageWithExpiry.setItem(
+                  `todaysSummary_${user.id}`,
+                  true,
+                  3600000
+                );
               }
             }
           }
