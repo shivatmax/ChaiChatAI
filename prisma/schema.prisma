@@ -9,8 +9,14 @@ datasource db {
 
 model User {
   id                   String                @id @default(uuid())
-  name                 String
-  email                String                @unique
+  encrypted_name       String
+  encrypted_email      String
+  email_hash           String                @unique
+  encryption_salt      String
+  encryption_key       String
+  iv                   String
+  tag                  String
+  name                 String                @default("New_User")
   about                String
   persona              String
   knowledge_base       String

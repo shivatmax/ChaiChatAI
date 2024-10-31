@@ -7,9 +7,17 @@ import { supabase } from '../integrations/supabase/supabase';
 import { v4 as uuidv4 } from 'uuid';
 import { motion } from 'framer-motion';
 import { FaUserAstronaut } from 'react-icons/fa';
-import { rateLimiter } from '../utils/rateLimiter';
+// import { rateLimiter } from '../utils/rateLimiter';
 import { sanitizeInput } from '../utils/sanitize';
 import { validateEmail } from '../utils/email_valid';
+import {
+  generateSalt,
+  hashEmail,
+  encrypt,
+  decrypt,
+  generateEncryptionKey,
+} from '../utils/encryption';
+import { handleAuthError } from '../utils/errorHandling';
 
 interface AuthFormProps {
   onAuthSuccess: () => void;
@@ -29,69 +37,82 @@ const AuthForm: React.FC<AuthFormProps> = ({
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    const sanitizedUsername = sanitizeInput(username);
-    const sanitizedEmail = sanitizeInput(email);
+    const sanitizedUsername = sanitizeInput(username.trim());
+    const sanitizedEmail = sanitizeInput(email.toLowerCase().trim());
+
+    if (!sanitizedUsername || !sanitizedEmail) {
+      setLoginError('Please fill in all fields');
+      return;
+    }
 
     if (!(await validateEmail(sanitizedEmail))) {
-      console.log('Invalid email address. Please enter a valid email.');
-      setLoginError('Invalid email address. Please enter a valid email.');
+      setLoginError('Invalid email address');
       return;
     }
 
     setIsLoading(true);
     setLoginError(null);
 
-    const ipAddress = await fetch('https://api.ipify.org?format=json')
-      .then((response) => response.json())
-      .then((data) => data.ip);
-
-    if (!rateLimiter.attempt(`${ipAddress}:${sanitizedEmail}`)) {
-      setLoginError('Too many login attempts. Please try again later.');
-      setIsLoading(false);
-      return;
-    }
-
-    // // Validate email
-    // const isEmailValid = await validateEmail(sanitizedEmail);
-    // if (!isEmailValid) {
-    //   setLoginError('Invalid email address. Please enter a valid email.');
-    //   setIsLoading(false);
-    //   return;
-    // }
-
     try {
-      const { data: existingUser, error: fetchError } = await supabase
+      // Generate encryption materials
+      const salt = generateSalt();
+      const emailHash = hashEmail(sanitizedEmail);
+      const encryptionKey = generateEncryptionKey(
+        sanitizedEmail + sanitizedUsername,
+        salt
+      );
+
+      // Check for existing user first
+      const { data: existingUser } = await supabase
         .from('User')
         .select('*')
-        .eq('email', sanitizedEmail)
+        .eq('email_hash', emailHash)
         .single();
-
-      if (fetchError && fetchError.code !== 'PGRST116') {
-        throw fetchError;
-      }
 
       let userId;
 
       if (existingUser) {
-        if (existingUser.name !== sanitizedUsername) {
-          setLoginError('Username does not match the existing email.');
+        try {
+          // Verify existing user
+          const storedKey = generateEncryptionKey(
+            sanitizedEmail + sanitizedUsername,
+            existingUser.encryption_salt
+          );
+
+          const decryptedUsername = decrypt(
+            existingUser.encrypted_name,
+            storedKey,
+            existingUser.iv,
+            existingUser.tag
+          );
+
+          if (decryptedUsername !== sanitizedUsername) {
+            throw new Error('Invalid credentials');
+          }
+
+          userId = existingUser.id;
+        } catch (error) {
+          console.error('Decryption error:', error);
+          setLoginError('Invalid username or email combination');
           return;
         }
-        userId = existingUser.id;
-      } else if (!(await validateEmail(sanitizedEmail))) {
-        setLoginError('Invalid email address. Please enter a valid email.');
-        return;
       } else {
         // Create new user
+        const encryptedEmail = encrypt(sanitizedEmail, encryptionKey);
+        const encryptedUsername = encrypt(sanitizedUsername, encryptionKey);
+
         const newUser = {
           id: uuidv4(),
-          name: sanitizedUsername,
-          email: sanitizedEmail,
-          persona: 'Enthusiastic and Funny, loves to chat and like ice cream',
-          about: '21 year old, loves to eat and play games',
-          knowledge_base:
-            'Knows a lot about AI, loves to talk about it and learn new things',
-          avatar_url: null, // Placeholder for future avatar implementation
+          encrypted_name: encryptedUsername.encryptedData,
+          encrypted_email: encryptedEmail.encryptedData,
+          email_hash: emailHash,
+          encryption_salt: salt,
+          encryption_key: encryptionKey.toString('hex'),
+          iv: encryptedEmail.iv,
+          tag: encryptedEmail.tag,
+          persona: 'Enthusiastic and Friendly',
+          about: 'New user',
+          knowledge_base: 'Basic knowledge',
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         };
@@ -102,9 +123,14 @@ const AuthForm: React.FC<AuthFormProps> = ({
           .select()
           .single();
 
-        if (insertError) throw insertError;
+        if (insertError) {
+          if (insertError.code === '23505') {
+            throw new Error('Email already in use');
+          }
+          throw insertError;
+        }
+
         userId = insertedUser.id;
-        // console.log('New user created:', userId);
       }
 
       localStorage.setItem('userId', userId);
@@ -116,10 +142,8 @@ const AuthForm: React.FC<AuthFormProps> = ({
       onAuthSuccess();
       navigate('/');
     } catch (error) {
-      console.error('Error during authentication:', error);
-      setLoginError(
-        'An error occurred during authentication. Please try again.'
-      );
+      const errorMessage = handleAuthError(error);
+      setLoginError(errorMessage);
     } finally {
       setIsLoading(false);
     }

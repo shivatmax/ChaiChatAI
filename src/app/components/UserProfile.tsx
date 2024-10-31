@@ -31,6 +31,7 @@ import Image from 'next/image';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs';
 import { Label } from './ui/label';
 import { imageGen } from '../utils/models';
+import { decrypt } from '../utils/encryption';
 
 interface UserProfileProps {
   user: User | null;
@@ -76,7 +77,14 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value.slice(0, 12);
-    setEditedUser((prev) => (prev ? { ...prev, name: newName } : null));
+    setEditedUser((prev) =>
+      prev
+        ? {
+            ...prev,
+            name: newName || 'New User',
+          }
+        : null
+    );
   };
 
   const handleAvatarUpload = async (
@@ -146,39 +154,62 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
       : name;
   };
 
+  const getDisplayName = () => {
+    if (!user) return '?';
+
+    // First try to get name
+    if (user.name) {
+      return user.name;
+    }
+
+    // Fallback to decrypted name
+    try {
+      if (user.encrypted_name) {
+        const key = Buffer.from(user.encryption_key, 'hex');
+        const decryptedName = decrypt(
+          user.encrypted_name,
+          key,
+          user.iv,
+          user.tag
+        );
+        return decryptedName;
+      }
+    } catch (error) {
+      console.error('Error decrypting name:', error);
+    }
+
+    return 'New User';
+  };
+
   if (!user) return null;
 
   return (
-    <div className="bg-comic-yellow comic-bg p-4 rounded-lg comic-border comic-shadow max-h-screen overflow-y-auto">
+    <div className="bg-comic-yellow comic-bg p-4 rounded-lg comic-border comic-shadow max-h-screen overflow-y-hidden">
       <div className="flex flex-col items-center mb-3 relative">
-        <div className="relative">
-          <Avatar className="w-20 h-20 mb-3 ring-3 ring-comic-purple">
-            <AvatarImage
-              src={currentAvatar}
-              alt={user.name}
-              onError={(e) => {
-                console.error('Error loading avatar image:', e);
-                e.currentTarget.src = '/path/to/fallback/image.png';
-              }}
-            />
+        <div className="relative group">
+          <Avatar
+            onClick={() => setIsAvatarDialogOpen(true)}
+            className="cursor-pointer hover:opacity-80 transition-opacity duration-200 w-24 h-24"
+          >
+            <AvatarImage src={currentAvatar} />
             <AvatarFallback className="bg-comic-blue text-white text-2xl font-bold">
-              {user.name.charAt(0)}
+              {getDisplayName().charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <Button
             variant="outline"
             size="sm"
-            className="absolute bottom-0 right-0 rounded-full bg-comic-blue"
+            className="absolute -bottom-2 -right-2 rounded-full bg-comic-blue hover:bg-comic-purple transition-colors duration-200"
             onClick={() => setIsAvatarDialogOpen(true)}
           >
             <Camera className="h-4 w-4" />
           </Button>
         </div>
-        <h2 className="text-2xl font-bold text-comic-purple mb-1">
-          {truncateName(user.name, 12)}
+        <h2 className="text-2xl font-bold text-comic-purple mb-1 mt-3">
+          {truncateName(getDisplayName(), 12)}
         </h2>
         <p className="text-base text-comic-darkblue text-center mb-3 font-medium">
-          {user.persona.slice(0, 80)}...
+          {user.persona.slice(0, 50)}...
         </p>
         <GlowingComponent isGlowing={isGlowing}>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>

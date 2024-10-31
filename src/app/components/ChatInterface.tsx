@@ -292,6 +292,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
       toast,
     ]);
 
+    console.log('user', user);
     const memoizedMessageList = useMemo(
       () => <MessageList messages={messages} user={user} />,
       [messages, user]

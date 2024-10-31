@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Index from './pages/Index';
 import AuthPage from './components/AuthPage';
 import LoadingScreen from './components/LoadingScreen';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 const queryClient = new QueryClient();
 
@@ -36,22 +37,24 @@ export default function Home() {
 
   return (
     <React.StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          {isAuthenticated ? (
-            <Index
-              onLogout={() => setIsAuthenticated(false)}
-              onNavigate={handleNavigate}
-            />
-          ) : (
-            <AuthPage
-              onAuthSuccess={() => setIsAuthenticated(true)}
-              onNavigate={handleNavigate}
-            />
-          )}
-        </TooltipProvider>
-      </QueryClientProvider>
+      <ErrorBoundary>
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <Toaster />
+            {isAuthenticated ? (
+              <Index
+                onLogout={() => setIsAuthenticated(false)}
+                onNavigate={handleNavigate}
+              />
+            ) : (
+              <AuthPage
+                onAuthSuccess={() => setIsAuthenticated(true)}
+                onNavigate={handleNavigate}
+              />
+            )}
+          </TooltipProvider>
+        </QueryClientProvider>
+      </ErrorBoundary>
     </React.StrictMode>
   );
 }

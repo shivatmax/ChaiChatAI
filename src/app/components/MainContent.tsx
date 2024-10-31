@@ -16,6 +16,7 @@ import FirstTimeUserExperience from './FirstTimeUserExperience';
 import { useAIFriends } from '../integrations/supabase/hooks/useAIFriend';
 import GlowingComponent from './GlowingComponent';
 import { useQueryClient } from '@tanstack/react-query';
+import { handleError } from '../utils/errorHandling';
 
 const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
   user,
@@ -46,7 +47,7 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
           setSelectedSession(latestSession.id);
         }
       } catch (error) {
-        console.error('Error fetching latest session:', error);
+        handleError(error, 'fetchLatestSession');
       }
     };
 
@@ -99,16 +100,16 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className=''
+      className=""
     >
-      <div className='max-w-7xl mx-auto px-2 sm:px-4 lg:px-4 py-2 '>
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-4 py-2 ">
         <motion.div
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ type: 'spring', stiffness: 100 }}
-          className='bg-white rounded-lg comic-border comic-shadow overflow-hidden'
+          className="bg-white rounded-lg comic-border comic-shadow overflow-hidden"
         >
-          <div className='flex h-[calc(100vh-6rem)]'>
+          <div className="flex h-[calc(100vh-6rem)]">
             {/* Left Sidebar */}
             <AnimatePresence>
               {(desktopLeftPanelOpen || window.innerWidth >= 1280) && (
@@ -117,33 +118,33 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
                   animate={{ x: 0, opacity: 1 }}
                   exit={{ x: -300, opacity: 0 }}
                   transition={{ type: 'spring', stiffness: 100 }}
-                  className='hidden lg:block w-full lg:w-1/4 bg-comic-blue border-r-4 border-black'
+                  className="hidden lg:block w-full lg:w-1/4 bg-comic-blue border-r-4 border-black"
                 >
-                  <div className='h-full flex flex-col'>
+                  <div className="h-full flex flex-col">
                     <UserProfile
                       user={user}
                       isGlowing={glowingComponent === 'userProfile'}
                     />
-                    <div className='flex-grow overflow-hidden flex flex-col'>
-                      <h2 className='text-2xl font-bold mb-1 text-black border-b-4 border-black pb-1 px-2 sticky top-0 bg-comic-blue z-10'>
+                    <div className="flex-grow overflow-hidden flex flex-col">
+                      <h2 className="text-2xl font-bold mb-1 text-black border-b-4 border-black pb-1 px-2 sticky top-0 bg-comic-blue z-10">
                         Friends
                       </h2>
-                      <div className='overflow-y-auto flex-grow'>
+                      <div className="overflow-y-hidden flex-grow">
                         <AIFriendList
                           onSelectFriend={setSelectedFriend}
                           userId={user.id}
                         />
                       </div>
                     </div>
-                    <div className='p-2 space-y-1'>
+                    <div className="p-2 space-y-1">
                       <GlowingComponent
                         isGlowing={glowingComponent === 'createAIFriend'}
                       >
                         <Button
                           onClick={() => setIsAIFriendCreatorOpen(true)}
-                          className='w-full bg-comic-red hover:bg-comic-purple text-white text-lg py-2 comic-border comic-shadow transition-transform transform hover:scale-105'
+                          className="w-full bg-comic-red hover:bg-comic-purple text-white text-lg py-2 comic-border comic-shadow transition-transform transform hover:scale-105"
                         >
-                          <Plus className='mr-1 h-5 w-5' /> Create AI Friend
+                          <Plus className="mr-1 h-5 w-5" /> Create AI Friend
                         </Button>
                       </GlowingComponent>
                       <GlowingComponent
@@ -151,7 +152,7 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
                       >
                         <Button
                           onClick={() => setIsCreateSessionDialogOpen(true)}
-                          className='w-full bg-comic-green hover:bg-comic-yellow text-black text-lg py-2 comic-border comic-shadow transition-transform transform hover:scale-105'
+                          className="w-full bg-comic-green hover:bg-comic-yellow text-black text-lg py-2 comic-border comic-shadow transition-transform transform hover:scale-105"
                         >
                           Create Session
                         </Button>
@@ -167,27 +168,27 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.3 }}
-              className='flex-grow flex flex-col w-full lg:w-1/2 bg-white'
+              className="flex-grow flex flex-col w-full lg:w-1/2 bg-white"
             >
-              <div className='flex justify-between p-1 bg-comic-purple border-b-4 border-black lg:hidden'>
+              <div className="flex justify-between p-1 bg-comic-purple border-b-4 border-black lg:hidden">
                 <Button
                   onClick={toggleMobileLeftPanel}
-                  variant='outline'
-                  size='icon'
-                  className='comic-border comic-shadow'
+                  variant="outline"
+                  size="icon"
+                  className="comic-border comic-shadow"
                 >
-                  <Menu className='h-6 w-6' />
+                  <Menu className="h-6 w-6" />
                 </Button>
                 <Button
                   onClick={toggleMobileRightPanel}
-                  variant='outline'
-                  size='icon'
-                  className='comic-border comic-shadow'
+                  variant="outline"
+                  size="icon"
+                  className="comic-border comic-shadow"
                 >
-                  <Menu className='h-6 w-6' />
+                  <Menu className="h-6 w-6" />
                 </Button>
               </div>
-              <div className='overflow-hidden'>
+              <div className="overflow-hidden">
                 <ChatInterface
                   selectedSession={selectedSession}
                   onSelectSession={handleSelectSession}
@@ -205,14 +206,14 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
                   animate={{ x: 0, opacity: 1 }}
                   exit={{ x: 300, opacity: 0 }}
                   transition={{ type: 'spring', stiffness: 100 }}
-                  className='hidden lg:block w-full lg:w-1/4 bg-comic-green border-l-4 border-black'
+                  className="hidden lg:block w-full lg:w-1/4 bg-comic-green border-l-4 border-black"
                 >
-                  <div className='h-[calc(100vh-8rem)] p-1 flex flex-col'>
-                    <div className='flex-grow overflow-hidden'>
+                  <div className="h-[calc(100vh-8rem)] p-1 flex flex-col">
+                    <div className="flex-grow overflow-hidden">
                       <GlowingComponent
                         isGlowing={glowingComponent === 'conversationInsights'}
                       >
-                        <div className='h-full overflow-auto'>
+                        <div className="h-full overflow-auto">
                           <ConversationInsights
                             userId={user.id}
                             aiFriendId={selectedFriend?.id || ''}
@@ -221,7 +222,7 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
                         </div>
                       </GlowingComponent>
                     </div>
-                    <div className='mt-1'>
+                    <div className="mt-1">
                       <LogoutButton onLogout={onLogout} />
                     </div>
                   </div>
@@ -237,12 +238,12 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
                   animate={{ x: 0 }}
                   exit={{ x: '-100%' }}
                   transition={{ type: 'spring', stiffness: 100 }}
-                  className='lg:hidden fixed inset-y-0 left-0 z-50 w-full sm:w-80 bg-comic-blue'
+                  className="lg:hidden fixed inset-y-0 left-0 z-50 w-full sm:w-80 bg-comic-blue"
                 >
-                  <div className='h-full overflow-y-auto p-4 flex flex-col'>
+                  <div className="h-full overflow-y-auto p-4 flex flex-col">
                     <button
                       onClick={toggleMobileLeftPanel}
-                      className='absolute top-4 right-4 p-2 rounded-full bg-comic-red text-white hover:bg-comic-purple transition-colors duration-200 comic-border comic-shadow'
+                      className="absolute top-4 right-4 p-2 rounded-full bg-comic-red text-white hover:bg-comic-purple transition-colors duration-200 comic-border comic-shadow"
                     >
                       <X size={15} />
                     </button>
@@ -254,16 +255,16 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
                       onSelectFriend={setSelectedFriend}
                       userId={user.id}
                     />
-                    <div className='mt-auto'>
+                    <div className="mt-auto">
                       <Button
                         onClick={() => setIsAIFriendCreatorOpen(true)}
-                        className='mb-2 w-full bg-comic-red hover:bg-comic-purple text-white text-lg py-2 comic-border comic-shadow transition-transform transform hover:scale-105'
+                        className="mb-2 w-full bg-comic-red hover:bg-comic-purple text-white text-lg py-2 comic-border comic-shadow transition-transform transform hover:scale-105"
                       >
-                        <Plus className='mr-2 h-5 w-5' /> Create AI Friend
+                        <Plus className="mr-2 h-5 w-5" /> Create AI Friend
                       </Button>
                       <Button
                         onClick={() => setIsCreateSessionDialogOpen(true)}
-                        className='w-full bg-comic-green hover:bg-comic-yellow text-black text-lg py-2 comic-border comic-shadow transition-transform transform hover:scale-105'
+                        className="w-full bg-comic-green hover:bg-comic-yellow text-black text-lg py-2 comic-border comic-shadow transition-transform transform hover:scale-105"
                       >
                         Create Session
                       </Button>
@@ -281,12 +282,12 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
                   animate={{ x: 0 }}
                   exit={{ x: '100%' }}
                   transition={{ type: 'spring', stiffness: 100 }}
-                  className='lg:hidden fixed inset-y-0 right-0 z-50 w-full sm:w-80 bg-comic-green'
+                  className="lg:hidden fixed inset-y-0 right-0 z-50 w-full sm:w-80 bg-comic-green"
                 >
-                  <div className='h-[calc(100vh-8rem)] p-4'>
+                  <div className="h-[calc(100vh-8rem)] p-4">
                     <button
                       onClick={toggleMobileRightPanel}
-                      className='absolute top-2 left-2 p-2 rounded-full bg-comic-red text-white hover:bg-comic-purple comic-border comic-shadow'
+                      className="absolute top-2 left-2 p-2 rounded-full bg-comic-red text-white hover:bg-comic-purple comic-border comic-shadow"
                     >
                       <X size={15} />
                     </button>
@@ -333,33 +334,33 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
       />
 
       <motion.div
-        className='fixed bottom-4 left-4 z-50'
+        className="fixed bottom-4 left-4 z-50"
         animate={{
           rotate: [0, 10, -10, 10, 0],
           transition: { repeat: Infinity, duration: 5 },
         }}
       >
-        <Sparkles className='text-comic-yellow text-4xl' />
+        <Sparkles className="text-comic-yellow text-4xl" />
       </motion.div>
 
       <motion.div
-        className='fixed top-4 left-4 z-50'
+        className="fixed top-4 left-4 z-50"
         animate={{
           scale: [1, 1.2, 1],
           transition: { repeat: Infinity, duration: 2 },
         }}
       >
-        <Star className='text-comic-red text-4xl' />
+        <Star className="text-comic-red text-4xl" />
       </motion.div>
 
       <motion.div
-        className='fixed top-4 right-4 z-50'
+        className="fixed top-4 right-4 z-50"
         animate={{
           y: [0, -10, 0],
           transition: { repeat: Infinity, duration: 3, ease: 'easeInOut' },
         }}
       >
-        <Coffee className='text-comic-green text-4xl' />
+        <Coffee className="text-comic-green text-4xl" />
       </motion.div>
     </motion.div>
   );

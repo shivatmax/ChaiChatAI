@@ -42,12 +42,20 @@ export interface UserKnowledgeBase {
 export interface User {
   id: string;
   name: string;
+  encrypted_name: string;
+  encrypted_email: string;
+  email_hash: string;
+  encryption_key: string;
+  encryption_salt: string;
+  iv: string;
+  tag: string;
+  email?: string;
+  avatar_url?: string;
   persona: string;
   about: string;
   knowledge_base: string;
-  created_at: string;
-  updated_at: string;
-  avatar_url?: string;
+  created_at: string | Date;
+  updated_at: string | Date;
 }
 
 export enum SessionType {

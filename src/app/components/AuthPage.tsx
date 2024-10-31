@@ -9,8 +9,15 @@ import LoadingScreen from './LoadingScreen';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaRobot, FaUserAstronaut } from 'react-icons/fa';
 import { Sparkles, Zap, Star } from 'lucide-react';
-import { rateLimiter } from '../utils/rateLimiter';
+// import { rateLimiter } from '../utils/rateLimiter';
 import { handleAuthError } from '../utils/errorHandling';
+import {
+  hashEmail,
+  decrypt,
+  encrypt,
+  generateSalt,
+  generateEncryptionKey,
+} from '../utils/encryption';
 
 interface AuthPageProps {
   onAuthSuccess: () => void;
@@ -43,21 +50,14 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess, onNavigate }) => {
     setIsLoading(true);
     setLoginError(null);
 
-    const ipAddress = await fetch('https://api.ipify.org?format=json')
-      .then((response) => response.json())
-      .then((data) => data.ip);
-
-    if (!rateLimiter.attempt(`${ipAddress}:${email}`)) {
-      setLoginError('Too many login attempts. Please try again later.');
-      setIsLoading(false);
-      return;
-    }
-
     try {
+      const sanitizedEmail = email.toLowerCase().trim();
+      const emailHash = hashEmail(sanitizedEmail);
+
       const { data: existingUser, error: fetchError } = await supabase
         .from('User')
         .select('*')
-        .eq('email', email)
+        .eq('email_hash', emailHash)
         .single();
 
       if (fetchError && fetchError.code !== 'PGRST116') {
@@ -67,21 +67,42 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess, onNavigate }) => {
       let userId;
 
       if (existingUser) {
-        if (existingUser.name !== username) {
-          setLoginError('Username does not match the existing email.');
-          return;
+        try {
+          const key = Buffer.from(existingUser.encryption_key, 'hex');
+          const decryptedUsername = decrypt(
+            existingUser.encrypted_name,
+            key,
+            existingUser.iv,
+            existingUser.tag
+          );
+
+          if (decryptedUsername !== username) {
+            setLoginError('Username does not match the existing email.');
+            return;
+          }
+          userId = existingUser.id;
+        } catch (error) {
+          throw new Error('Failed to decrypt user data');
         }
-        userId = existingUser.id;
       } else {
-        // Create new user
+        // Create new user with encryption
+        const salt = generateSalt();
+        const encryptionKey = generateEncryptionKey(email + username, salt);
+        const encryptedEmail = encrypt(sanitizedEmail, encryptionKey);
+        const encryptedUsername = encrypt(username, encryptionKey);
+
         const newUser = {
           id: uuidv4(),
-          name: username,
-          email: email,
+          encrypted_name: encryptedUsername.encryptedData,
+          encrypted_email: encryptedEmail.encryptedData,
+          email_hash: emailHash,
+          encryption_salt: salt,
+          encryption_key: encryptionKey.toString('hex'),
+          iv: encryptedEmail.iv,
+          tag: encryptedEmail.tag,
           persona: 'Energetic and tech-savvy',
           about: '23-year-old guy who loves gaming and coding',
-          knowledge_base:
-            'Extensive knowledge of latest tech trends, video games, and programming languages',
+          knowledge_base: 'Extensive knowledge of latest tech trends',
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         };

@@ -2,10 +2,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../supabase';
 import { User } from '../../../types/SupabaseTypes';
 import { v4 as uuidv4 } from 'uuid';
+import { decrypt } from '../../../utils/encryption';
 
 export const useUser = (id: string) =>
   useQuery({
-    queryKey: ['users', id],
+    queryKey: ['user', id],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('User')
@@ -14,8 +15,28 @@ export const useUser = (id: string) =>
         .single();
 
       if (error) throw new Error(error.message);
-      return data;
+
+      if (data) {
+        try {
+          const key = Buffer.from(data.encryption_key, 'hex');
+          return {
+            ...data,
+            name: data.encrypted_name
+              ? decrypt(data.encrypted_name, key, data.iv, data.tag)
+              : data.name,
+            email: data.encrypted_email
+              ? decrypt(data.encrypted_email, key, data.iv, data.tag)
+              : data.email,
+          };
+        } catch (error) {
+          console.error('Failed to decrypt user data:', error);
+          return data;
+        }
+      }
+      return null;
     },
+    staleTime: 1000 * 60 * 5,
+    retry: 2,
   });
 
 export const useUsers = () =>

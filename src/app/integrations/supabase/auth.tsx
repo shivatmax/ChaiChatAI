@@ -5,6 +5,7 @@ import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { Session } from '@supabase/supabase-js';
 import { v4 as uuidv4 } from 'uuid';
+import { createEncryptedUser } from '@/app/utils/encryption';
 
 const SupabaseAuthContext = createContext<
   | { session: Session | null; loading: boolean; logout: () => Promise<void> }
@@ -43,17 +44,20 @@ export const SupabaseAuthProviderInner = ({
         } else {
           const storedUserId = localStorage.getItem('userId');
           if (!storedUserId) {
-            const { data: newUser, error } = await supabase
+            const encryptedData = createEncryptedUser();
+            const newUser = {
+              id: uuidv4(),
+              ...encryptedData,
+              persona: 'Friendly',
+              about: 'New user',
+              knowledge_base: 'Basic knowledge',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            };
+
+            const { data: insertedUser, error } = await supabase
               .from('User')
-              .insert({
-                id: uuidv4(),
-                name: 'New User',
-                persona: 'Friendly',
-                about: ['chatting'],
-                knowledge_base: 'Basic knowledge',
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-              })
+              .insert(newUser)
               .select()
               .single();
 
@@ -62,8 +66,8 @@ export const SupabaseAuthProviderInner = ({
               throw error;
             }
 
-            if (newUser && newUser.id) {
-              localStorage.setItem('userId', newUser.id);
+            if (insertedUser && insertedUser.id) {
+              localStorage.setItem('userId', insertedUser.id);
             } else {
               throw new Error('Failed to create new user: No data returned');
             }

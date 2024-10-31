@@ -15,6 +15,9 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
     persistSession: true,
   },
   global: {
-    headers: { 'x-my-custom-header': 'my-app-name' },
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
   },
 });

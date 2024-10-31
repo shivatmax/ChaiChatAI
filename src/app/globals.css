@@ -225,6 +225,15 @@
   .url-container::-webkit-scrollbar-thumb {
     @apply bg-blue-400 rounded-full;
   }
+
+  .friends-scroll-area {
+    -ms-overflow-style: none !important; /* IE and Edge */
+    scrollbar-width: none !important; /* Firefox */
+  }
+
+  .friends-scroll-area::-webkit-scrollbar {
+    display: none !important; /* Chrome, Safari and Opera */
+  }
 }
 
 @layer utilities {

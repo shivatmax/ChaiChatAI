@@ -1,7 +1,8 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User } from '../types/User';
+import { User } from '../types/SupabaseTypes';
 import { detectUrls } from '../utils/urlDetector';
+import { decrypt } from '../utils/encryption';
 
 interface Message {
   sender: string;
@@ -11,7 +12,7 @@ interface Message {
 
 interface MessageListProps {
   messages: Message[];
-  user: User | null | undefined;
+  user: User;
 }
 
 const MessageList: React.FC<MessageListProps> = React.memo(
@@ -39,6 +40,34 @@ const MessageList: React.FC<MessageListProps> = React.memo(
       return <span dangerouslySetInnerHTML={{ __html: renderedContent }} />;
     };
 
+    const getDisplayName = (user: User) => {
+      console.log('user', user);
+      if (!user) return 'You';
+
+      // First try to get name
+      if (user.name) {
+        return user.name;
+      }
+
+      // Fallback to decrypted name
+      try {
+        if (user.encrypted_name && user.encryption_key && user.iv && user.tag) {
+          const key = Buffer.from(user.encryption_key, 'hex');
+          const decryptedName = decrypt(
+            user.encrypted_name,
+            key,
+            user.iv,
+            user.tag
+          );
+          return decryptedName;
+        }
+      } catch (error) {
+        console.error('Error decrypting name:', error);
+      }
+
+      return 'Unknown User';
+    };
+
     return (
       <AnimatePresence>
         {messages.map((message, index) => (
@@ -49,13 +78,15 @@ const MessageList: React.FC<MessageListProps> = React.memo(
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
             className={`flex ${
-              message.sender === user?.name ? 'justify-end' : 'justify-start'
+              message.sender === getDisplayName(user)
+                ? 'justify-end'
+                : 'justify-start'
             } mb-1 sm:mb-2`}
           >
             <motion.div
               whileHover={{ scale: 1.02 }}
               className={`max-w-[90%] p-1 sm:p-2 rounded-lg sm:rounded-xl comic-border comic-shadow ${
-                message.sender === user?.name
+                message.sender === getDisplayName(user)
                   ? 'bg-comic-blue text-white'
                   : 'bg-white text-black'
               }`}

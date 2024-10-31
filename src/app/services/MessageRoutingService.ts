@@ -1,5 +1,5 @@
 import { AIFriend } from '../types/AIFriend';
-import { User } from '../types/User';
+import { User } from '../types/SupabaseTypes';
 interface RouterData {
   user: Partial<User>;
   activeFriends: Partial<AIFriend>[];
