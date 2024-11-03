@@ -1,4 +1,5 @@
 import { supabase } from '../integrations/supabase/supabase';
+import { logger } from './logger';
 
 export const resetTodaysSummary = async (): Promise<void> => {
   try {
