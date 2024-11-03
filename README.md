@@ -2,7 +2,6 @@
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Version](https://img.shields.io/badge/version-1.0.0-green.svg)
-![Social](https://img.shields.io/twitter/follow/yourhandle?style=social)
 
 ChitChat AI is an open-source interactive chat application that allows users to create and converse with AI friends. It's built with Next.js, React, and Supabase, offering a fun and engaging way to explore AI-powered conversations. 🤖💬
 ![UI](https://github.com/shivatmax/ChaiChatAI/blob/main/Screenshot%202024-11-03%20224753.png)
