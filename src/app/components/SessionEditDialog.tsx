@@ -10,6 +10,8 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { Session, SessionType } from '../types/Session';
+import { motion } from 'framer-motion';
+import { Sparkles } from 'lucide-react';
 
 interface SessionEditDialogProps {
   isOpen: boolean;
@@ -72,148 +74,158 @@ const SessionEditDialog: React.FC<SessionEditDialogProps> = ({
   if (!session) return null;
 
   return (
-    <Dialog
-      open={isOpen}
-      onOpenChange={onClose}
-    >
-      <DialogContent className='sm:max-w-[425px] bg-comic-yellow comic-bg rounded-xl comic-border comic-shadow'>
-        <DialogHeader>
-          <DialogTitle className='text-4xl font-bold text-comic-purple'>
-            Edit Session
-          </DialogTitle>
-        </DialogHeader>
-        <form
-          onSubmit={handleSubmit}
-          className='space-y-6'
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[525px] max-w-[90%] w-full bg-gradient-to-br from-blue-100/90 to-white/90 backdrop-blur-xl border border-blue-200 rounded-2xl shadow-2xl">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
         >
-          <div className='space-y-4'>
-            <div>
-              <label
-                htmlFor='title'
-                className='block text-xl font-medium text-comic-darkblue'
+          <DialogHeader className="relative">
+            <DialogTitle className="text-xl sm:text-2xl font-bold text-blue-900 text-center pb-4">
+              Edit Session
+              <motion.div
+                className="absolute -top-1 -right-1"
+                animate={{
+                  rotate: [0, 15, -15, 15, 0],
+                  scale: [1, 1.2, 1, 1.2, 1],
+                }}
+                transition={{ repeat: Infinity, duration: 3 }}
               >
-                Title
-              </label>
-              <Input
-                id='title'
-                name='title'
-                value={sessionData.title}
-                onChange={(e) =>
-                  setSessionData({ ...sessionData, title: e.target.value })
-                }
-                required
-                className='mt-1 text-xl p-4 comic-border comic-shadow'
-              />
-            </div>
-            {session.session_type === SessionType.General && (
+                <Sparkles className="h-6 w-6 text-blue-400" />
+              </motion.div>
+            </DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+            <div className="space-y-4">
               <div>
                 <label
-                  htmlFor='description'
-                  className='block text-xl font-medium text-comic-darkblue'
+                  htmlFor="title"
+                  className="block text-sm sm:text-base font-medium text-blue-900 mb-2"
                 >
-                  Description
+                  Title
                 </label>
-                <Textarea
-                  id='description'
-                  name='description'
-                  value={sessionData.description}
+                <Input
+                  id="title"
+                  name="title"
+                  value={sessionData.title}
                   onChange={(e) =>
-                    setSessionData({
-                      ...sessionData,
-                      description: e.target.value,
-                    })
+                    setSessionData({ ...sessionData, title: e.target.value })
                   }
-                  rows={3}
-                  className='mt-1 text-xl p-4 comic-border comic-shadow'
+                  required
+                  className="bg-white/80 border-blue-200 text-blue-900 placeholder:text-blue-400 focus:border-blue-400 focus:ring-blue-400"
                 />
               </div>
-            )}
-            {session.session_type === SessionType.StoryMode && (
-              <div>
-                <label
-                  htmlFor='characters_and_relationships'
-                  className='block text-xl font-medium text-comic-darkblue'
-                >
-                  Characters and Relationships
-                </label>
-                <Textarea
-                  id='characters_and_relationships'
-                  name='characters_and_relationships'
-                  value={sessionData.charactersAndRelationships}
-                  onChange={(e) =>
-                    setSessionData({
-                      ...sessionData,
-                      charactersAndRelationships: e.target.value,
-                    })
-                  }
-                  rows={3}
-                  className='mt-1 text-xl p-4 comic-border comic-shadow'
-                />
-              </div>
-            )}
-            {session.session_type === SessionType.ResearchCreateMode && (
-              <>
+              {session.session_type === SessionType.General && (
                 <div>
                   <label
-                    htmlFor='team_members'
-                    className='block text-xl font-medium text-comic-darkblue'
+                    htmlFor="description"
+                    className="block text-sm sm:text-base font-medium text-blue-900 mb-2"
                   >
-                    Team Members
-                  </label>
-                  <Input
-                    id='team_members'
-                    name='team_members'
-                    value={sessionData.teamMembers}
-                    onChange={(e) =>
-                      setSessionData({
-                        ...sessionData,
-                        teamMembers: e.target.value,
-                      })
-                    }
-                    className='mt-1 text-xl p-4 comic-border comic-shadow'
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor='project_description'
-                    className='block text-xl font-medium text-comic-darkblue'
-                  >
-                    Project Description
+                    Description
                   </label>
                   <Textarea
-                    id='project_description'
-                    name='project_description'
-                    value={sessionData.projectDescription}
+                    id="description"
+                    name="description"
+                    value={sessionData.description}
                     onChange={(e) =>
                       setSessionData({
                         ...sessionData,
-                        projectDescription: e.target.value,
+                        description: e.target.value,
                       })
                     }
                     rows={3}
-                    className='mt-1 text-xl p-4 comic-border comic-shadow'
+                    className="bg-white/80 border-blue-200 text-blue-900 placeholder:text-blue-400 focus:border-blue-400 focus:ring-blue-400"
                   />
                 </div>
-              </>
-            )}
-          </div>
-          <DialogFooter className='mt-4'>
-            <Button
-              type='button'
-              variant='outline'
-              onClick={onClose}
-              className='mr-2 bg-comic-red text-white hover:bg-comic-purple transition-colors duration-300 comic-border comic-shadow'
-            >
-              Cancel
-            </Button>
-            <Button
-              type='submit'
-              className='bg-comic-green text-black hover:bg-comic-blue hover:text-white transition-colors duration-300 comic-border comic-shadow'
-            >
-              Update Session 🚀
-            </Button>
-          </DialogFooter>
-        </form>
+              )}
+              {session.session_type === SessionType.StoryMode && (
+                <div>
+                  <label
+                    htmlFor="characters_and_relationships"
+                    className="block text-sm sm:text-base font-medium text-blue-900 mb-2"
+                  >
+                    Characters and Relationships
+                  </label>
+                  <Textarea
+                    id="characters_and_relationships"
+                    name="characters_and_relationships"
+                    value={sessionData.charactersAndRelationships}
+                    onChange={(e) =>
+                      setSessionData({
+                        ...sessionData,
+                        charactersAndRelationships: e.target.value,
+                      })
+                    }
+                    rows={3}
+                    className="bg-white/80 border-blue-200 text-blue-900 placeholder:text-blue-400 focus:border-blue-400 focus:ring-blue-400"
+                  />
+                </div>
+              )}
+              {session.session_type === SessionType.ResearchCreateMode && (
+                <>
+                  <div>
+                    <label
+                      htmlFor="team_members"
+                      className="block text-sm sm:text-base font-medium text-blue-900 mb-2"
+                    >
+                      Team Members
+                    </label>
+                    <Input
+                      id="team_members"
+                      name="team_members"
+                      value={sessionData.teamMembers}
+                      onChange={(e) =>
+                        setSessionData({
+                          ...sessionData,
+                          teamMembers: e.target.value,
+                        })
+                      }
+                      className="bg-white/80 border-blue-200 text-blue-900 placeholder:text-blue-400 focus:border-blue-400 focus:ring-blue-400"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="project_description"
+                      className="block text-sm sm:text-base font-medium text-blue-900 mb-2"
+                    >
+                      Project Description
+                    </label>
+                    <Textarea
+                      id="project_description"
+                      name="project_description"
+                      value={sessionData.projectDescription}
+                      onChange={(e) =>
+                        setSessionData({
+                          ...sessionData,
+                          projectDescription: e.target.value,
+                        })
+                      }
+                      rows={3}
+                      className="bg-white/80 border-blue-200 text-blue-900 placeholder:text-blue-400 focus:border-blue-400 focus:ring-blue-400"
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+            <DialogFooter className="mt-6 sm:mt-8 space-x-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onClose}
+                className="w-full sm:w-auto text-sm sm:text-base bg-white/80 hover:bg-blue-50 text-blue-900 border-blue-200"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="w-full sm:w-auto text-sm sm:text-base bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white transform hover:scale-105 transition-all duration-300"
+              >
+                Update Session
+              </Button>
+            </DialogFooter>
+          </form>
+        </motion.div>
       </DialogContent>
     </Dialog>
   );

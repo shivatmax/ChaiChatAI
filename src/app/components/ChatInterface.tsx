@@ -299,23 +299,28 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
     );
 
     return (
-      <div className="flex flex-col h-[calc(100vh-9rem)] lg:h-[calc(100vh-5.5rem)] bg-comic-yellow comic-bg">
+      <div className="flex flex-col h-[calc(100vh-9rem)] lg:h-[calc(100vh-5.5rem)] bg-gradient-to-b from-blue-50 to-white backdrop-blur-lg">
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.3 }}
-          className="flex flex-col p-3 lg:p-4 bg-comic-blue comic-border"
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          className="hidden lg:flex flex-col p-4 lg:p-6 bg-gradient-to-r from-blue-200 to-blue-100 backdrop-blur-md border-b border-white/20"
         >
-          <div className="flex items-center justify-center mb-4">
-            <div className="flex items-center space-x-2 sm:space-x-3">
-              <MessageCircle className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
-              <h1 className="text-xl sm:text-2xl font-extrabold text-white">
-                Chat Interface
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-3">
+              <motion.div
+                whileHover={{ scale: 1.1, rotate: 15 }}
+                className="p-2 rounded-xl bg-white/70 backdrop-blur-sm"
+              >
+                <MessageCircle className="h-6 w-6 sm:h-7 sm:w-7 text-blue-500" />
+              </motion.div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-blue-600">
+                ChitChat Buddy
               </h1>
             </div>
           </div>
-          <div className="flex items-center space-x-1 sm:space-x-2 w-full">
-            <span className="text-sm sm:text-base font-medium text-white">
+          <div className="flex items-center space-x-3 w-full">
+            <span className="text-base sm:text-lg font-medium text-blue-700">
               Active Session:
             </span>
             <div className="flex-grow">
@@ -327,23 +332,25 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
             </div>
           </div>
         </motion.div>
-        <ScrollArea className="flex-grow p-2 sm:p-3 h-[calc(100vh-14rem)] sm:h-[calc(100vh-18rem)] ">
+        <ScrollArea className="flex-grow p-4 sm:p-6 h-[calc(100vh-14rem)] sm:h-[calc(100vh-18rem)] bg-gradient-to-b from-blue-50/50 to-white/50">
           {memoizedMessageList}
           {isTyping && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="text-sm sm:text-base text-comic-purple italic animate-pulse text-center mt-2"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="text-base sm:text-lg text-blue-600 italic flex items-center justify-center gap-2 mt-4"
             >
-              {typingFriend
-                ? `${typingFriend} is typing... 💭`
-                : 'Waiting... ⏳'}
+              <div className="p-2 rounded-lg bg-blue-100/60 backdrop-blur-sm">
+                {typingFriend
+                  ? `${typingFriend} is typing... 💭`
+                  : 'Waiting... ⏳'}
+              </div>
             </motion.div>
           )}
           <div ref={messagesEndRef} />
         </ScrollArea>
-        <div className="mt-auto">
+        <div className="mt-auto p-4 bg-gradient-to-t from-blue-50/30 to-transparent backdrop-blur-sm">
           <ChatInputArea
             inputMessage={inputMessage}
             setInputMessage={setInputMessage}

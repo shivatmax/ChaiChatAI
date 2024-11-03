@@ -183,45 +183,48 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
   };
 
   if (!user) return null;
-
   return (
-    <div className="bg-comic-yellow comic-bg p-4 rounded-lg comic-border comic-shadow max-h-screen overflow-y-hidden">
-      <div className="flex flex-col items-center mb-3 relative">
+    <div className="bg-gradient-to-br from-blue-300/40 to-blue-500/40 backdrop-blur-md p-6 rounded-2xl border border-white/20 max-h-screen overflow-y-hidden">
+      <div className="flex flex-col items-center mb-4 relative">
         <div className="relative group">
           <Avatar
             onClick={() => setIsAvatarDialogOpen(true)}
-            className="cursor-pointer hover:opacity-80 transition-opacity duration-200 w-24 h-24"
+            className="cursor-pointer hover:opacity-90 transition-all duration-300 w-28 h-28 ring-4 ring-white/20 hover:ring-white/40"
           >
             <AvatarImage src={currentAvatar} />
-            <AvatarFallback className="bg-comic-blue text-white text-2xl font-bold">
+            <AvatarFallback className="bg-gradient-to-br from-blue-300 to-blue-400 text-white text-3xl font-bold">
               {getDisplayName().charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <Button
             variant="outline"
             size="sm"
-            className="absolute -bottom-2 -right-2 rounded-full bg-comic-blue hover:bg-comic-purple transition-colors duration-200"
+            className="absolute -bottom-2 -right-2 rounded-full bg-white/30 hover:bg-white/40 border border-white/30 backdrop-blur-sm"
             onClick={() => setIsAvatarDialogOpen(true)}
           >
-            <Camera className="h-4 w-4" />
+            <Camera className="h-4 w-4 text-white" />
           </Button>
         </div>
-        <h2 className="text-2xl font-bold text-comic-purple mb-1 mt-3">
+        <h2 className="text-2xl font-bold text-white mb-1 mt-4">
           {truncateName(getDisplayName(), 12)}
         </h2>
-        <p className="text-base text-comic-darkblue text-center mb-3 font-medium">
+        <p className="text-base text-white/80 text-center mb-4 font-medium">
           {user.persona.slice(0, 50)}...
         </p>
         <GlowingComponent isGlowing={isGlowing}>
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-full"
+          >
             <Button
               variant="outline"
-              size="sm"
+              size="lg"
               onClick={() => {
                 setEditedUser(user);
                 setIsOpen(true);
               }}
-              className="w-full bg-comic-green hover:bg-comic-blue text-black hover:text-white transition-colors duration-200 comic-border comic-shadow text-lg font-bold"
+              className="w-full bg-gradient-to-r from-blue-300 to-blue-400 hover:from-blue-400 hover:to-blue-500 text-white text-lg py-3 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300"
             >
               <Pencil className="mr-2 h-5 w-5" />
               Edit Profile
@@ -230,38 +233,36 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
         </GlowingComponent>
       </div>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-[375px] max-h-[91vh] bg-comic-yellow comic-bg rounded-xl comic-border comic-shadow">
+        <DialogContent className="sm:max-w-[425px] max-h-[91vh] bg-gradient-to-br from-blue-100/90 to-white/90 backdrop-blur-lg border border-white/20 rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-comic-purple">
+            <DialogTitle className="text-2xl font-bold text-blue-900">
               Edit Profile
             </DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4 py-3">
-            {/* Name input */}
+          <div className="grid gap-4 py-4">
             <div className="relative">
               <label
                 htmlFor="name"
-                className="block text-lg font-medium text-comic-darkblue mb-1"
+                className="block text-lg font-medium text-blue-900/80 mb-2"
               >
                 Name (max 12 characters)
               </label>
               <div className="relative">
-                <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-comic-purple text-xl" />
+                <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-900/60" />
                 <Input
                   id="name"
                   placeholder="Name"
                   value={editedUser?.name || ''}
                   onChange={handleNameChange}
                   maxLength={12}
-                  className="w-full pl-10 pr-3 py-2 text-lg bg-white bg-opacity-50 rounded-md comic-border comic-shadow"
+                  className="w-full pl-10 pr-3 py-2 text-lg bg-white/50 border border-blue-200 rounded-xl text-blue-900"
                 />
               </div>
             </div>
-            {/* Persona textarea */}
             <div>
               <label
                 htmlFor="persona"
-                className="block text-lg font-medium text-comic-darkblue mb-1"
+                className="block text-lg font-medium text-blue-900/80 mb-2"
               >
                 Persona
               </label>
@@ -274,14 +275,13 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
                     prev ? { ...prev, persona: e.target.value } : null
                   )
                 }
-                className="w-full px-3 py-2 text-lg bg-white bg-opacity-50 rounded-md min-h-[80px] resize-y comic-border comic-shadow"
+                className="w-full px-3 py-2 text-lg bg-white/50 border border-blue-200 rounded-xl min-h-[80px] resize-y text-blue-900"
               />
             </div>
-            {/* About textarea */}
             <div>
               <label
                 htmlFor="about"
-                className="block text-lg font-medium text-comic-darkblue mb-1"
+                className="block text-lg font-medium text-blue-900/80 mb-2"
               >
                 About
               </label>
@@ -294,14 +294,13 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
                     prev ? { ...prev, about: e.target.value } : null
                   )
                 }
-                className="w-full px-3 py-2 text-lg bg-white bg-opacity-50 rounded-md min-h-[80px] resize-y comic-border comic-shadow"
+                className="w-full px-3 py-2 text-lg bg-white/50 border border-blue-200 rounded-xl min-h-[80px] resize-y text-blue-900"
               />
             </div>
-            {/* Knowledge Base textarea */}
             <div>
               <label
                 htmlFor="knowledgeBase"
-                className="block text-lg font-medium text-comic-darkblue mb-1"
+                className="block text-lg font-medium text-blue-900/80 mb-2"
               >
                 Knowledge Base
               </label>
@@ -314,23 +313,23 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
                     prev ? { ...prev, knowledge_base: e.target.value } : null
                   )
                 }
-                className="w-full px-3 py-2 text-lg bg-white bg-opacity-50 rounded-md min-h-[80px] resize-y comic-border comic-shadow"
+                className="w-full px-3 py-2 text-lg bg-white/50 border border-blue-200 rounded-xl min-h-[80px] resize-y text-blue-900"
               />
             </div>
           </div>
           <DialogFooter>
-            <div className="w-full flex justify-between space-x-2">
+            <div className="w-full flex justify-between space-x-3">
               <Button
                 onClick={() => setIsOpen(false)}
                 variant="outline"
-                className="w-1/2 bg-comic-red text-white hover:bg-comic-purple transition-colors duration-300 comic-border comic-shadow text-lg font-bold"
+                className="w-1/2 bg-blue-200 hover:bg-blue-300 text-blue-900 text-lg py-3 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleSave}
                 disabled={updateUserMutation.isPending}
-                className="w-1/2 bg-comic-green text-black hover:bg-comic-blue hover:text-white transition-colors duration-300 comic-border comic-shadow text-lg font-bold"
+                className="w-1/2 bg-gradient-to-r from-blue-300 to-blue-400 hover:from-blue-400 hover:to-blue-500 text-white text-lg py-3 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300"
               >
                 <Save className="mr-2 h-5 w-5" />
                 {updateUserMutation.isPending ? 'Saving...' : 'Save Changes'}
@@ -340,32 +339,32 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
         </DialogContent>
       </Dialog>
       <Dialog open={isAvatarDialogOpen} onOpenChange={setIsAvatarDialogOpen}>
-        <DialogContent className="sm:max-w-[500px] bg-gradient-to-br to-comic-blue comic-bg rounded-xl comic-border comic-shadow">
+        <DialogContent className="sm:max-w-[500px] bg-gradient-to-br from-blue-100/90 to-white/90 backdrop-blur-lg border border-white/20 rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-3xl font-bold text-comic-purple mb-4">
-              🎨 Update Your Avatar 🖼️
+            <DialogTitle className="text-3xl font-bold text-blue-900 mb-4">
+              Update Your Avatar
             </DialogTitle>
           </DialogHeader>
           <Tabs defaultValue="upload" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-4 bg-comic-purple">
+            <TabsList className="grid w-full grid-cols-2 mb-4 bg-white/50">
               <TabsTrigger
                 value="upload"
-                className="text-lg font-bold text-white data-[state=active]:bg-comic-blue"
+                className="text-lg font-bold text-blue-900 data-[state=active]:bg-blue-300/50"
               >
-                📤 Upload
+                Upload
               </TabsTrigger>
               <TabsTrigger
                 value="generate"
-                className="text-lg font-bold text-white data-[state=active]:bg-comic-green"
+                className="text-lg font-bold text-blue-900 data-[state=active]:bg-blue-300/50"
               >
-                🪄 Generate
+                Generate
               </TabsTrigger>
             </TabsList>
             <TabsContent value="upload">
               <div className="space-y-4">
                 <Button
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full bg-comic-red text-white hover:bg-comic-purple transition-all duration-300 comic-border comic-shadow text-lg font-bold transform hover:scale-105"
+                  className="w-full bg-gradient-to-r from-blue-300 to-blue-400 hover:from-blue-400 hover:to-blue-500 text-white text-lg py-3 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300"
                   disabled={isUploading}
                 >
                   {isUploading ? (
@@ -373,7 +372,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
                   ) : (
                     <Upload className="mr-2 h-6 w-6" />
                   )}
-                  {isUploading ? '📤 Uploading...' : '📁 Choose Your Avatar'}
+                  {isUploading ? 'Uploading...' : 'Choose Your Avatar'}
                 </Button>
                 <input
                   type="file"
@@ -389,21 +388,21 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
                 <div className="grid w-full items-center gap-1.5">
                   <Label
                     htmlFor="imagePrompt"
-                    className="text-lg font-bold text-comic-purple"
+                    className="text-lg font-bold text-blue-900/80"
                   >
-                    🎭 Describe Your Dream Avatar
+                    Describe Your Dream Avatar
                   </Label>
                   <Input
                     id="imagePrompt"
                     placeholder="E.g., A superhero cat with laser eyes"
                     value={imagePrompt}
                     onChange={(e) => setImagePrompt(e.target.value)}
-                    className="mb-2 bg-white bg-opacity-70 comic-border"
+                    className="mb-2 bg-white/50 border border-blue-200 text-blue-900 rounded-xl"
                   />
                 </div>
                 <Button
                   onClick={handleGenerateAvatar}
-                  className="w-full bg-comic-purple text-white hover:bg-comic-blue transition-all duration-300 comic-border comic-shadow text-lg font-bold transform hover:scale-105"
+                  className="w-full bg-gradient-to-r from-blue-300 to-blue-400 hover:from-blue-400 hover:to-blue-500 text-white text-lg py-3 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300"
                   disabled={isGenerating}
                 >
                   {isGenerating ? (
@@ -411,12 +410,12 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
                   ) : (
                     <Wand2 className="mr-2 h-6 w-6" />
                   )}
-                  {isGenerating ? '🎭 Conjuring...' : '🎨 Create Magic Avatar'}
+                  {isGenerating ? 'Generating...' : 'Create Magic Avatar'}
                 </Button>
               </div>
             </TabsContent>
           </Tabs>
-          <div className="mt-4 h-64 w-full bg-white/70 rounded-lg overflow-hidden comic-border relative">
+          <div className="mt-4 h-64 w-full bg-white/50 rounded-xl overflow-hidden border border-blue-200 relative">
             {previewImage ? (
               <Image
                 src={previewImage}
@@ -425,34 +424,34 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
                 objectFit="contain"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-comic-purple text-lg font-bold">
-                <ImageIcon className="w-16 h-16 text-comic-purple/50 animate-pulse" />
+              <div className="w-full h-full flex items-center justify-center text-blue-900/50">
+                <ImageIcon className="w-16 h-16 animate-pulse" />
               </div>
             )}
           </div>
           <DialogFooter className="mt-4">
-            <div className="w-full flex justify-between space-x-2">
+            <div className="w-full flex justify-between space-x-3">
               <Button
                 onClick={() => {
                   setIsAvatarDialogOpen(false);
                   setPreviewImage(null);
                 }}
                 variant="outline"
-                className="w-1/2 bg-comic-red text-white hover:bg-comic-purple transition-all duration-300 comic-border comic-shadow text-lg font-bold rounded-full"
+                className="w-1/2 bg-blue-200 hover:bg-blue-300 text-blue-900 text-lg py-3 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300"
               >
-                🚫 Cancel
+                Cancel
               </Button>
               <Button
                 onClick={saveAvatar}
                 disabled={!previewImage || isSaving}
-                className="w-1/2 bg-comic-green text-black hover:bg-comic-blue hover:text-white transition-all duration-300 comic-border comic-shadow text-lg font-bold rounded-full"
+                className="w-1/2 bg-gradient-to-r from-blue-300 to-blue-400 hover:from-blue-400 hover:to-blue-500 text-white text-lg py-3 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300"
               >
                 {isSaving ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
-                  <Sparkles className="h-4 w-4" />
+                  <Sparkles className="mr-2 h-4 w-4" />
                 )}
-                {isSaving ? '💾 Saving...' : '✅ Save Avatar'}
+                {isSaving ? 'Saving...' : 'Save Avatar'}
               </Button>
             </div>
           </DialogFooter>

@@ -33,35 +33,34 @@ const LogoutButton: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <motion.div
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.05, rotate: 2 }}
           whileTap={{ scale: 0.95 }}
           className="flex justify-center"
         >
           <Button
             variant="outline"
-            className="w-[90%] bg-comic-red hover:bg-comic-purple text-white font-bold py-3 px-6 rounded-full comic-border comic-shadow transition-all duration-300 ease-in-out text-xl"
+            className="w-[90%] bg-gradient-to-r from-blue-400 to-sky-500 hover:from-blue-500 hover:to-sky-600 text-white font-bold py-3 px-6 rounded-2xl border border-white/20 shadow-lg shadow-blue-400/30 backdrop-blur-sm transition-all duration-300 ease-in-out text-lg"
           >
-            <LogOut className="mr-2 h-6 w-6" /> Logout
+            <LogOut className="mr-2 h-5 w-5" /> Logout
           </Button>
         </motion.div>
       </AlertDialogTrigger>
-      <AlertDialogContent className="bg-comic-yellow comic-bg rounded-xl comic-border comic-shadow">
+      <AlertDialogContent className="bg-gradient-to-b from-white/95 to-blue-50/95 backdrop-blur-xl border border-blue-200 rounded-2xl shadow-2xl">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-3xl font-bold text-comic-purple">
-            Are you sure you want to logout?
+          <AlertDialogTitle className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-sky-500 bg-clip-text text-transparent">
+            Confirm Logout
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-xl text-comic-darkblue">
-            This action will end your current session and return you to the
-            login page.
+          <AlertDialogDescription className="text-lg text-gray-600">
+            Are you sure you want to end your current session?
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="flex flex-row items-center justify-center space-x-4">
-          <AlertDialogCancel className="w-1/3 bg-comic-green text-black hover:bg-comic-blue hover:text-white transition-colors duration-300 comic-border comic-shadow text-xl font-bold">
-            Cancel
+          <AlertDialogCancel className="w-1/3 bg-gradient-to-r from-white to-blue-50 hover:from-blue-50 hover:to-blue-100 text-blue-600 transition-all duration-300 rounded-xl border border-blue-200 shadow-lg text-lg font-medium">
+            Stay
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleLogout}
-            className="w-1/3 bg-comic-red text-white hover:bg-comic-purple transition-colors duration-300 comic-border comic-shadow text-xl font-bold"
+            className="w-1/3 bg-gradient-to-r from-blue-400 to-sky-500 hover:from-blue-500 hover:to-sky-600 text-white transition-all duration-300 rounded-xl border border-white/20 shadow-lg text-lg font-medium"
           >
             Logout
           </AlertDialogAction>

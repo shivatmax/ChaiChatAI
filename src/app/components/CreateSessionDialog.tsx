@@ -81,17 +81,17 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] bg-comic-yellow comic-bg rounded-xl comic-border comic-shadow max-h-[96vh]">
+      <DialogContent className="sm:max-w-[550px] bg-gradient-to-br from-blue-50 to-white backdrop-blur-lg rounded-2xl border border-blue-200 shadow-2xl max-h-[96vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-3xl sm:text-4xl font-bold text-comic-purple">
+          <DialogTitle className="text-4xl font-bold bg-gradient-to-r from-blue-500 to-blue-400 bg-clip-text text-transparent">
             Create New Session
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-          <div className="flex items-center justify-between">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="flex items-center justify-between p-4 bg-blue-50/50 rounded-xl backdrop-blur-sm">
             <Label
               htmlFor="advanced-mode"
-              className="text-lg sm:text-xl font-medium text-comic-darkblue"
+              className="text-xl font-medium text-blue-800"
             >
               Advanced Mode
             </Label>
@@ -99,12 +99,13 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
               id="advanced-mode"
               checked={isAdvancedMode}
               onCheckedChange={setIsAdvancedMode}
+              className="data-[state=checked]:bg-gradient-to-r from-blue-400 to-blue-500"
             />
           </div>
-          <div>
+          <div className="space-y-2">
             <Label
               htmlFor="title"
-              className="text-lg sm:text-xl font-medium text-comic-darkblue"
+              className="text-xl font-medium text-blue-800"
             >
               Title
             </Label>
@@ -114,7 +115,7 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter session title"
               required
-              className="mt-1 text-lg sm:text-xl p-3 sm:p-4 comic-border comic-shadow"
+              className="text-xl p-4 bg-white border border-blue-200 rounded-xl text-blue-800 placeholder:text-blue-300 focus:ring-2 focus:ring-blue-400"
             />
           </div>
           <AnimatePresence>
@@ -123,13 +124,13 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
+                transition={{ type: 'spring', stiffness: 120, damping: 20 }}
               >
-                <div>
-                  <Label className="text-lg sm:text-xl font-medium text-comic-darkblue">
+                <div className="space-y-4">
+                  <Label className="text-xl font-medium text-blue-800">
                     Session Type
                   </Label>
-                  <div className="mt-2 space-y-2">
+                  <div className="grid gap-4">
                     <Button
                       type="button"
                       onClick={() => setSessionType(SessionType.StoryMode)}
@@ -138,14 +139,16 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
                           ? 'default'
                           : 'outline'
                       }
-                      className={`w-full text-lg sm:text-xl p-3 sm:p-4 ${
+                      className={`group relative overflow-hidden p-6 ${
                         sessionType === SessionType.StoryMode
-                          ? 'bg-comic-green text-black'
-                          : 'bg-white text-comic-darkblue'
-                      } comic-border comic-shadow transition-colors duration-300`}
+                          ? 'bg-gradient-to-r from-blue-400 to-blue-500'
+                          : 'bg-blue-50 hover:bg-blue-100'
+                      } rounded-xl border border-blue-200 transition-all duration-300`}
                     >
-                      <Book className="w-6 h-6 sm:w-8 sm:h-8 mr-2" /> Story Mode
-                      📚
+                      <div className="flex items-center justify-center">
+                        <Book className="w-8 h-8 mr-3" />
+                        <span className="text-xl font-bold">Story Mode 📚</span>
+                      </div>
                     </Button>
                     <Button
                       type="button"
@@ -157,14 +160,18 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
                           ? 'default'
                           : 'outline'
                       }
-                      className={`w-full text-lg sm:text-xl p-3 sm:p-4 ${
+                      className={`group relative overflow-hidden p-6 ${
                         sessionType === SessionType.ResearchCreateMode
-                          ? 'bg-comic-blue text-white'
-                          : 'bg-white text-comic-darkblue'
-                      } comic-border comic-shadow transition-colors duration-300`}
+                          ? 'bg-gradient-to-r from-blue-400 to-blue-500'
+                          : 'bg-blue-50 hover:bg-blue-100'
+                      } rounded-xl border border-blue-200 transition-all duration-300`}
                     >
-                      <Microscope className="w-6 h-6 sm:w-8 sm:h-8 mr-2" />{' '}
-                      Research Mode 🔬
+                      <div className="flex items-center justify-center">
+                        <Microscope className="w-8 h-8 mr-3" />
+                        <span className="text-xl font-bold">
+                          Research Mode 🔬
+                        </span>
+                      </div>
                     </Button>
                   </div>
                 </div>
@@ -174,12 +181,16 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
                       initial={{ opacity: 0, y: -20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
-                      transition={{ duration: 0.3 }}
-                      className="mt-4"
+                      transition={{
+                        type: 'spring',
+                        stiffness: 120,
+                        damping: 20,
+                      }}
+                      className="mt-6"
                     >
                       <Label
                         htmlFor="charactersAndRelationships"
-                        className="text-lg sm:text-xl font-medium text-comic-darkblue"
+                        className="text-xl font-medium text-blue-800"
                       >
                         Characters & Relationships
                       </Label>
@@ -190,8 +201,8 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
                           setCharactersAndRelationships(e.target.value)
                         }
                         placeholder="Describe characters and their relationships"
-                        rows={3}
-                        className="mt-1 text-lg sm:text-xl p-3 sm:p-4 comic-border comic-shadow"
+                        rows={4}
+                        className="mt-2 text-xl p-4 bg-white border border-blue-200 rounded-xl text-blue-800 placeholder:text-blue-300 focus:ring-2 focus:ring-blue-400"
                       />
                     </motion.div>
                   )}
@@ -200,13 +211,17 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
                       initial={{ opacity: 0, y: -20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
-                      transition={{ duration: 0.3 }}
-                      className="mt-4 space-y-4"
+                      transition={{
+                        type: 'spring',
+                        stiffness: 120,
+                        damping: 20,
+                      }}
+                      className="mt-6 space-y-4"
                     >
                       <div>
                         <Label
                           htmlFor="teamMembers"
-                          className="text-lg sm:text-xl font-medium text-comic-darkblue"
+                          className="text-xl font-medium text-blue-800"
                         >
                           Team Members
                         </Label>
@@ -215,13 +230,13 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
                           value={teamMembers}
                           onChange={(e) => setTeamMembers(e.target.value)}
                           placeholder="Enter team members"
-                          className="mt-1 text-lg sm:text-xl p-3 sm:p-4 comic-border comic-shadow"
+                          className="mt-2 text-xl p-4 bg-white border border-blue-200 rounded-xl text-blue-800 placeholder:text-blue-300 focus:ring-2 focus:ring-blue-400"
                         />
                       </div>
                       <div>
                         <Label
                           htmlFor="projectDescription"
-                          className="text-lg sm:text-xl font-medium text-comic-darkblue"
+                          className="text-xl font-medium text-blue-800"
                         >
                           Project Description
                         </Label>
@@ -232,8 +247,8 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
                             setProjectDescription(e.target.value)
                           }
                           placeholder="Describe the research project"
-                          rows={3}
-                          className="mt-1 text-lg sm:text-xl p-3 sm:p-4 comic-border comic-shadow"
+                          rows={4}
+                          className="mt-2 text-xl p-4 bg-white border border-blue-200 rounded-xl text-blue-800 placeholder:text-blue-300 focus:ring-2 focus:ring-blue-400"
                         />
                       </div>
                     </motion.div>
@@ -245,11 +260,11 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
+                transition={{ type: 'spring', stiffness: 120, damping: 20 }}
               >
                 <Label
                   htmlFor="description"
-                  className="text-lg sm:text-xl font-medium text-comic-darkblue"
+                  className="text-xl font-medium text-blue-800"
                 >
                   Description
                 </Label>
@@ -258,24 +273,23 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Enter session description"
-                  rows={3}
-                  className="mt-1 text-lg sm:text-xl p-3 sm:p-4 comic-border comic-shadow"
+                  rows={4}
+                  className="mt-2 text-xl p-4 bg-white border border-blue-200 rounded-xl text-blue-800 placeholder:text-blue-300 focus:ring-2 focus:ring-blue-400"
                 />
               </motion.div>
             )}
           </AnimatePresence>
-          <DialogFooter className="flex flex-row justify-between">
+          <DialogFooter className="flex gap-4 mt-6">
             <Button
               type="button"
-              variant="outline"
               onClick={onClose}
-              className="w-1/2 bg-comic-red text-white hover:bg-comic-purple transition-colors duration-300 comic-border comic-shadow"
+              className="flex-1 bg-gradient-to-r from-blue-300 to-blue-400 hover:from-blue-400 hover:to-blue-500 text-white text-lg py-6 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300"
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              className="w-1/2 bg-comic-green text-black hover:bg-comic-blue hover:text-white transition-colors duration-300 comic-border comic-shadow"
+              className="flex-1 bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white text-lg py-6 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300"
             >
               Create Session 🚀
             </Button>

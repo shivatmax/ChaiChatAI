@@ -26,37 +26,47 @@ const ConversationInsights: React.FC<ConversationInsightsProps> = ({
   );
 
   return (
-    <Card className='w-full h-full bg-comic-yellow comic-bg rounded-xl comic-border comic-shadow overflow-hidden'>
-      <CardHeader className='bg-gradient-to-r from-comic-purple to-comic-blue p-4'>
-        <CardTitle className='text-2xl font-bold text-comic-yellow'>
+    <Card className="w-full h-full bg-gradient-to-b from-blue-50 to-white backdrop-blur-lg border border-blue-200 rounded-2xl overflow-hidden">
+      <CardHeader className="bg-gradient-to-r from-blue-400/80 to-blue-500/80 backdrop-blur-md border-b border-blue-200 p-4">
+        <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent flex items-center">
           Conversation Insights
         </CardTitle>
       </CardHeader>
-      <CardContent className='p-4'>
-        <ScrollArea className='h-[calc(100vh-240px)]'>
+      <CardContent className="p-4">
+        <ScrollArea className="h-[calc(100vh-240px)]">
           {filteredHistory && filteredHistory.length > 0 ? (
-            <div className='space-y-4'>
+            <div className="space-y-4">
               {filteredHistory.map((entry: ConversationEntry) => (
                 <motion.div
                   key={entry.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className='bg-white p-3 rounded-lg comic-border comic-shadow'
+                  transition={{ duration: 0.5, ease: 'easeOut' }}
+                  className="bg-gradient-to-r from-blue-100/50 to-blue-200/50 backdrop-blur-sm p-4 rounded-xl border border-blue-200 hover:border-blue-300 transition-all duration-300 shadow-lg hover:shadow-blue-200/20"
                 >
-                  <p className='text-lg text-comic-blue font-medium'>
+                  <p className="text-lg text-blue-800 font-medium leading-relaxed">
                     {entry.message}
                   </p>
-                  <p className='text-sm text-comic-purple mt-2'>
+                  <p className="text-sm text-blue-500 mt-2 font-light">
                     {new Date(entry.created_at).toLocaleString()}
                   </p>
                 </motion.div>
               ))}
             </div>
           ) : (
-            <p className='text-xl text-comic-purple text-center font-bold'>
-              No conversation insights available yet!
-            </p>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="flex flex-col items-center justify-center h-full text-center p-6"
+            >
+              <p className="text-xl text-blue-500 font-medium">
+                No conversation insights available yet!
+              </p>
+              <p className="text-sm text-blue-400 mt-2">
+                Start chatting to see insights appear here
+              </p>
+            </motion.div>
           )}
         </ScrollArea>
       </CardContent>

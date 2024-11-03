@@ -130,23 +130,22 @@ const SessionsDropdown: React.FC<SessionsDropdownProps> = ({
   const selectedSessionTitle = selectedSession
     ? sessions?.find((s) => s.id === selectedSession)?.title
     : 'Select a session';
-
   return (
     <>
       <Select
         value={selectedSession || undefined}
         onValueChange={onSelectSession}
       >
-        <SelectTrigger className="w-full sm:w-[200px] bg-comic-yellow border-2 sm:border-4 border-black rounded-lg sm:rounded-xl shadow-comic hover:bg-comic-green transition-all duration-300 focus:ring-2 focus:ring-comic-purple focus:border-comic-purple text-xs sm:text-sm font-bold py-1 sm:py-2 px-2 sm:px-3">
+        <SelectTrigger className="w-full sm:w-[250px] bg-gradient-to-r from-blue-400/90 to-sky-400/90 backdrop-blur-md border border-white/30 rounded-2xl shadow-lg hover:shadow-xl hover:from-blue-500/90 hover:to-sky-500/90 transition-all duration-300 focus:ring-2 focus:ring-white/40 text-sm font-medium py-2.5 px-4">
           <GlowingComponent isGlowing={isGlowing}>
             <SelectValue>
-              <span className="text-comic-darkblue font-bold truncate">
+              <span className="text-white font-medium truncate">
                 {selectedSessionTitle}
               </span>
             </SelectValue>
           </GlowingComponent>
         </SelectTrigger>
-        <SelectContent className="bg-comic-yellow rounded-lg sm:rounded-xl shadow-comic border-2 sm:border-4 border-black overflow-hidden max-h-48 sm:max-h-60 overflow-y-auto">
+        <SelectContent className="bg-gradient-to-b from-white/95 to-blue-50/95 backdrop-blur-lg rounded-xl border border-blue-200/30 shadow-2xl overflow-hidden max-h-60 overflow-y-auto">
           {sessions && sessions.length > 0 ? (
             sessions.map((session: Session) => (
               <SessionItem
@@ -161,7 +160,7 @@ const SessionsDropdown: React.FC<SessionsDropdownProps> = ({
             <SelectItem
               value="no-sessions"
               disabled
-              className="text-xs sm:text-sm text-comic-purple italic font-bold"
+              className="text-sm text-blue-400 italic font-medium px-4 py-2"
             >
               No sessions available
             </SelectItem>
@@ -181,23 +180,23 @@ const SessionsDropdown: React.FC<SessionsDropdownProps> = ({
         open={!!sessionToDelete}
         onOpenChange={() => setSessionToDelete(null)}
       >
-        <AlertDialogContent className="bg-comic-yellow comic-bg rounded-xl comic-border comic-shadow">
+        <AlertDialogContent className="bg-gradient-to-b from-white/95 to-blue-50/95 backdrop-blur-xl rounded-2xl border border-blue-200/30 shadow-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-3xl font-bold text-comic-purple">
+            <AlertDialogTitle className="text-2xl font-bold text-blue-900">
               Delete Session
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-xl text-comic-darkblue">
+            <AlertDialogDescription className="text-base text-blue-700">
               Are you sure you want to delete the session &quot;
               {sessionToDelete?.title}&quot;? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-comic-green text-black hover:bg-comic-blue hover:text-white transition-colors duration-300 comic-border comic-shadow text-xl font-bold">
+            <AlertDialogCancel className="bg-gradient-to-r from-blue-100/90 to-blue-200/90 text-blue-800 hover:from-blue-200/90 hover:to-blue-300/90 transition-all duration-300 rounded-xl border border-blue-300/30 text-sm font-medium">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
-              className="bg-comic-red text-white hover:bg-comic-purple transition-colors duration-300 comic-border comic-shadow text-xl font-bold"
+              className="bg-gradient-to-r from-red-400/90 to-red-500/90 text-white hover:from-red-500/90 hover:to-red-600/90 transition-all duration-300 rounded-xl border border-red-300/30 text-sm font-medium"
             >
               Delete
             </AlertDialogAction>

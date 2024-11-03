@@ -3,7 +3,7 @@ import { supabase } from '../integrations/supabase/supabase';
 import { User } from '../types/SupabaseTypes';
 import LoadingScreen from '../components/LoadingScreen';
 import MainContent from '../components/MainContent';
-import ComicBackground from '../components/ComicBackground';
+// import ComicBackground from '../components/ComicBackground';
 import { motion } from 'framer-motion';
 import { createEncryptedUser } from '../utils/encryption';
 import { logger } from '../utils/logger';
@@ -98,8 +98,8 @@ const Index: React.FC<IndexProps> = ({ onLogout, onNavigate }) => {
       transition={{ duration: 0.5 }}
       className="relative"
     >
-      <ComicBackground />
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-4 py-2 relative z-10">
+      {/* <ComicBackground /> */}
+      <div className="max-w-[90rem] mx-auto px-2 sm:px-4 lg:px-4 py-2 relative z-10">
         <MainContent user={user} onLogout={onLogout} />
       </div>
     </motion.div>

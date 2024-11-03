@@ -4,11 +4,13 @@ import { User } from '../types/SupabaseTypes';
 import { detectUrls } from '../utils/urlDetector';
 import { decrypt } from '../utils/encryption';
 import { logger } from '../utils/logger';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 
 interface Message {
   sender: string;
   content: string;
   timestamp: Date;
+  avatar_url?: string;
 }
 
 interface MessageListProps {
@@ -34,7 +36,7 @@ const MessageList: React.FC<MessageListProps> = React.memo(
       urls.forEach((url) => {
         renderedContent = renderedContent.replace(
           url,
-          `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline break-all">${url}</a>`
+          `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 underline break-all transition-colors duration-300">${url}</a>`
         );
       });
 
@@ -44,12 +46,10 @@ const MessageList: React.FC<MessageListProps> = React.memo(
     const getDisplayName = (user: User) => {
       if (!user) return 'You';
 
-      // First try to get name
       if (user.name) {
         return user.name;
       }
 
-      // Fallback to decrypted name
       try {
         if (user.encrypted_name && user.encryption_key && user.iv && user.tag) {
           const key = Buffer.from(user.encryption_key, 'hex');
@@ -76,31 +76,54 @@ const MessageList: React.FC<MessageListProps> = React.memo(
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
+            transition={{
+              type: 'spring',
+              stiffness: 120,
+              damping: 20,
+            }}
             className={`flex ${
               message.sender === getDisplayName(user)
                 ? 'justify-end'
                 : 'justify-start'
-            } mb-1 sm:mb-2`}
+            } mb-3 px-4`}
           >
+            {message.sender !== getDisplayName(user) && (
+              <Avatar className="w-8 h-8 mr-2 mt-2">
+                <AvatarImage src={message.avatar_url} alt={message.sender} />
+                <AvatarFallback className="bg-gradient-to-r from-blue-400 to-blue-500 text-white">
+                  {message.sender.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
+            )}
             <motion.div
-              whileHover={{ scale: 1.02 }}
-              className={`max-w-[90%] p-1 sm:p-2 rounded-lg sm:rounded-xl comic-border comic-shadow ${
+              whileHover={{
+                scale: 1.02,
+                boxShadow: '0 8px 32px rgba(31, 38, 135, 0.15)',
+              }}
+              className={`max-w-[85%] p-4 rounded-2xl backdrop-blur-lg border border-blue-100/30 ${
                 message.sender === getDisplayName(user)
-                  ? 'bg-comic-blue text-white'
-                  : 'bg-white text-black'
+                  ? 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800'
+                  : 'bg-gradient-to-r from-white to-blue-50 text-blue-900'
               }`}
             >
-              <p className="font-bold text-xs sm:text-sm mb-0.5 sm:mb-1">
+              <p className="font-bold text-sm mb-2 text-blue-900/90">
                 {message.sender}
               </p>
-              <p className="text-xs sm:text-sm leading-relaxed break-words url-highlight message-url url-container">
+              <p className="text-sm leading-relaxed break-words">
                 {renderMessageContent(message.content)}
               </p>
-              <p className="text-[10px] sm:text-xs mt-0.5 sm:mt-1 opacity-70">
+              <p className="text-xs mt-2 text-blue-800/70 font-light">
                 {formatTime(message.timestamp)}
               </p>
             </motion.div>
+            {message.sender === getDisplayName(user) && (
+              <Avatar className="w-8 h-8 ml-2 mt-2">
+                <AvatarImage src={user.avatar_url} alt={message.sender} />
+                <AvatarFallback className="bg-gradient-to-r from-blue-400 to-blue-500 text-white">
+                  {message.sender.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
+            )}
           </motion.div>
         ))}
       </AnimatePresence>

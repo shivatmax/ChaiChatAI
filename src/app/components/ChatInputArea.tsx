@@ -83,21 +83,6 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = React.memo(
       [setInputMessage]
     );
 
-    const renderInputWithHighlightedUrls = (text: string) => {
-      const urls = detectUrls(text);
-      if (urls.length === 0) return text;
-
-      let highlightedText = text;
-      urls.forEach((url) => {
-        const span = document.createElement('span');
-        span.className = 'text-blue-600 underline';
-        span.textContent = url;
-        highlightedText = highlightedText.replace(url, span.outerHTML);
-      });
-
-      return highlightedText;
-    };
-
     return (
       <div className="relative w-full flex justify-center items-center">
         <AnimatePresence>
@@ -118,10 +103,10 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = React.memo(
             </motion.div>
           )}
         </AnimatePresence>
-        <div className="flex items-center space-x-2 p-2 sm:p-3 bg-comic-green comic-border w-full max-w-5xl">
+        <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-blue-200/90 to-blue-300/90 backdrop-blur-md rounded-2xl border border-blue-100 w-full max-w-5xl shadow-lg">
           <motion.div
-            whileHover={{ scale: isDisabled ? 1 : 1.05 }}
-            whileTap={{ scale: isDisabled ? 1 : 0.95 }}
+            whileHover={{ scale: isDisabled ? 1 : 1.1 }}
+            whileTap={{ scale: isDisabled ? 1 : 0.9 }}
           >
             <Tooltip>
               <TooltipTrigger asChild>
@@ -129,15 +114,15 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = React.memo(
                   onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                   variant="outline"
                   size="icon"
-                  className="rounded-full hover:bg-comic-yellow transition-colors duration-200 comic-border comic-shadow w-8 h-8 sm:w-10 sm:h-10"
+                  className="rounded-xl bg-white/80 hover:bg-white border-blue-200 w-12 h-12 transition-all duration-300"
                   disabled={isDisabled}
                 >
-                  <Smile className="h-4 w-4 sm:h-5 sm:w-5 text-comic-purple" />
+                  <Smile className="h-6 w-6 text-blue-500" />
                 </Button>
               </TooltipTrigger>
               {isDisabled && (
                 <TooltipContent>
-                  <p>Create a session to start chatting! 🚀</p>
+                  <p>Create a session to start chatting! ✨</p>
                 </TooltipContent>
               )}
             </Tooltip>
@@ -152,8 +137,8 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = React.memo(
                       rows={2}
                       placeholder={
                         isDisabled
-                          ? 'Create a session to start chatting 🚀'
-                          : 'Type your message... 📝'
+                          ? 'Create a session to start chatting ✨'
+                          : 'Type your message...'
                       }
                       value={inputMessage}
                       onChange={(e) => {
@@ -170,41 +155,41 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = React.memo(
                           setInputMessage(newText);
                         }
                       }}
-                      className="w-full max-w-full rounded-full bg-white comic-border focus:ring-2 focus:ring-comic-purple text-sm sm:text-base py-2 px-3 resize-none overflow-y-auto scrollbar-thin scrollbar-thumb-comic-transparent scrollbar-track-transparent url-highlight"
+                      className="w-full max-w-full rounded-xl bg-white/80 border border-blue-200 focus:ring-2 focus:ring-blue-300 text-blue-800 placeholder-blue-400 text-base py-3 px-4 resize-none overflow-y-auto scrollbar-thin scrollbar-thumb-blue-200 scrollbar-track-transparent backdrop-blur-sm"
                       disabled={isDisabled}
                       style={{
-                        minHeight: '40px',
-                        maxHeight: '80px',
+                        minHeight: '50px',
+                        maxHeight: '100px',
                       }}
                     />
                   </div>
                 </TooltipTrigger>
                 {isDisabled && (
                   <TooltipContent>
-                    <p>Create a session to start chatting! 🚀</p>
+                    <p>Create a session to start chatting! ✨</p>
                   </TooltipContent>
                 )}
               </Tooltip>
             </TooltipProvider>
           </GlowingComponent>
           <motion.div
-            whileHover={{ scale: isDisabled ? 1 : 1.05 }}
-            whileTap={{ scale: isDisabled ? 1 : 0.95 }}
+            whileHover={{ scale: isDisabled ? 1 : 1.1 }}
+            whileTap={{ scale: isDisabled ? 1 : 0.9 }}
           >
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   onClick={handleSendMessage}
-                  className="rounded-full bg-comic-red hover:bg-comic-purple transition-colors duration-200 px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm font-bold text-white comic-border comic-shadow"
+                  className="rounded-xl bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 px-6 py-3 font-medium text-white border border-blue-200 shadow-lg transition-all duration-300"
                   disabled={isDisabled}
                 >
-                  <Send className="h-3 w-3 sm:h-4 sm:w-4 mr-0 sm:mr-1" />
+                  <Send className="h-5 w-5 mr-2" />
                   <span className="hidden sm:inline">Send</span>
                 </Button>
               </TooltipTrigger>
               {isDisabled && (
                 <TooltipContent>
-                  <p>Create a session to start chatting! 🚀</p>
+                  <p>Create a session to start chatting! ✨</p>
                 </TooltipContent>
               )}
             </Tooltip>

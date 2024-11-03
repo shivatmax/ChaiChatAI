@@ -57,16 +57,23 @@ export default {
           foreground: 'hsl(var(--card-foreground))',
         },
         comic: {
-          darkblue: '#0000FF',
-          red: '#FF5252',
-          blue: '#4FC3F7',
-          yellow: '#FFD760',
-          green: '#69F0AE',
-          purple: '#E040FB',
+          darkblue: '#1E3A8A', // Deeper, more professional blue
+          red: '#DC2626', // More muted red
+          blue: '#4FC3F7', // Light bright blue
+          yellow: {
+            DEFAULT: '#FFD700', // Bright but light yellow
+            light: '#FFE44D', // Lighter yellow
+            dark: '#B89B00', // Darker yellow
+            pale: '#FFF4B8', // Very light yellow
+            vivid: '#FFD000', // More saturated yellow
+          },
+          green: '#34d399', // Light emerald green
+          purple: '#7C3AED', // Rich purple
           white: '#FFFFFF',
+          black: '#000000',
           transparent: '#00000000',
         },
-        pink: '#FFC0CB', // You can adjust this hex code to get the desired shade of pink
+        pink: '#DB2777', // Professional magenta pink
       },
       borderRadius: {
         lg: 'var(--radius)',
