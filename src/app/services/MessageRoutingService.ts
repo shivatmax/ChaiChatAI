@@ -170,7 +170,7 @@ export const FriendsMemory = async (
     // Fetch last 30 conversations from Supabase
     const lastConversations = await fetchConversationsFromSupabase(
       conversationId,
-      50
+      30
     );
 
     const response = await fetch('/api/vector/create-memory-summary', {
