@@ -52,6 +52,7 @@ const ConversationInsights: React.FC<ConversationInsightsProps> = ({
                   </p>
                 </motion.div>
               ))}
+              <div className="h-4" /> {/* Added spacing at the end */}
             </div>
           ) : (
             <motion.div

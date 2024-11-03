@@ -4,6 +4,7 @@ export interface Message {
   timestamp: Date;
   mode?: string;
   webContent?: string;
+  avatar_url?: string;
   urlPreview?: {
     url: string;
     title?: string;

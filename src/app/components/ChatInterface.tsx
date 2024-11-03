@@ -41,6 +41,7 @@ interface Message {
   timestamp: Date;
   mode?: string;
   webContent?: string;
+  avatar_url?: string;
 }
 
 interface ChatInterfaceProps {
@@ -70,21 +71,27 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
     }, []);
 
     useEffect(() => {
-      if (conversationHistories && selectedSession) {
+      if (conversationHistories && selectedSession && aiFriends) {
         const sessionMessages = conversationHistories.filter(
           (history: ConversationHistory) =>
             history.conversation_id === selectedSession
         );
         const formattedMessages = sessionMessages.map(
-          (history: ConversationHistory) => ({
-            sender: history.sender,
-            content: history.message,
-            timestamp: new Date(history.created_at),
-          })
+          (history: ConversationHistory) => {
+            const aiFriend = aiFriends.find(
+              (friend: AIFriend) => friend.name === history.sender
+            );
+            return {
+              sender: history.sender,
+              content: history.message,
+              timestamp: new Date(history.created_at),
+              avatar_url: aiFriend?.avatar_url,
+            };
+          }
         );
         setMessages(formattedMessages);
       }
-    }, [conversationHistories, selectedSession]);
+    }, [conversationHistories, selectedSession, aiFriends]);
 
     useEffect(() => {
       if (messages.length > 0) {
@@ -136,6 +143,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
         sender: user.name,
         content: sanitizedMessage,
         timestamp: new Date(),
+        avatar_url: user.avatar_url,
       };
 
       setMessages((prevMessages) => [...prevMessages, newMessage]);
@@ -208,6 +216,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
                       sender: aiFriend.name,
                       content: sentence,
                       timestamp: new Date(),
+                      avatar_url: aiFriend.avatar_url,
                       mode: mode,
                       webContent: webContent,
                     };
@@ -306,7 +315,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
           transition={{ duration: 0.5, ease: 'easeOut' }}
           className="hidden lg:flex flex-col p-4 lg:p-6 bg-gradient-to-r from-blue-200 to-blue-100 backdrop-blur-md border-b border-white/20"
         >
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <motion.div
                 whileHover={{ scale: 1.1, rotate: 15 }}
@@ -319,7 +328,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
               </h1>
             </div>
           </div>
-          <div className="flex items-center space-x-3 w-full">
+          <div className="flex items-center space-x-3 w-full mt-0">
             <span className="text-base sm:text-lg font-medium text-blue-700">
               Active Session:
             </span>

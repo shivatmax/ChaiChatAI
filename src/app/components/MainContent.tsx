@@ -18,6 +18,7 @@ import GlowingComponent from './GlowingComponent';
 import { useQueryClient } from '@tanstack/react-query';
 import { handleError } from '../utils/errorHandling';
 import { logger } from '../utils/logger';
+import SessionsDropdown from './SessionsDropdown';
 
 const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
   user,
@@ -120,7 +121,7 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
                   className="hidden lg:block w-full lg:w-[28%] bg-gradient-to-b from-blue-50 to-blue-100 backdrop-blur-md border-r border-blue-100"
                 >
                   <div className="h-full flex flex-col">
-                    <div className="flex justify-center py-2">
+                    <div className="flex justify-center py-2 pt-2">
                       <div className="w-[90%]">
                         <UserProfile
                           user={user}
@@ -173,7 +174,7 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
               transition={{ duration: 0.5, ease: 'easeOut' }}
               className="flex-grow flex flex-col w-full lg:w-1/2 bg-gradient-to-b from-white to-blue-50 backdrop-blur-lg"
             >
-              <div className="flex justify-between p-2 bg-gradient-to-r from-blue-100 to-blue-200 backdrop-blur-md border-b border-blue-100 lg:hidden">
+              <div className="flex items-center justify-between pb-4 pt-2 bg-gradient-to-r from-blue-100 to-blue-200 backdrop-blur-md border-b border-blue-100 lg:hidden">
                 <Button
                   onClick={toggleMobileLeftPanel}
                   variant="outline"
@@ -182,6 +183,16 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
                 >
                   <Menu className="h-6 w-6 text-blue-600" />
                 </Button>
+                <h1 className="text-lg font-bold text-blue-600">
+                  ChitChat Buddy
+                </h1>
+                <div className="space-x-2">
+                  <SessionsDropdown
+                    selectedSession={selectedSession}
+                    onSelectSession={handleSelectSession}
+                    isGlowing={glowingComponent === 'activeSessions'}
+                  />
+                </div>
                 <Button
                   onClick={toggleMobileRightPanel}
                   variant="outline"
@@ -191,14 +202,12 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
                   <Menu className="h-6 w-6 text-blue-600" />
                 </Button>
               </div>
-              <div className="overflow-hidden">
-                <ChatInterface
-                  selectedSession={selectedSession}
-                  onSelectSession={handleSelectSession}
-                  isGlowing={glowingComponent === 'chatInterface'}
-                  isSessionsGlowing={glowingComponent === 'activeSessions'}
-                />
-              </div>
+              <ChatInterface
+                selectedSession={selectedSession}
+                onSelectSession={handleSelectSession}
+                isGlowing={glowingComponent === 'chatInterface'}
+                isSessionsGlowing={glowingComponent === 'activeSessions'}
+              />
             </motion.div>
 
             {/* Right Sidebar */}
@@ -211,8 +220,8 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
                   transition={{ type: 'spring', stiffness: 120, damping: 20 }}
                   className="hidden lg:block w-full lg:w-1/4 bg-gradient-to-b from-blue-50 to-blue-100 backdrop-blur-md border-l border-blue-100"
                 >
-                  <div className="h-[calc(100vh-8rem)] p-4 flex flex-col">
-                    <div className="flex-grow overflow-hidden rounded-xl">
+                  <div className="h-[calc(100vh-5.5rem)] p-4 flex flex-col">
+                    <div className="flex-grow overflow-hidden rounded-xl h-[calc(100vh-11rem)]">
                       <GlowingComponent
                         isGlowing={glowingComponent === 'conversationInsights'}
                       >
@@ -225,7 +234,7 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
                         </div>
                       </GlowingComponent>
                     </div>
-                    <div className="mt-4">
+                    <div className="h-12 mt-4">
                       <LogoutButton onLogout={onLogout} />
                     </div>
                   </div>
@@ -246,7 +255,7 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
                   <div className="h-full overflow-y-auto p-6 flex flex-col">
                     <button
                       onClick={toggleMobileLeftPanel}
-                      className="absolute top-4 right-4 p-2 rounded-full bg-blue-200 hover:bg-blue-300 text-blue-600 backdrop-blur-sm transform hover:rotate-90 transition-all duration-300"
+                      className="absolute top-4 right-4 p-2 rounded-full bg-blue-200 hover:bg-blue-300 text-blue-600 backdrop-blur-sm transform hover:rotate-90 transition-all duration-300 z-50"
                     >
                       <X size={20} />
                     </button>
@@ -290,7 +299,7 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
                   <div className="h-[calc(100vh-8rem)] p-6">
                     <button
                       onClick={toggleMobileRightPanel}
-                      className="absolute top-4 left-4 p-2 rounded-full bg-blue-200 hover:bg-blue-300 text-blue-600 backdrop-blur-sm transform hover:rotate-90 transition-all duration-300"
+                      className="absolute top-4 left-4 p-2 rounded-full bg-blue-200 hover:bg-blue-300 text-blue-600 backdrop-blur-sm transform hover:rotate-90 transition-all duration-300 z-[51]"
                     >
                       <X size={20} />
                     </button>
@@ -299,7 +308,9 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
                       aiFriendId={selectedFriend?.id || ''}
                       aiFriendName={selectedFriend?.name || ''}
                     />
-                    <LogoutButton onLogout={onLogout} />
+                    <div className="mt-2">
+                      <LogoutButton onLogout={onLogout} />
+                    </div>
                   </div>
                 </motion.div>
               )}

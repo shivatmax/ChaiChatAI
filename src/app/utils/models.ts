@@ -24,7 +24,7 @@ try {
 
 export async function unifyAgentChat(userPrompt: string, systemPrompt: string) {
   try {
-    const response = await fetch('/api/unify-proxy', {
+    const response = await fetch('/api/gen-proxy', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -64,7 +64,7 @@ export async function unifyAgentChatWithResponseFormat(
   responseFormat: string
 ) {
   try {
-    const response = await fetch('/api/unify-proxy', {
+    const response = await fetch('/api/gen-proxy', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
