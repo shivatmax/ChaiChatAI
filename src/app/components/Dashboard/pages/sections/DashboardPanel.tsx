@@ -1,0 +1,94 @@
+import { useState, useEffect } from 'react';
+import Navbar from './Navbar';
+import Usage from './../Usage';
+import Account from './Account';
+import Settings from './../Settings';
+import BetaFeatures from './BetaFeatures';
+import { ArrowLeft, Menu } from 'lucide-react';
+import { ScrollArea } from '../../../ui/scroll-area';
+import { Sheet, SheetContent, SheetTrigger } from '../../../ui/sheet';
+import React from 'react';
+
+type Tab = 'usage' | 'account' | 'settings' | 'beta';
+
+const DashboardPanel = ({ onClose }: { onClose: () => void }) => {
+  const [activeTab, setActiveTab] = useState<Tab>('usage');
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key && event.key.toLowerCase() === 'escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'usage':
+        return <Usage />;
+      case 'account':
+        return <Account />;
+      case 'settings':
+        return <Settings />;
+      case 'beta':
+        return <BetaFeatures />;
+    }
+  };
+
+  const MobileNav = () => (
+    <Sheet>
+      <SheetTrigger asChild>
+        <button className="md:hidden p-2 hover:bg-gray-100 rounded-lg">
+          <Menu size={24} />
+        </button>
+      </SheetTrigger>
+      <SheetContent
+        side="top"
+        className="p-0 h-auto max-h-[300px] w-full animate-slide-down border-b"
+      >
+        <div className="h-full bg-white">
+          <Navbar
+            activeTab={activeTab}
+            onTabChange={(tab) => {
+              setActiveTab(tab);
+              const trigger = document.querySelector(
+                '[data-state="open"]'
+              ) as HTMLElement;
+              if (trigger) trigger.click();
+            }}
+          />
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+
+  return (
+    <div className="fixed inset-0 bg-black/20 flex items-center justify-center">
+      <div className="dashboard-panel flex flex-col md:flex-row w-full h-full md:h-[90vh] md:w-[90vw] md:max-w-[1400px] md:m-4">
+        <div className="hidden md:block">
+          <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
+        </div>
+        <ScrollArea className="flex-1 h-full">
+          <div className="sticky top-0 z-10 bg-white border-b px-4 py-3 md:p-6">
+            <div className="flex items-center justify-between">
+              <button
+                onClick={onClose}
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+              >
+                <ArrowLeft size={20} />
+                Back
+              </button>
+              <MobileNav />
+            </div>
+          </div>
+          <div className="p-4 md:p-6">{renderContent()}</div>
+        </ScrollArea>
+      </div>
+    </div>
+  );
+};
+
+export default DashboardPanel;
