@@ -160,7 +160,7 @@ const FirstTimeUserExperience: React.FC<FirstTimeUserExperienceProps> = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4'
+        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
       >
         <motion.div
           key={currentStep}
@@ -173,39 +173,40 @@ const FirstTimeUserExperience: React.FC<FirstTimeUserExperienceProps> = ({
           }}
           exit={{ opacity: 0, scale: 0.8 }}
           transition={{ duration: 0.5 }}
-          className='absolute w-full max-w-[90vw] sm:max-w-sm md:max-w-md'
+          className="absolute w-full max-w-[90vw] sm:max-w-sm md:max-w-md"
           style={{
             transform: 'translate(-50%, -50%)',
           }}
         >
-          <Card className='bg-comic-yellow comic-border comic-shadow overflow-hidden'>
-            <CardHeader className='p-4'>
-              <CardTitle className='text-lg sm:text-xl md:text-2xl font-bold text-comic-purple flex items-center justify-between'>
+          <Card className="bg-white/90 border border-blue-200 shadow-lg backdrop-blur-lg overflow-hidden rounded-2xl">
+            <CardHeader className="p-4">
+              <CardTitle className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent flex items-center justify-between">
                 <span>{steps[currentStep].title}</span>
-                <span className='text-2xl sm:text-3xl md:text-4xl'>
+                <span className="text-2xl sm:text-3xl md:text-4xl">
                   {steps[currentStep].emoji}
                 </span>
               </CardTitle>
             </CardHeader>
-            <CardContent className='p-4'>
-              <p className='text-xs sm:text-sm md:text-base text-comic-darkblue'>
+            <CardContent className="p-4">
+              <p className="text-xs sm:text-sm md:text-base text-blue-600/70">
                 {steps[currentStep].content}
               </p>
             </CardContent>
-            <CardFooter className='flex justify-between p-4'>
+            <CardFooter className="flex justify-between p-4">
               <Button
                 onClick={prevStep}
                 disabled={currentStep === 0}
-                className='bg-comic-purple text-white hover:bg-comic-blue text-xs sm:text-sm'
+                variant="outline"
+                className="border-blue-200 text-blue-600 hover:bg-blue-50 text-xs sm:text-sm"
               >
-                <ChevronLeft className='mr-1 h-3 w-3 sm:h-4 sm:w-4' /> Previous
+                <ChevronLeft className="mr-1 h-3 w-3 sm:h-4 sm:w-4" /> Previous
               </Button>
               <Button
                 onClick={nextStep}
-                className='bg-comic-green text-black hover:bg-comic-blue hover:text-white text-xs sm:text-sm'
+                className="bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white text-xs sm:text-sm"
               >
                 {currentStep === steps.length - 1 ? 'Finish' : 'Next'}{' '}
-                <ChevronRight className='ml-1 h-3 w-3 sm:h-4 sm:w-4' />
+                <ChevronRight className="ml-1 h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
             </CardFooter>
           </Card>
