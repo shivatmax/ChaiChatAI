@@ -8,11 +8,24 @@ import { ArrowLeft, Menu } from 'lucide-react';
 import { ScrollArea } from '../../../ui/scroll-area';
 import { Sheet, SheetContent, SheetTrigger } from '../../../ui/sheet';
 import React from 'react';
+import { useUserData } from '../../../../integrations/supabase/hooks/useUserData';
 
 type Tab = 'usage' | 'account' | 'settings' | 'beta';
 
-const DashboardPanel = ({ onClose }: { onClose: () => void }) => {
+const DashboardPanel = ({
+  onClose,
+  currentUserId,
+}: {
+  onClose: () => void;
+  currentUserId: string;
+}) => {
   const [activeTab, setActiveTab] = useState<Tab>('usage');
+  const { data: userData, isLoading, error } = useUserData(currentUserId);
+
+  console.log('DashboardPanel - userData:', userData);
+  console.log('DashboardPanel - isLoading:', isLoading);
+  console.log('DashboardPanel - error:', error);
+  console.log('DashboardPanel - currentUserId:', currentUserId);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -26,15 +39,30 @@ const DashboardPanel = ({ onClose }: { onClose: () => void }) => {
   }, [onClose]);
 
   const renderContent = () => {
+    if (error) {
+      return (
+        <div className="p-4 text-red-600">
+          Error loading dashboard:{' '}
+          {error instanceof Error ? error.message : 'Unknown error'}
+        </div>
+      );
+    }
+
+    if (!userData?.user?.id) {
+      return null;
+    }
+
     switch (activeTab) {
       case 'usage':
-        return <Usage />;
+        return <Usage currentUserId={userData.user.id} />;
       case 'account':
-        return <Account />;
+        return <Account currentUserId={userData.user.id} />;
       case 'settings':
-        return <Settings />;
+        return <Settings currentUserId={userData.user.id} />;
       case 'beta':
-        return <BetaFeatures />;
+        return <BetaFeatures currentUserId={userData.user.id} />;
+      default:
+        return null;
     }
   };
 

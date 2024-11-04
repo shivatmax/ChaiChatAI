@@ -343,7 +343,10 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
       )}
 
       {showDashboard && (
-        <DashboardPanel onClose={() => setShowDashboard(false)} />
+        <DashboardPanel
+          onClose={() => setShowDashboard(false)}
+          currentUserId={user.id}
+        />
       )}
 
       <AIFriendCreator

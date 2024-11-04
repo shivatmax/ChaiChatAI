@@ -1,34 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '../../../../integrations/supabase';
 import { Card } from '../../../ui/card';
 import { Star, Sparkles, Rocket } from 'lucide-react';
-import { useToast } from '../../../ui/use-toast';
 import React from 'react';
 import Image from 'next/image';
+import { useUserData } from '../../../../integrations/supabase/hooks/useUserData';
 
-const BetaFeatures = () => {
-  const { toast } = useToast();
-
-  const { data: features, isLoading } = useQuery({
-    queryKey: ['beta-features'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('beta_features')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        toast({
-          title: 'Error loading beta features',
-          description: error.message,
-          variant: 'destructive',
-        });
-        throw error;
-      }
-
-      return data;
-    },
-  });
+const BetaFeatures = ({ currentUserId }: { currentUserId: string }) => {
+  const { data: userData, isLoading } = useUserData(currentUserId);
+  const features = userData?.beta;
 
   if (isLoading) {
     return (

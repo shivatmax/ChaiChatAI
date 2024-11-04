@@ -9,7 +9,7 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      account_settings: {
+      AccountSettings: {
         Row: {
           bio: string | null;
           created_at: string | null;
@@ -42,7 +42,7 @@ export type Database = {
         };
         Relationships: [];
       };
-      beta_features: {
+      BetaFeatures: {
         Row: {
           created_at: string | null;
           description: string | null;
@@ -72,7 +72,7 @@ export type Database = {
         };
         Relationships: [];
       };
-      usage_statistics: {
+      UsageStatistics: {
         Row: {
           avg_session_time: number | null;
           conversations_left: number | null;
@@ -105,7 +105,7 @@ export type Database = {
         };
         Relationships: [];
       };
-      user_settings: {
+      UserSettings: {
         Row: {
           auto_reply: boolean | null;
           created_at: string | null;

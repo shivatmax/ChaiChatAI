@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '../../../../ui/button';
 import { Input } from '../../../../ui/input';
 import { useToast } from '../../../../ui/use-toast';
-import { useUserData } from '../../../../../hooks/useUserData';
+import { useUserData } from '../../../../../integrations/supabase/hooks/useUserData';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,15 +13,20 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '../../../../ui/alert-dialog';
+import { supabase } from '../../../../../integrations/supabase/supabase';
 
-export const AccountDangerZone = () => {
+export const AccountDangerZone = ({
+  currentUserId,
+}: {
+  currentUserId: string;
+}) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [confirmEmail, setConfirmEmail] = useState('');
   const { toast } = useToast();
-  const { data: userData } = useUserData();
+  const { data: userData } = useUserData(currentUserId);
 
-  const handleDeleteAccount = () => {
-    if (confirmEmail !== userData?.account?.email) {
+  const handleDeleteAccount = async () => {
+    if (confirmEmail !== userData?.user.email) {
       toast({
         title: "Email doesn't match",
         description:
@@ -31,13 +36,30 @@ export const AccountDangerZone = () => {
       return;
     }
 
-    // Proceed with account deletion
-    toast({
-      title: 'Account deleted',
-      description: 'Your account has been permanently deleted.',
-      variant: 'destructive',
-    });
-    setIsDialogOpen(false);
+    try {
+      const { error } = await supabase
+        .from('User')
+        .delete()
+        .eq('id', currentUserId);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Account deleted',
+        description: 'Your account has been permanently deleted.',
+        variant: 'destructive',
+      });
+      setIsDialogOpen(false);
+      // Redirect to logout or home page
+      window.location.href = '/';
+    } catch (error) {
+      toast({
+        title: 'Error deleting account',
+        description:
+          error instanceof Error ? error.message : 'An error occurred',
+        variant: 'destructive',
+      });
+    }
   };
 
   return (
@@ -57,12 +79,23 @@ export const AccountDangerZone = () => {
         </Button>
 
         <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <AlertDialogContent className="max-w-md bg-gradient-to-b from-gray-900 to-gray-800 border-2 border-red-500/20">
+          <AlertDialogContent
+            className="max-w-md bg-gradient-to-b from-gray-900 to-gray-800 border-2 border-red-500/20"
+            role="alertdialog"
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
             <AlertDialogHeader>
-              <AlertDialogTitle className="text-2xl font-bold bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">
+              <AlertDialogTitle
+                id="alert-dialog-title"
+                className="text-2xl font-bold bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent"
+              >
                 Delete Account Permanently
               </AlertDialogTitle>
-              <AlertDialogDescription className="space-y-4">
+              <AlertDialogDescription
+                id="alert-dialog-description"
+                className="space-y-4"
+              >
                 <p className="text-gray-300">
                   This action cannot be undone. This will permanently delete
                   your account and remove all your data from our servers.
@@ -71,7 +104,7 @@ export const AccountDangerZone = () => {
                   <label className="text-sm font-medium text-gray-300">
                     Please type your email to confirm:
                     <span className="font-semibold text-red-400 ml-1">
-                      {userData?.account?.email}
+                      {userData?.user.email}
                     </span>
                   </label>
                   <Input

@@ -1,22 +1,30 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { Clock, MessageSquare, Users, AlertTriangle } from 'lucide-react';
-import { useUserData } from '../../../hooks/useUserData';
-// import { useToast } from '../../ui/use-toast';
+import { useUserData } from '../../../integrations/supabase/hooks/useUserData';
 import { Alert, AlertDescription, AlertTitle } from '../../ui/alert';
 
-const Usage = () => {
-  const { data: userData, isLoading } = useUserData();
-  // const { toast } = useToast();
+const Usage = ({ currentUserId }: { currentUserId: string }) => {
+  const { data: userData, isLoading, error } = useUserData(currentUserId);
   const stats = userData?.usage;
 
   const avgSessionTime = stats?.avg_session_time || 0;
   const totalAiFriends = stats?.total_ai_friends || 0;
-  // const totalConversations = stats?.total_conversations || 0;
   const conversationsLeft = stats?.conversations_left || 0;
 
   if (isLoading) {
     return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertTitle>Error loading usage data</AlertTitle>
+        <AlertDescription>
+          {error instanceof Error ? error.message : 'An unknown error occurred'}
+        </AlertDescription>
+      </Alert>
+    );
   }
 
   return (
@@ -93,7 +101,7 @@ const Usage = () => {
         <Card className="bg-gradient-to-br from-blue-100 to-white border-none shadow-lg hover:shadow-xl transition-all duration-300 sm:col-span-2 lg:col-span-1">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-blue-900">
-              Avg Session Time
+              Average Session Time
             </CardTitle>
             <Clock className="h-4 w-4 text-blue-700" />
           </CardHeader>

@@ -1,23 +1,42 @@
 export interface UserSettings {
   id: string;
-  user_id: string;
-  email_notifications: boolean;
-  push_notifications: boolean;
-  share_usage_data: boolean;
-  public_profile: boolean;
-  message_history: boolean;
-  auto_reply: boolean;
-  created_at: string;
-  updated_at: string;
+  userId: string;
+  emailNotifications?: boolean;
+  pushNotifications?: boolean;
+  shareUsageData?: boolean;
+  publicProfile?: boolean;
+  messageHistory?: boolean;
+  autoReply?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface UsageStatistics {
   id: string;
-  user_id: string;
-  total_conversations: number;
-  total_ai_friends: number;
-  avg_session_time: number;
-  conversations_left: number;
-  created_at: string;
-  updated_at: string;
+  userId: string;
+  totalConversations?: number;
+  totalAiFriends?: number;
+  avgSessionTime?: number;
+  conversationsLeft?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface AccountSettings {
+  id: string;
+  userId: string;
+  subscriptionPlan?: string;
+  bio?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface BetaFeatures {
+  id: string;
+  featureName: string;
+  description?: string;
+  status?: string;
+  releaseDate?: Date;
+  createdAt?: Date;
+  imageUrl?: string;
 }

@@ -28,6 +28,11 @@ model User {
   sessions             Session[]
   user_knowledge_base  UserKnowledgeBase[]
   todaysSummary        Boolean               @default(true)
+
+  // Relations
+  settings        UserSettings?
+  usageStats      UsageStatistics?
+  accountSettings AccountSettings?
 }
 
 model AIFriend {
@@ -105,93 +110,48 @@ enum SessionType {
   ResearchCreateMode
 }
 
-
 model AccountSettings {
-
-  id              String    @id @default(uuid())
-
-  userId          String    @map("user_id")
-
-  subscriptionPlan String?  @default("FREE") @map("subscription_plan")
-
-  displayName     String?   @map("display_name")
-
-  email           String?
-
-  bio             String?   @db.Text
-
-  createdAt       DateTime? @default(now()) @map("created_at")
-
-  updatedAt       DateTime? @default(now()) @map("updated_at")
-
+  id               String    @id @default(uuid())
+  userId           String    @unique @map("user_id")
+  subscriptionPlan String?   @default("FREE") @map("subscription_plan")
+  bio              String?   @db.Text
+  createdAt        DateTime? @default(now()) @map("created_at")
+  updatedAt        DateTime? @default(now()) @map("updated_at")
+  user             User      @relation(fields: [userId], references: [id])
 }
-
-
 
 model BetaFeatures {
-
   id          String    @id @default(uuid())
-
   featureName String    @map("feature_name")
-
   description String?   @db.Text
-
   status      String?   @default("active")
-
   releaseDate DateTime? @default(now()) @map("release_date")
-
   createdAt   DateTime? @default(now()) @map("created_at")
-
   imageUrl    String?   @map("image_url")
-
 }
-
-
 
 model UsageStatistics {
-
-  id                String    @id @default(uuid())
-
-  userId           String    @map("user_id")
-
-  totalConversations Int?     @default(0) @map("total_conversations")
-
-  totalAiFriends    Int?     @default(0) @map("total_ai_friends")
-
-  avgSessionTime    Int?     @default(0) @map("avg_session_time")
-
-  conversationsLeft Int?     @default(100) @map("conversations_left")
-
-  createdAt        DateTime? @default(now()) @map("created_at")
-
-  updatedAt        DateTime? @default(now()) @map("updated_at")
-
+  id                 String    @id @default(uuid())
+  userId             String    @unique @map("user_id")
+  totalConversations Int?      @default(100) @map("total_conversations")
+  totalAiFriends     Int?      @default(0) @map("total_ai_friends")
+  avgSessionTime     Int?      @default(0) @map("avg_session_time")
+  conversationsLeft  Int?      @default(100) @map("conversations_left")
+  createdAt          DateTime? @default(now()) @map("created_at")
+  updatedAt          DateTime? @default(now()) @map("updated_at")
+  user               User      @relation(fields: [userId], references: [id])
 }
-
-
 
 model UserSettings {
-
   id                 String    @id @default(uuid())
-
-  userId            String    @map("user_id")
-
+  userId             String    @unique @map("user_id")
   emailNotifications Boolean?  @default(false) @map("email_notifications")
-
   pushNotifications  Boolean?  @default(false) @map("push_notifications")
-
   shareUsageData     Boolean?  @default(false) @map("share_usage_data")
-
   publicProfile      Boolean?  @default(false) @map("public_profile")
-
   messageHistory     Boolean?  @default(false) @map("message_history")
-
-  autoReply         Boolean?  @default(false) @map("auto_reply")
-
-  createdAt         DateTime? @default(now()) @map("created_at")
-
-  updatedAt         DateTime? @default(now()) @map("updated_at")
-
+  autoReply          Boolean?  @default(false) @map("auto_reply")
+  createdAt          DateTime? @default(now()) @map("created_at")
+  updatedAt          DateTime? @default(now()) @map("updated_at")
+  user               User      @relation(fields: [userId], references: [id])
 }
-
-

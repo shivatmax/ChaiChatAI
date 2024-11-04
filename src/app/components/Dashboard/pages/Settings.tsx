@@ -1,31 +1,40 @@
 import React from 'react';
 import { Switch } from '../../ui/switch';
 import { useToast } from '../../ui/use-toast';
-import { supabase } from '../../../integrations/supabase';
 import { useEffect, useState } from 'react';
-import { useUserData } from '../../../hooks/useUserData';
+import { useUserData } from '../../../integrations/supabase/hooks/useUserData';
+import { supabase } from '../../../integrations/supabase/supabase';
 
-const Settings = () => {
+// interface UserSettings {
+//   email_notifications: boolean;
+//   push_notifications: boolean;
+//   share_usage_data: boolean;
+//   public_profile: boolean;
+//   message_history: boolean;
+//   auto_reply: boolean;
+// }
+
+const Settings = ({ currentUserId }: { currentUserId: string }) => {
   const { toast } = useToast();
-  const { data: userData, isLoading } = useUserData();
+  const { data: userData, isLoading } = useUserData(currentUserId);
   const [settings, setSettings] = useState({
-    emailNotifications: false,
-    pushNotifications: false,
-    shareUsageData: false,
-    publicProfile: false,
-    messageHistory: false,
-    autoReply: false,
+    email_notifications: false,
+    push_notifications: false,
+    share_usage_data: false,
+    public_profile: false,
+    message_history: false,
+    auto_reply: false,
   });
 
   useEffect(() => {
     if (userData?.settings) {
       setSettings({
-        emailNotifications: Boolean(userData.settings.email_notifications),
-        pushNotifications: Boolean(userData.settings.push_notifications),
-        shareUsageData: Boolean(userData.settings.share_usage_data),
-        publicProfile: Boolean(userData.settings.public_profile),
-        messageHistory: Boolean(userData.settings.message_history),
-        autoReply: Boolean(userData.settings.auto_reply),
+        email_notifications: Boolean(userData.settings.email_notifications),
+        push_notifications: Boolean(userData.settings.push_notifications),
+        share_usage_data: Boolean(userData.settings.share_usage_data),
+        public_profile: Boolean(userData.settings.public_profile),
+        message_history: Boolean(userData.settings.message_history),
+        auto_reply: Boolean(userData.settings.auto_reply),
       });
     }
   }, [userData]);
@@ -35,28 +44,37 @@ const Settings = () => {
   }
 
   const updateSetting = async (key: keyof typeof settings, value: boolean) => {
-    setSettings((prev) => ({ ...prev, [key]: value }));
+    try {
+      // First update Supabase
+      const updatedSettings = {
+        id: userData?.settings?.id,
+        user_id: currentUserId,
+        ...settings,
+        [key]: value,
+        updated_at: new Date().toISOString(),
+      };
 
-    const dbKey = key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+      const { error } = await supabase
+        .from('UserSettings')
+        .upsert(updatedSettings, {
+          onConflict: 'id',
+        });
 
-    const { error } = await supabase
-      .from('user_settings')
-      .update({
-        [dbKey]: value,
-      })
-      .order('created_at', { ascending: true })
-      .limit(1);
+      if (error) throw error;
 
-    if (error) {
-      toast({
-        title: 'Error saving setting',
-        description: error.message,
-        variant: 'destructive',
-      });
-    } else {
+      // If Supabase update succeeds, update local state
+      setSettings((prev) => ({ ...prev, [key]: value }));
+
       toast({
         title: 'Setting updated',
         description: 'Your preference has been saved.',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error saving setting',
+        description:
+          error instanceof Error ? error.message : 'An error occurred',
+        variant: 'destructive',
       });
     }
   };
@@ -103,12 +121,12 @@ const Settings = () => {
             <SettingItem
               title="Email Notifications"
               description="Receive email updates about your conversations"
-              settingKey="emailNotifications"
+              settingKey="email_notifications"
             />
             <SettingItem
               title="Push Notifications"
               description="Get notified about new messages"
-              settingKey="pushNotifications"
+              settingKey="push_notifications"
             />
           </div>
         </section>
@@ -119,12 +137,12 @@ const Settings = () => {
             <SettingItem
               title="Share Usage Data"
               description="Help us improve by sharing anonymous usage data"
-              settingKey="shareUsageData"
+              settingKey="share_usage_data"
             />
             <SettingItem
               title="Public Profile"
               description="Make your profile visible to other users"
-              settingKey="publicProfile"
+              settingKey="public_profile"
             />
           </div>
         </section>
@@ -137,12 +155,12 @@ const Settings = () => {
             <SettingItem
               title="Message History"
               description="Keep chat history for future reference"
-              settingKey="messageHistory"
+              settingKey="message_history"
             />
             <SettingItem
               title="Auto-Reply"
               description="Enable AI friends to send automatic responses"
-              settingKey="autoReply"
+              settingKey="auto_reply"
             />
           </div>
         </section>

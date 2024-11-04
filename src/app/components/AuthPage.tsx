@@ -137,6 +137,9 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess, onNavigate }) => {
         userId = insertedUser.id;
       }
 
+      // Create default user data
+      await createDefaultUserData(userId);
+
       localStorage.setItem('userId', userId);
       toast({
         title: 'Success! 🎉',
@@ -152,6 +155,56 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess, onNavigate }) => {
       );
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const createDefaultUserData = async (userId: string) => {
+    try {
+      // Create default UserSettings
+      const defaultSettings = {
+        id: crypto.randomUUID(),
+        user_id: userId,
+        email_notifications: false,
+        push_notifications: false,
+        share_usage_data: false,
+        public_profile: false,
+        message_history: false,
+        auto_reply: false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      // Create default AccountSettings
+      const defaultAccount = {
+        id: crypto.randomUUID(),
+        user_id: userId,
+        subscription_plan: 'FREE',
+        bio: '',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      // Create default UsageStatistics
+      const defaultUsage = {
+        id: crypto.randomUUID(),
+        user_id: userId,
+        total_conversations: 0,
+        total_ai_friends: 0,
+        avg_session_time: 0,
+        conversations_left: 100,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      // Insert all default data in parallel
+      await Promise.all([
+        supabase.from('UserSettings').insert([defaultSettings]),
+        supabase.from('AccountSettings').insert([defaultAccount]),
+        supabase.from('UsageStatistics').insert([defaultUsage]),
+      ]);
+    } catch (error) {
+      logger.error('Error creating default user data:', error);
+      throw error;
     }
   };
 
