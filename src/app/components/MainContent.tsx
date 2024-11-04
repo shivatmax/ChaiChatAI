@@ -185,7 +185,7 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
                 >
                   <Menu className="h-6 w-6 text-blue-600" />
                 </Button>
-                <h1 className="text-lg font-bold text-blue-600">
+                <h1 className="text-[1rem] font-bold text-blue-600">
                   ChitChat Buddy
                 </h1>
                 <div className="space-x-2">
@@ -236,7 +236,7 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
                         </div>
                       </GlowingComponent>
                     </div>
-                    <div className="flex flex-col gap-2 mt-4">
+                    <div className="flex flex-col items-center gap-2 mt-4">
                       <Button
                         onClick={() => setShowDashboard(true)}
                         className="w-full bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white text-lg py-2 rounded-xl shadow-md transform hover:scale-105 transition-all duration-300"
@@ -316,7 +316,7 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
                       aiFriendId={selectedFriend?.id || ''}
                       aiFriendName={selectedFriend?.name || ''}
                     />
-                    <div className="mt-4 space-y-2">
+                    <div className="mt-4 flex flex-col items-center space-y-2">
                       <Button
                         onClick={() => setShowDashboard(true)}
                         className="w-full bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white text-lg py-2 rounded-xl shadow-md transform hover:scale-105 transition-all duration-300"
