@@ -9,6 +9,7 @@ import { ScrollArea } from '../../../ui/scroll-area';
 import { Sheet, SheetContent, SheetTrigger } from '../../../ui/sheet';
 import React from 'react';
 import { useUserData } from '../../../../integrations/supabase/hooks/useUserData';
+import { updateUsageStats } from '../../../../integrations/supabase/hooks/useUpdateUsageStats';
 
 type Tab = 'usage' | 'account' | 'settings' | 'beta';
 
@@ -37,6 +38,15 @@ const DashboardPanel = ({
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
+
+  useEffect(() => {
+    const updateStats = async () => {
+      if (currentUserId) {
+        await updateUsageStats(currentUserId);
+      }
+    };
+    updateStats();
+  }, [currentUserId]);
 
   const renderContent = () => {
     if (error) {
