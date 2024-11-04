@@ -130,17 +130,24 @@ const SessionsDropdown: React.FC<SessionsDropdownProps> = ({
   const selectedSessionTitle = selectedSession
     ? sessions?.find((s) => s.id === selectedSession)?.title
     : 'Select a session';
+
+  const truncateText = (text: string, maxLength: number) => {
+    return text.length > maxLength
+      ? text.substring(0, maxLength) + '...'
+      : text;
+  };
+
   return (
     <>
       <Select
         value={selectedSession || undefined}
         onValueChange={onSelectSession}
       >
-        <SelectTrigger className="w-full sm:w-[250px] bg-gradient-to-r from-blue-400/90 to-sky-400/90 backdrop-blur-md border border-white/30 rounded-2xl shadow-lg hover:shadow-xl hover:from-blue-500/90 hover:to-sky-500/90 transition-all duration-300 focus:ring-2 focus:ring-white/40 text-sm font-medium py-2.5 px-4">
+        <SelectTrigger className="w-[80px] sm:w-[250px] bg-gradient-to-r from-blue-400/90 to-sky-400/90 backdrop-blur-md border border-white/30 rounded-2xl shadow-lg hover:shadow-xl hover:from-blue-500/90 hover:to-sky-500/90 transition-all duration-300 focus:ring-2 focus:ring-white/40 text-sm font-medium py-2.5 px-4">
           <GlowingComponent isGlowing={isGlowing}>
             <SelectValue>
               <span className="text-white font-medium truncate">
-                {selectedSessionTitle}
+                {truncateText(selectedSessionTitle || '', 5)}
               </span>
             </SelectValue>
           </GlowingComponent>
@@ -187,7 +194,8 @@ const SessionsDropdown: React.FC<SessionsDropdownProps> = ({
             </AlertDialogTitle>
             <AlertDialogDescription className="text-base text-blue-700">
               Are you sure you want to delete the session &quot;
-              {sessionToDelete?.title}&quot;? This action cannot be undone.
+              {truncateText(sessionToDelete?.title || '', 30)}&quot;? This
+              action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

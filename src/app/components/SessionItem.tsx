@@ -38,6 +38,12 @@ const SessionItem: React.FC<SessionItemProps> = ({
     onDelete(session);
   };
 
+  const truncateText = (text: string, maxLength: number) => {
+    return text.length > maxLength
+      ? text.substring(0, maxLength) + '...'
+      : text;
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -51,7 +57,10 @@ const SessionItem: React.FC<SessionItemProps> = ({
     >
       <div className="flex items-center flex-grow">
         <span className="text-sm sm:text-base font-medium truncate mr-3 text-blue-800">
-          {session.title || `Session ${session.id.slice(0, 8)}`}
+          {truncateText(
+            session.title || `Session ${session.id.slice(0, 8)}`,
+            12
+          )}
         </span>
       </div>
       <div className="flex space-x-2 flex-shrink-0">

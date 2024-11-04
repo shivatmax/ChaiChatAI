@@ -103,7 +103,7 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = React.memo(
             </motion.div>
           )}
         </AnimatePresence>
-        <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-blue-200/90 to-blue-300/90 backdrop-blur-md rounded-2xl border border-blue-100 w-full max-w-5xl shadow-lg">
+        <div className="flex items-center space-x-2 sm:space-x-3 p-2 sm:p-4 bg-gradient-to-r from-blue-200/90 to-blue-300/90 backdrop-blur-md rounded-2xl border border-blue-100 w-full max-w-5xl shadow-lg">
           <motion.div
             whileHover={{ scale: isDisabled ? 1 : 1.1 }}
             whileTap={{ scale: isDisabled ? 1 : 0.9 }}
@@ -114,10 +114,10 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = React.memo(
                   onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                   variant="outline"
                   size="icon"
-                  className="rounded-xl bg-white/80 hover:bg-white border-blue-200 w-12 h-12 transition-all duration-300"
+                  className="rounded-xl bg-white/80 hover:bg-white border-blue-200 w-8 h-8 sm:w-12 sm:h-12 transition-all duration-300"
                   disabled={isDisabled}
                 >
-                  <Smile className="h-6 w-6 text-blue-500" />
+                  <Smile className="h-4 w-4 sm:h-6 sm:w-6 text-blue-500" />
                 </Button>
               </TooltipTrigger>
               {isDisabled && (
@@ -155,7 +155,7 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = React.memo(
                           setInputMessage(newText);
                         }
                       }}
-                      className="w-full max-w-full rounded-xl bg-white/80 border border-blue-200 focus:ring-2 focus:ring-blue-300 text-blue-800 placeholder-blue-400 text-base py-3 px-4 resize-none overflow-y-auto scrollbar-thin scrollbar-thumb-blue-200 scrollbar-track-transparent backdrop-blur-sm"
+                      className="w-full max-w-full rounded-xl bg-white/80 border border-blue-200 focus:ring-2 focus:ring-blue-300 text-blue-800 placeholder-blue-400 text-base py-2 sm:py-3 px-3 sm:px-4 resize-none overflow-y-auto scrollbar-thin scrollbar-thumb-blue-200 scrollbar-track-transparent backdrop-blur-sm"
                       disabled={isDisabled}
                       style={{
                         minHeight: '50px',
@@ -180,10 +180,10 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = React.memo(
               <TooltipTrigger asChild>
                 <Button
                   onClick={handleSendMessage}
-                  className="rounded-xl bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 px-6 py-3 font-medium text-white border border-blue-200 shadow-lg transition-all duration-300"
+                  className="rounded-xl bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 px-3 sm:px-6 py-2 sm:py-3 font-medium text-white border border-blue-200 shadow-lg transition-all duration-300"
                   disabled={isDisabled}
                 >
-                  <Send className="h-5 w-5 mr-2" />
+                  <Send className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
                   <span className="hidden sm:inline">Send</span>
                 </Button>
               </TooltipTrigger>

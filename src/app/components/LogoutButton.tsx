@@ -35,13 +35,13 @@ const LogoutButton: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
         <motion.div
           whileHover={{ scale: 1.05, rotate: 2 }}
           whileTap={{ scale: 0.95 }}
-          className="flex justify-center"
+          className="flex justify-center w-full"
         >
           <Button
             variant="outline"
-            className="w-[90%] bg-gradient-to-r from-blue-400 to-sky-500 hover:from-blue-500 hover:to-sky-600 text-white font-bold py-3 px-6 rounded-2xl border border-white/20 shadow-lg shadow-blue-400/30 backdrop-blur-sm transition-all duration-300 ease-in-out text-lg"
+            className="w-full bg-gradient-to-r from-blue-400 to-sky-500 hover:from-blue-500 hover:to-sky-600 text-white font-bold py-3 px-6 rounded-2xl border border-white/20 shadow-lg shadow-blue-400/30 backdrop-blur-sm transition-all duration-300 ease-in-out text-lg"
           >
-            <LogOut className="mr-2 h-5 w-5" /> Logout
+            <LogOut className="mr-2 h-5" /> Logout
           </Button>
         </motion.div>
       </AlertDialogTrigger>
