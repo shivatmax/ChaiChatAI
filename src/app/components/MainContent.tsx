@@ -5,7 +5,7 @@ import AIFriendList from './AIFriendList';
 import ConversationInsights from './ConversationInsights';
 import UserProfile from './UserProfile';
 import { User } from '../types/SupabaseTypes';
-import { X, Plus, Menu, Sparkles, Star, Coffee } from 'lucide-react';
+import { X, Plus, Menu, Sparkles, Star, Coffee, Settings } from 'lucide-react';
 import { Button } from './ui/button';
 import { AIFriend } from '../types/AIFriend';
 import { getLatestSession } from '../services/SessionService';
@@ -19,6 +19,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { handleError } from '../utils/errorHandling';
 import { logger } from '../utils/logger';
 import SessionsDropdown from './SessionsDropdown';
+import DashboardPanel from './Dashboard/pages/sections/DashboardPanel';
 
 const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
   user,
@@ -36,6 +37,7 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
   const [selectedSession, setSelectedSession] = useState<string | null>(null);
   const [showFirstTimeExperience, setShowFirstTimeExperience] = useState(false);
   const [glowingComponent, setGlowingComponent] = useState('none');
+  const [showDashboard, setShowDashboard] = useState(false);
   const { data: aiFriendsData, isLoading: isLoadingAIFriends } = useAIFriends(
     user.id
   );
@@ -234,7 +236,13 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
                         </div>
                       </GlowingComponent>
                     </div>
-                    <div className="h-12 mt-4">
+                    <div className="flex flex-col gap-2 mt-4">
+                      <Button
+                        onClick={() => setShowDashboard(true)}
+                        className="w-full bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white text-lg py-2 rounded-xl shadow-md transform hover:scale-105 transition-all duration-300"
+                      >
+                        <Settings className="mr-2 h-5 w-5" /> Settings
+                      </Button>
                       <LogoutButton onLogout={onLogout} />
                     </div>
                   </div>
@@ -296,7 +304,7 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
                   transition={{ type: 'spring', stiffness: 120, damping: 20 }}
                   className="lg:hidden fixed inset-y-0 right-0 z-50 w-full sm:w-80 bg-gradient-to-br from-blue-50 to-blue-100 backdrop-blur-lg"
                 >
-                  <div className="h-[calc(100vh-8rem)] p-6">
+                  <div className="h-[calc(100vh-12rem)] p-6">
                     <button
                       onClick={toggleMobileRightPanel}
                       className="absolute top-4 left-4 p-2 rounded-full bg-blue-200 hover:bg-blue-300 text-blue-600 backdrop-blur-sm transform hover:rotate-90 transition-all duration-300 z-[51]"
@@ -308,7 +316,13 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
                       aiFriendId={selectedFriend?.id || ''}
                       aiFriendName={selectedFriend?.name || ''}
                     />
-                    <div className="mt-2">
+                    <div className="mt-4 space-y-2">
+                      <Button
+                        onClick={() => setShowDashboard(true)}
+                        className="w-full bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white text-lg py-2 rounded-xl shadow-md transform hover:scale-105 transition-all duration-300"
+                      >
+                        <Settings className="mr-2 h-5 w-5" /> Settings
+                      </Button>
                       <LogoutButton onLogout={onLogout} />
                     </div>
                   </div>
@@ -325,6 +339,13 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
             setShowFirstTimeExperience(false);
           }}
           updateGlowingComponent={updateGlowingComponent}
+        />
+      )}
+
+      {showDashboard && (
+        <DashboardPanel
+          onClose={() => setShowDashboard(false)}
+          currentUserId={user.id}
         />
       )}
 
