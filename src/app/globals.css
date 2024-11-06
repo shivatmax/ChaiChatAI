@@ -314,6 +314,26 @@
   .friends-scroll-area::-webkit-scrollbar {
     display: none !important; /* Chrome, Safari and Opera */
   }
+
+  .chat-app-container {
+    @apply max-w-[1000px] mx-auto h-[700px] my-8;
+  }
+
+  .chat-app-content {
+    @apply h-full rounded-[24px] backdrop-blur-lg bg-white/80 shadow-lg overflow-hidden border border-blue-100;
+  }
+
+  .chat-sidebar {
+    @apply w-[280px] h-full bg-gradient-to-b from-blue-50 to-blue-100 backdrop-blur-md border-r border-blue-100;
+  }
+
+  .chat-main {
+    @apply flex-grow flex flex-col bg-gradient-to-b from-white to-blue-50 backdrop-blur-lg;
+  }
+
+  .chat-right-sidebar {
+    @apply w-[280px] h-full bg-gradient-to-b from-blue-50 to-blue-100 backdrop-blur-md border-l border-blue-100;
+  }
 }
 
 @layer utilities {
@@ -347,6 +367,19 @@
 
   .animate-slide-up {
     animation: slide-up 0.5s ease-out;
+  }
+
+  .chat-container {
+    height: calc(100vh - 4rem);
+    max-height: 900px;
+  }
+
+  .chat-content {
+    height: calc(100% - 4rem);
+  }
+
+  .sidebar-content {
+    height: calc(100% - 2rem);
   }
 }
 

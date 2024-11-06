@@ -20,6 +20,7 @@ import { handleError } from '../utils/errorHandling';
 import { logger } from '../utils/logger';
 import SessionsDropdown from './SessionsDropdown';
 import DashboardPanel from './Dashboard/pages/sections/DashboardPanel';
+import AvatarButton from './gallery/AvatarButton';
 
 const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
   user,
@@ -103,15 +104,16 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.8, ease: 'easeInOut' }}
+      className="h-[calc(100vh-2rem)]"
     >
-      <div className="max-w-10xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="h-full p-1">
         <motion.div
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ type: 'spring', stiffness: 120, damping: 20 }}
-          className="rounded-2xl backdrop-blur-lg bg-white/80 shadow-lg overflow-hidden border border-blue-100"
+          className="h-full rounded-2xl backdrop-blur-lg bg-white/80 shadow-lg overflow-hidden border border-blue-100"
         >
-          <div className="flex h-[calc(100vh-6rem)]">
+          <div className="flex h-full">
             {/* Left Sidebar */}
             <AnimatePresence>
               {(desktopLeftPanelOpen || window.innerWidth >= 1280) && (
@@ -120,7 +122,7 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
                   animate={{ x: 0, opacity: 1 }}
                   exit={{ x: -300, opacity: 0 }}
                   transition={{ type: 'spring', stiffness: 120, damping: 20 }}
-                  className="hidden lg:block w-full lg:w-[28%] bg-gradient-to-b from-blue-50 to-blue-100 backdrop-blur-md border-r border-blue-100"
+                  className="hidden lg:block w-full lg:w-[28%] h-full bg-gradient-to-b from-blue-50 to-blue-100 backdrop-blur-md border-r border-blue-100"
                 >
                   <div className="h-full flex flex-col">
                     <div className="flex justify-center py-2 pt-2">
@@ -163,6 +165,7 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
                           Create Session
                         </Button>
                       </GlowingComponent>
+                      <AvatarButton userId={user.id} />
                     </div>
                   </div>
                 </motion.div>
@@ -174,7 +177,7 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.5, ease: 'easeOut' }}
-              className="flex-grow flex flex-col w-full lg:w-1/2 bg-gradient-to-b from-white to-blue-50 backdrop-blur-lg"
+              className="flex-grow flex flex-col w-full lg:w-1/2 h-full bg-gradient-to-b from-white to-blue-50 backdrop-blur-lg"
             >
               <div className="flex items-center justify-between pb-4 pt-2 bg-gradient-to-r from-blue-100 to-blue-200 backdrop-blur-md border-b border-blue-100 lg:hidden">
                 <Button
@@ -220,10 +223,10 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
                   animate={{ x: 0, opacity: 1 }}
                   exit={{ x: 300, opacity: 0 }}
                   transition={{ type: 'spring', stiffness: 120, damping: 20 }}
-                  className="hidden lg:block w-full lg:w-1/4 bg-gradient-to-b from-blue-50 to-blue-100 backdrop-blur-md border-l border-blue-100"
+                  className="hidden lg:block w-full lg:w-1/4 h-full bg-gradient-to-b from-blue-50 to-blue-100 backdrop-blur-md border-l border-blue-100"
                 >
-                  <div className="h-[calc(100vh-5.5rem)] p-4 flex flex-col">
-                    <div className="flex-grow overflow-hidden rounded-xl h-[calc(100vh-11rem)]">
+                  <div className="h-[calc(100vh-4rem)] p-4 flex flex-col">
+                    <div className="flex-grow overflow-hidden rounded-xl">
                       <GlowingComponent
                         isGlowing={glowingComponent === 'conversationInsights'}
                       >
@@ -288,6 +291,7 @@ const MainContent: React.FC<{ user: User; onLogout: () => void }> = ({
                       >
                         Create Session
                       </Button>
+                      <AvatarButton userId={user.id} />
                     </div>
                   </div>
                 </motion.div>

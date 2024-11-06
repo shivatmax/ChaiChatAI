@@ -6,7 +6,6 @@ import MainContent from '../components/MainContent';
 import { motion } from 'framer-motion';
 import { createEncryptedUser } from '../utils/encryption';
 import { logger } from '../utils/logger';
-import AvatarButton from '../components/gallery/AvatarButton';
 
 interface IndexProps {
   onLogout: () => void;
@@ -96,13 +95,9 @@ const Index: React.FC<IndexProps> = ({ onLogout, onNavigate }) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className="relative"
+      className="relative min-h-screen w-full bg-gradient-to-b from-blue-50 to-blue-100"
     >
-      {/* <ComicBackground /> */}
-      <div className="">
-        <AvatarButton userId={user.id} />
-      </div>
-      <div className="max-w-[90rem] mx-auto px-2 sm:px-4 lg:px-4 py-2 relative z-10">
+      <div className="max-w-[75rem] mx-auto px-4 py-4 relative z-10 h-[calc(100vh-2rem)]">
         <MainContent user={user} onLogout={onLogout} />
       </div>
     </motion.div>
