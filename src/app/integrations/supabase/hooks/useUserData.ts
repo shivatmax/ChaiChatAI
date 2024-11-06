@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../supabase';
 // import { decrypt } from '../../../utils/encryption';
 import { logger } from '../../../utils/logger';
+import { v4 as uuidv4 } from 'uuid';
 
 const fetchUser = async (currentUserId: string) => {
   console.log('Fetching user data for ID:', currentUserId);
@@ -76,13 +77,15 @@ const fetchSettings = async (currentUserId: string) => {
     if (error.code === 'PGRST116') {
       console.log('No settings found, creating default settings');
       const defaultSettings = {
-        userId: currentUserId,
-        emailNotifications: false,
-        pushNotifications: false,
-        shareUsageData: false,
-        publicProfile: false,
-        messageHistory: false,
-        autoReply: false,
+        id: uuidv4(),
+        user_id: currentUserId,
+        email_notifications: true,
+        push_notifications: false,
+        share_usage_data: false,
+        message_history: false,
+        auto_reply: false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       };
 
       const { data: newSettings, error: createError } = await supabase

@@ -167,7 +167,6 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess, onNavigate }) => {
         email_notifications: false,
         push_notifications: false,
         share_usage_data: false,
-        public_profile: false,
         message_history: true,
         auto_reply: false,
         created_at: new Date().toISOString(),

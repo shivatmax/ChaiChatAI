@@ -12,7 +12,7 @@ import AvatarGrid from './avatar/AvatarGrid';
 import { useFavorites } from '../../hooks/useFavorites';
 import { cn } from '../../lib/utils';
 import React from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu } from 'lucide-react';
 
 const AVATAR_CATEGORIES = [
   'All',
@@ -100,20 +100,16 @@ const AvatarLibrary = ({ userId }: { userId: string }) => {
   const isMobile = windowWidth < 768;
 
   return (
-    <div className="flex h-full overflow-hidden bg-white">
+    <div className="flex h-full overflow-hidden bg-white relative">
       {/* Mobile Menu Button and Navigation */}
       {isMobile && (
-        <div className="fixed top-0 left-0 right-0 z-50">
+        <div className="fixed top-0 left-0 right-0 z-[100]">
           <div className="flex items-center justify-between p-3 bg-white border-b border-avatar-primary/10">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
             >
-              {isMobileMenuOpen ? (
-                <X className="w-7 h-7 text-avatar-primary" />
-              ) : (
-                <Menu className="w-7 h-7 text-avatar-primary" />
-              )}
+              <Menu className="w-7 h-7 text-avatar-primary" />
             </button>
             {isMobileMenuOpen && (
               <div className="absolute top-full left-0 w-full max-w-[280px] bg-white shadow-xl border-r border-avatar-primary/10 rounded-br-lg">

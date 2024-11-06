@@ -21,7 +21,6 @@ const Settings = ({ currentUserId }: { currentUserId: string }) => {
     email_notifications: false,
     push_notifications: false,
     share_usage_data: false,
-    public_profile: false,
     message_history: false,
     auto_reply: false,
   });
@@ -32,7 +31,6 @@ const Settings = ({ currentUserId }: { currentUserId: string }) => {
         email_notifications: Boolean(userData.settings.email_notifications),
         push_notifications: Boolean(userData.settings.push_notifications),
         share_usage_data: Boolean(userData.settings.share_usage_data),
-        public_profile: Boolean(userData.settings.public_profile),
         message_history: Boolean(userData.settings.message_history),
         auto_reply: Boolean(userData.settings.auto_reply),
       });
@@ -138,11 +136,6 @@ const Settings = ({ currentUserId }: { currentUserId: string }) => {
               title="Share Usage Data"
               description="Help us improve by sharing anonymous usage data"
               settingKey="share_usage_data"
-            />
-            <SettingItem
-              title="Public Profile"
-              description="Make your profile visible to other users"
-              settingKey="public_profile"
             />
           </div>
         </section>

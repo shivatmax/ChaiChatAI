@@ -53,6 +53,8 @@ const BetaFeatures = ({ currentUserId }: { currentUserId: string }) => {
                 <Image
                   src={feature.image_url}
                   alt={feature.feature_name}
+                  width={1000}
+                  height={1000}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
               </div>

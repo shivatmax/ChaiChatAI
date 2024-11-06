@@ -1,14 +1,13 @@
 export interface UserSettings {
   id: string;
   userId: string;
-  emailNotifications?: boolean;
-  pushNotifications?: boolean;
-  shareUsageData?: boolean;
-  publicProfile?: boolean;
-  messageHistory?: boolean;
-  autoReply?: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
+  email_notifications?: boolean;
+  push_notifications?: boolean;
+  share_usage_data?: boolean;
+  message_history?: boolean;
+  auto_reply?: boolean;
+  created_at?: Date;
+  updated_at?: Date;
 }
 
 export interface UsageStatistics {

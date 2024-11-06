@@ -114,10 +114,13 @@ const DashboardPanel = ({
             <div className="flex items-center justify-between">
               <button
                 onClick={onClose}
-                className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+                className="flex items-center gap-2.5 px-3 py-1.5 text-blue-600 hover:text-blue-800 bg-blue-50/50 hover:bg-blue-100/80 rounded-lg transition-all duration-300 ease-in-out transform hover:-translate-x-0.5 hover:shadow-sm group"
               >
-                <ArrowLeft size={20} />
-                Back
+                <ArrowLeft
+                  size={20}
+                  className="transition-transform duration-300 group-hover:-translate-x-1"
+                />
+                <span className="font-medium">Back</span>
               </button>
               <MobileNav />
             </div>
