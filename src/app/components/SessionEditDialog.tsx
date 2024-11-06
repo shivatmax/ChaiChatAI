@@ -11,7 +11,8 @@ import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { Session, SessionType } from '../types/Session';
 import { motion } from 'framer-motion';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, AlertCircle } from 'lucide-react';
+import { useToast } from '../hooks/use-toast';
 
 interface SessionEditDialogProps {
   isOpen: boolean;
@@ -36,6 +37,9 @@ const SessionEditDialog: React.FC<SessionEditDialogProps> = ({
     title: '',
   });
 
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const { toast } = useToast();
+
   useEffect(() => {
     if (session) {
       const parsedDescription =
@@ -54,9 +58,47 @@ const SessionEditDialog: React.FC<SessionEditDialogProps> = ({
     }
   }, [session]);
 
+  const validateField = (field: string, value: string) => {
+    const newErrors = { ...errors };
+
+    if (field === 'title' && value.length < 3) {
+      newErrors[field] = 'Title must be at least 3 characters long';
+    } else if (field !== 'title' && value.length < 6) {
+      newErrors[field] = 'Must be at least 6 characters long';
+    } else {
+      delete newErrors[field];
+    }
+
+    setErrors(newErrors);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!session) return;
+
+    // Validate all fields before submission
+    validateField('title', sessionData.title);
+    if (sessionData.description)
+      validateField('description', sessionData.description);
+    if (sessionData.charactersAndRelationships)
+      validateField(
+        'charactersAndRelationships',
+        sessionData.charactersAndRelationships
+      );
+    if (sessionData.teamMembers)
+      validateField('teamMembers', sessionData.teamMembers);
+    if (sessionData.projectDescription)
+      validateField('projectDescription', sessionData.projectDescription);
+
+    // Check if any field has validation errors
+    if (Object.keys(errors).length > 0) {
+      toast({
+        title: 'Validation Error',
+        description: 'Please check all fields meet minimum length requirements',
+        variant: 'destructive',
+      });
+      return;
+    }
 
     const updates: Partial<Session> = {
       title: sessionData.title,
@@ -109,12 +151,21 @@ const SessionEditDialog: React.FC<SessionEditDialogProps> = ({
                   id="title"
                   name="title"
                   value={sessionData.title}
-                  onChange={(e) =>
-                    setSessionData({ ...sessionData, title: e.target.value })
-                  }
+                  onChange={(e) => {
+                    setSessionData({ ...sessionData, title: e.target.value });
+                    validateField('title', e.target.value);
+                  }}
                   required
-                  className="bg-white/80 border-blue-200 text-blue-900 placeholder:text-blue-400 focus:border-blue-400 focus:ring-blue-400"
+                  className={`bg-white/80 border-blue-200 text-blue-900 placeholder:text-blue-400 focus:border-blue-400 focus:ring-blue-400 ${
+                    errors.title ? 'border-red-500' : ''
+                  }`}
                 />
+                {errors.title && (
+                  <div className="flex items-center mt-1 text-red-500 text-sm">
+                    <AlertCircle className="h-4 w-4 mr-1" />
+                    {errors.title}
+                  </div>
+                )}
               </div>
               {session.session_type === SessionType.General && (
                 <div>
@@ -128,15 +179,24 @@ const SessionEditDialog: React.FC<SessionEditDialogProps> = ({
                     id="description"
                     name="description"
                     value={sessionData.description}
-                    onChange={(e) =>
+                    onChange={(e) => {
                       setSessionData({
                         ...sessionData,
                         description: e.target.value,
-                      })
-                    }
+                      });
+                      validateField('description', e.target.value);
+                    }}
                     rows={3}
-                    className="bg-white/80 border-blue-200 text-blue-900 placeholder:text-blue-400 focus:border-blue-400 focus:ring-blue-400"
+                    className={`bg-white/80 border-blue-200 text-blue-900 placeholder:text-blue-400 focus:border-blue-400 focus:ring-blue-400 ${
+                      errors.description ? 'border-red-500' : ''
+                    }`}
                   />
+                  {errors.description && (
+                    <div className="flex items-center mt-1 text-red-500 text-sm">
+                      <AlertCircle className="h-4 w-4 mr-1" />
+                      {errors.description}
+                    </div>
+                  )}
                 </div>
               )}
               {session.session_type === SessionType.StoryMode && (
@@ -151,15 +211,27 @@ const SessionEditDialog: React.FC<SessionEditDialogProps> = ({
                     id="characters_and_relationships"
                     name="characters_and_relationships"
                     value={sessionData.charactersAndRelationships}
-                    onChange={(e) =>
+                    onChange={(e) => {
                       setSessionData({
                         ...sessionData,
                         charactersAndRelationships: e.target.value,
-                      })
-                    }
+                      });
+                      validateField(
+                        'charactersAndRelationships',
+                        e.target.value
+                      );
+                    }}
                     rows={3}
-                    className="bg-white/80 border-blue-200 text-blue-900 placeholder:text-blue-400 focus:border-blue-400 focus:ring-blue-400"
+                    className={`bg-white/80 border-blue-200 text-blue-900 placeholder:text-blue-400 focus:border-blue-400 focus:ring-blue-400 ${
+                      errors.charactersAndRelationships ? 'border-red-500' : ''
+                    }`}
                   />
+                  {errors.charactersAndRelationships && (
+                    <div className="flex items-center mt-1 text-red-500 text-sm">
+                      <AlertCircle className="h-4 w-4 mr-1" />
+                      {errors.charactersAndRelationships}
+                    </div>
+                  )}
                 </div>
               )}
               {session.session_type === SessionType.ResearchCreateMode && (
@@ -175,14 +247,23 @@ const SessionEditDialog: React.FC<SessionEditDialogProps> = ({
                       id="team_members"
                       name="team_members"
                       value={sessionData.teamMembers}
-                      onChange={(e) =>
+                      onChange={(e) => {
                         setSessionData({
                           ...sessionData,
                           teamMembers: e.target.value,
-                        })
-                      }
-                      className="bg-white/80 border-blue-200 text-blue-900 placeholder:text-blue-400 focus:border-blue-400 focus:ring-blue-400"
+                        });
+                        validateField('teamMembers', e.target.value);
+                      }}
+                      className={`bg-white/80 border-blue-200 text-blue-900 placeholder:text-blue-400 focus:border-blue-400 focus:ring-blue-400 ${
+                        errors.teamMembers ? 'border-red-500' : ''
+                      }`}
                     />
+                    {errors.teamMembers && (
+                      <div className="flex items-center mt-1 text-red-500 text-sm">
+                        <AlertCircle className="h-4 w-4 mr-1" />
+                        {errors.teamMembers}
+                      </div>
+                    )}
                   </div>
                   <div>
                     <label
@@ -195,15 +276,24 @@ const SessionEditDialog: React.FC<SessionEditDialogProps> = ({
                       id="project_description"
                       name="project_description"
                       value={sessionData.projectDescription}
-                      onChange={(e) =>
+                      onChange={(e) => {
                         setSessionData({
                           ...sessionData,
                           projectDescription: e.target.value,
-                        })
-                      }
+                        });
+                        validateField('projectDescription', e.target.value);
+                      }}
                       rows={3}
-                      className="bg-white/80 border-blue-200 text-blue-900 placeholder:text-blue-400 focus:border-blue-400 focus:ring-blue-400"
+                      className={`bg-white/80 border-blue-200 text-blue-900 placeholder:text-blue-400 focus:border-blue-400 focus:ring-blue-400 ${
+                        errors.projectDescription ? 'border-red-500' : ''
+                      }`}
                     />
+                    {errors.projectDescription && (
+                      <div className="flex items-center mt-1 text-red-500 text-sm">
+                        <AlertCircle className="h-4 w-4 mr-1" />
+                        {errors.projectDescription}
+                      </div>
+                    )}
                   </div>
                 </>
               )}

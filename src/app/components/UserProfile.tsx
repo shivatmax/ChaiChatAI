@@ -22,6 +22,7 @@ import {
   Loader2,
   Sparkles,
   Image as ImageIcon,
+  AlertCircle,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import GlowingComponent from './GlowingComponent';
@@ -53,9 +54,50 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [currentAvatar, setCurrentAvatar] = useState(user?.avatar_url || '');
+  const [validationErrors, setValidationErrors] = useState<{
+    [key: string]: string;
+  }>({});
+
+  const validateField = (field: string, value: string) => {
+    if (field === 'name' && value.length < 3) {
+      return 'Name must be at least 3 characters long';
+    } else if (field !== 'name' && value.length < 6) {
+      return 'Must be at least 6 characters long';
+    } else {
+      return '';
+    }
+  };
 
   const handleSave = async () => {
     if (editedUser) {
+      const errors: { [key: string]: string } = {};
+
+      // Validate all fields
+      const fieldsToValidate = {
+        name: editedUser.name || '',
+        persona: editedUser.persona || '',
+        about: (editedUser.about as string) || '',
+        knowledge_base: editedUser.knowledge_base || '',
+      };
+
+      Object.entries(fieldsToValidate).forEach(([field, value]) => {
+        const error = validateField(field, value);
+        if (error) {
+          errors[field] = error;
+        }
+      });
+
+      if (Object.keys(errors).length > 0) {
+        setValidationErrors(errors);
+        const errorMessages = Object.values(errors).join('\n');
+        toast({
+          title: 'Validation Error',
+          description: errorMessages,
+          variant: 'destructive',
+        });
+        return;
+      }
+
       try {
         await updateUserMutation.mutateAsync({
           ...editedUser,
@@ -70,6 +112,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
         if (user) {
           Object.assign(user, editedUser);
         }
+        setValidationErrors({});
       } catch (error) {
         logger.error('Error updating user:', error);
       }
@@ -77,15 +120,31 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newName = e.target.value.slice(0, 12);
-    setEditedUser((prev) =>
-      prev
-        ? {
-            ...prev,
-            name: newName || 'New User',
-          }
-        : null
-    );
+    const newName = e.target.value;
+    if (newName.length <= 12) {
+      setEditedUser((prev) =>
+        prev
+          ? {
+              ...prev,
+              name: newName,
+            }
+          : null
+      );
+      const error = validateField('name', newName);
+      setValidationErrors((prev) => ({
+        ...prev,
+        name: error,
+      }));
+    }
+  };
+
+  const handleFieldChange = (field: string, value: string) => {
+    setEditedUser((prev) => (prev ? { ...prev, [field]: value } : null));
+    const error = validateField(field, value);
+    setValidationErrors((prev) => ({
+      ...prev,
+      [field]: error,
+    }));
   };
 
   const handleAvatarUpload = async (
@@ -245,18 +304,31 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
                 htmlFor="name"
                 className="block text-lg font-medium text-blue-900/80 mb-2"
               >
-                Name (max 12 characters)
+                Name (3-12 characters)
               </label>
-              <div className="relative">
-                <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-900/60" />
-                <Input
-                  id="name"
-                  placeholder="Name"
-                  value={editedUser?.name || ''}
-                  onChange={handleNameChange}
-                  maxLength={12}
-                  className="w-full pl-10 pr-3 py-2 text-lg bg-white/50 border border-blue-200 rounded-xl text-blue-900"
-                />
+              <div className="relative flex flex-col">
+                <div className="relative">
+                  <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-900/60" />
+                  <Input
+                    id="name"
+                    placeholder="Name"
+                    value={editedUser?.name || ''}
+                    onChange={handleNameChange}
+                    maxLength={12}
+                    minLength={3}
+                    className={`w-full pl-10 pr-3 py-2 text-lg bg-white/50 border rounded-xl text-blue-900 ${
+                      validationErrors.name
+                        ? 'border-red-500'
+                        : 'border-blue-200'
+                    }`}
+                  />
+                </div>
+                {validationErrors.name && (
+                  <div className="flex items-center mt-1 text-red-500 text-sm">
+                    <AlertCircle className="h-4 w-4 mr-1" />
+                    {validationErrors.name}
+                  </div>
+                )}
               </div>
             </div>
             <div>
@@ -270,13 +342,19 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
                 id="persona"
                 placeholder="Persona"
                 value={editedUser?.persona || ''}
-                onChange={(e) =>
-                  setEditedUser((prev) =>
-                    prev ? { ...prev, persona: e.target.value } : null
-                  )
-                }
-                className="w-full px-3 py-2 text-lg bg-white/50 border border-blue-200 rounded-xl min-h-[80px] resize-y text-blue-900"
+                onChange={(e) => handleFieldChange('persona', e.target.value)}
+                className={`w-full px-3 py-2 text-lg bg-white/50 border rounded-xl min-h-[80px] resize-y text-blue-900 ${
+                  validationErrors.persona
+                    ? 'border-red-500'
+                    : 'border-blue-200'
+                }`}
               />
+              {validationErrors.persona && (
+                <div className="flex items-center mt-1 text-red-500 text-sm">
+                  <AlertCircle className="h-4 w-4 mr-1" />
+                  {validationErrors.persona}
+                </div>
+              )}
             </div>
             <div>
               <label
@@ -289,13 +367,17 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
                 id="about"
                 placeholder="About"
                 value={(editedUser?.about as string) || ''}
-                onChange={(e) =>
-                  setEditedUser((prev) =>
-                    prev ? { ...prev, about: e.target.value } : null
-                  )
-                }
-                className="w-full px-3 py-2 text-lg bg-white/50 border border-blue-200 rounded-xl min-h-[80px] resize-y text-blue-900"
+                onChange={(e) => handleFieldChange('about', e.target.value)}
+                className={`w-full px-3 py-2 text-lg bg-white/50 border rounded-xl min-h-[80px] resize-y text-blue-900 ${
+                  validationErrors.about ? 'border-red-500' : 'border-blue-200'
+                }`}
               />
+              {validationErrors.about && (
+                <div className="flex items-center mt-1 text-red-500 text-sm">
+                  <AlertCircle className="h-4 w-4 mr-1" />
+                  {validationErrors.about}
+                </div>
+              )}
             </div>
             <div>
               <label
@@ -309,18 +391,29 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
                 placeholder="Knowledge Base"
                 value={editedUser?.knowledge_base || ''}
                 onChange={(e) =>
-                  setEditedUser((prev) =>
-                    prev ? { ...prev, knowledge_base: e.target.value } : null
-                  )
+                  handleFieldChange('knowledge_base', e.target.value)
                 }
-                className="w-full px-3 py-2 text-lg bg-white/50 border border-blue-200 rounded-xl min-h-[80px] resize-y text-blue-900"
+                className={`w-full px-3 py-2 text-lg bg-white/50 border rounded-xl min-h-[80px] resize-y text-blue-900 ${
+                  validationErrors.knowledge_base
+                    ? 'border-red-500'
+                    : 'border-blue-200'
+                }`}
               />
+              {validationErrors.knowledge_base && (
+                <div className="flex items-center mt-1 text-red-500 text-sm">
+                  <AlertCircle className="h-4 w-4 mr-1" />
+                  {validationErrors.knowledge_base}
+                </div>
+              )}
             </div>
           </div>
           <DialogFooter>
             <div className="w-full flex justify-between space-x-3">
               <Button
-                onClick={() => setIsOpen(false)}
+                onClick={() => {
+                  setIsOpen(false);
+                  setValidationErrors({});
+                }}
                 variant="outline"
                 className="w-1/2 bg-blue-200 hover:bg-blue-300 text-blue-900 text-lg py-3 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300"
               >
@@ -328,7 +421,10 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
               </Button>
               <Button
                 onClick={handleSave}
-                disabled={updateUserMutation.isPending}
+                disabled={
+                  updateUserMutation.isPending ||
+                  Object.keys(validationErrors).length > 0
+                }
                 className="w-1/2 bg-gradient-to-r from-blue-300 to-blue-400 hover:from-blue-400 hover:to-blue-500 text-white text-lg py-3 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300"
               >
                 <Save className="mr-2 h-5 w-5" />

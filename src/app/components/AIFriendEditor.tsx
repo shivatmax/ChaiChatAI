@@ -13,7 +13,8 @@ import {
 } from './ui/dialog';
 import { useToast } from '../hooks/use-toast';
 import { useUpdateAIFriend } from '../integrations/supabase/hooks/useAIFriend';
-import { User, Save } from 'lucide-react';
+import { User, Save, AlertCircle } from 'lucide-react';
+import { logger } from '../utils/logger';
 
 interface AIFriendEditorProps {
   friend: AIFriend;
@@ -30,10 +31,44 @@ const AIFriendEditor: React.FC<AIFriendEditorProps> = ({
 }) => {
   const [editedFriend, setEditedFriend] = useState(friend);
   const [isOpen, setIsOpen] = useState(false);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const { toast } = useToast();
   const updateAIFriend = useUpdateAIFriend();
 
+  const validateField = (field: string, value: string) => {
+    const newErrors = { ...errors };
+
+    if (field === 'name' && value.length < 3) {
+      newErrors[field] = 'Name must be at least 3 characters long';
+    } else if (field !== 'name' && value.length < 6) {
+      newErrors[field] = 'Must be at least 6 characters long';
+    } else {
+      delete newErrors[field];
+    }
+
+    setErrors(newErrors);
+  };
+
   const handleSave = async () => {
+    // Validate all fields before submission
+    validateField('name', editedFriend.name);
+    validateField('persona', editedFriend.persona);
+    validateField('knowledge_base', editedFriend.knowledge_base);
+
+    if (
+      editedFriend.name.length < 3 ||
+      editedFriend.persona.length < 6 ||
+      editedFriend.knowledge_base.length < 6
+    ) {
+      toast({
+        title: 'Validation Error',
+        description: 'Please check all fields meet minimum length requirements',
+        variant: 'destructive',
+        className: 'bg-comic-red text-white font-bold',
+      });
+      return;
+    }
+
     try {
       await updateAIFriend.mutateAsync({
         updatedAIFriend: editedFriend,
@@ -48,8 +83,8 @@ const AIFriendEditor: React.FC<AIFriendEditorProps> = ({
       setIsOpen(false);
       localStorage.removeItem('aiFriendsSummary');
       localStorage.removeItem('cachedAIFriendsData');
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
+      logger.error(error as string);
       toast({
         title: 'Error',
         description: 'Failed to update AI Friend. Please try again.',
@@ -62,6 +97,7 @@ const AIFriendEditor: React.FC<AIFriendEditorProps> = ({
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value.slice(0, 12);
     setEditedFriend({ ...editedFriend, name: newName });
+    validateField('name', newName);
   };
 
   return (
@@ -89,14 +125,24 @@ const AIFriendEditor: React.FC<AIFriendEditorProps> = ({
               Name (max 12 characters)
             </label>
             <div className="relative mt-2">
-              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400" />
-              <Input
-                id="name"
-                value={editedFriend.name}
-                onChange={handleNameChange}
-                maxLength={12}
-                className="w-full pl-10 pr-3 py-3 text-xl bg-white border border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent placeholder-blue-300 text-blue-800"
-              />
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400" />
+                <Input
+                  id="name"
+                  value={editedFriend.name}
+                  onChange={handleNameChange}
+                  maxLength={12}
+                  className={`w-full pl-10 pr-3 py-3 text-xl bg-white border rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent placeholder-blue-300 text-blue-800 ${
+                    errors.name ? 'border-red-500' : 'border-blue-200'
+                  }`}
+                />
+              </div>
+              {errors.name && (
+                <div className="flex items-center mt-1 text-red-500 text-sm">
+                  <AlertCircle className="h-4 w-4 mr-1" />
+                  {errors.name}
+                </div>
+              )}
             </div>
           </div>
           <div>
@@ -109,12 +155,21 @@ const AIFriendEditor: React.FC<AIFriendEditorProps> = ({
             <Textarea
               id="persona"
               value={editedFriend.persona}
-              onChange={(e) =>
-                setEditedFriend({ ...editedFriend, persona: e.target.value })
-              }
-              className="mt-2 text-base p-3 bg-white border border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent text-blue-800"
+              onChange={(e) => {
+                setEditedFriend({ ...editedFriend, persona: e.target.value });
+                validateField('persona', e.target.value);
+              }}
+              className={`mt-2 text-base p-3 bg-white border rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent text-blue-800 ${
+                errors.persona ? 'border-red-500' : 'border-blue-200'
+              }`}
               rows={3}
             />
+            {errors.persona && (
+              <div className="flex items-center mt-1 text-red-500 text-sm">
+                <AlertCircle className="h-4 w-4 mr-1" />
+                {errors.persona}
+              </div>
+            )}
           </div>
           <div>
             <label
@@ -143,15 +198,24 @@ const AIFriendEditor: React.FC<AIFriendEditorProps> = ({
             <Textarea
               id="knowledgeBase"
               value={editedFriend.knowledge_base}
-              onChange={(e) =>
+              onChange={(e) => {
                 setEditedFriend({
                   ...editedFriend,
                   knowledge_base: e.target.value,
-                })
-              }
-              className="mt-2 text-base p-3 bg-white border border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent text-blue-800"
+                });
+                validateField('knowledge_base', e.target.value);
+              }}
+              className={`mt-2 text-base p-3 bg-white border rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent text-blue-800 ${
+                errors.knowledge_base ? 'border-red-500' : 'border-blue-200'
+              }`}
               rows={3}
             />
+            {errors.knowledge_base && (
+              <div className="flex items-center mt-1 text-red-500 text-sm">
+                <AlertCircle className="h-4 w-4 mr-1" />
+                {errors.knowledge_base}
+              </div>
+            )}
           </div>
           <DialogFooter className="flex flex-row justify-between gap-4 pt-4">
             <Button
