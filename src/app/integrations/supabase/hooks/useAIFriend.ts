@@ -32,11 +32,21 @@ export const useAIFriends = (userId: string) =>
     queryFn: async () => {
       const { data, error } = await supabase
         .from('AIFriend')
-        .select('*')
+        .select(
+          `
+          *,
+          avatar:Avatar!avatar_id(image_url)
+        `
+        )
         .eq('user_id', userId);
 
       if (error) throw new Error(error.message);
-      return data;
+
+      // Transform the data to include avatar_url from the avatar relation
+      return data.map((friend) => ({
+        ...friend,
+        avatar_url: friend.avatar?.image_url,
+      }));
     },
   });
 

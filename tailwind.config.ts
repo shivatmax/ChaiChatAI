@@ -74,6 +74,13 @@ export default {
           transparent: '#00000000',
         },
         pink: '#DB2777', // Professional magenta pink
+        avatar: {
+          primary: '#4B96FF',
+          secondary: '#E6F0FF',
+          hover: '#3B82F6',
+          accent: '#8B5CF6',
+          light: '#F8FAFF',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',

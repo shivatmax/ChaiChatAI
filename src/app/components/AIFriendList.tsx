@@ -50,6 +50,7 @@ import { Input } from './ui/input';
 import { imageGen } from '../utils/models';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Label } from './ui/label';
+import { supabase } from '../integrations/supabase/supabase';
 
 interface AIFriendListProps {
   onSelectFriend: (friend: AIFriend) => void;
@@ -154,18 +155,21 @@ const AIFriendList: React.FC<AIFriendListProps> = React.memo(
       if (selectedFriend && previewImage) {
         setIsSaving(true);
         try {
-          await updateAIFriendMutation.mutateAsync({
-            updatedAIFriend: { ...selectedFriend, avatar_url: previewImage },
-            userId,
-          });
+          const { error } = await supabase
+            .from('Avatar')
+            .update({ image_url: previewImage })
+            .eq('id', selectedFriend.avatar_id);
+
+          if (error) throw error;
+
           toast({
             title: 'Avatar Updated',
             description: 'AI Friend avatar has been successfully updated.',
           });
           setIsAvatarDialogOpen(false);
           setPreviewImage(null);
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
+          console.error(error);
           toast({
             title: 'Error',
             description: 'Failed to save avatar. Please try again.',

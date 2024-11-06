@@ -1,6 +1,7 @@
 export interface AIFriend {
   id: string;
   user_id: string;
+  avatar_id: string;
   name: string;
   persona: string;
   about: string;

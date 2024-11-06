@@ -9,6 +9,8 @@ import { useAddAIFriend } from '../integrations/supabase/hooks/useAIFriend';
 import { motion, AnimatePresence } from 'framer-motion';
 import { sanitizeInput } from '../utils/sanitize';
 import { logger } from '../utils/logger';
+import { v4 as uuidv4 } from 'uuid';
+import { supabase } from '../integrations/supabase/supabase';
 
 interface AIFriendCreatorProps {
   onAIFriendCreated: (friend: AIFriend) => void;
@@ -44,20 +46,50 @@ const AIFriendCreator: React.FC<AIFriendCreatorProps> = ({
       const sanitizedKnowledgeBase = sanitizeInput(knowledgeBase);
 
       if (friendCount < 5) {
-        const newFriend: Omit<AIFriend, 'id' | 'created_at' | 'updated_at'> = {
-          name: sanitizedName,
-          persona: sanitizedPersona,
-          about,
-          knowledge_base: sanitizedKnowledgeBase,
-          memory: [],
-          status: true,
-          user_id: userId,
-        };
         try {
+          // First create a default avatar
+          const avatarId = uuidv4();
+          const now = new Date().toISOString();
+          const { error: avatarError } = await supabase.from('Avatar').insert([
+            {
+              id: avatarId,
+              name: sanitizedName,
+              creator_id: userId,
+              description: about || '',
+              image_url: '',
+              about: about || '',
+              persona: sanitizedPersona,
+              knowledge_base: sanitizedKnowledgeBase,
+              status: true,
+              created_at: now,
+              updated_at: now,
+              interactions: 0,
+              tags: [],
+              is_featured: false,
+              is_public: false,
+            },
+          ]);
+
+          if (avatarError) throw avatarError;
+
+          // Then create the AI Friend with the avatar reference
+          const newFriend: Omit<AIFriend, 'id' | 'created_at' | 'updated_at'> =
+            {
+              name: sanitizedName,
+              persona: sanitizedPersona,
+              about,
+              knowledge_base: sanitizedKnowledgeBase,
+              memory: [],
+              status: true,
+              user_id: userId,
+              avatar_id: avatarId,
+            };
+
           const result = await addAIFriend.mutateAsync({
             newAIFriend: newFriend,
             userId,
           });
+
           if (result && result.id) {
             toast({
               title: 'AI Friend Created',

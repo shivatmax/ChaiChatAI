@@ -23,11 +23,13 @@ model User {
   avatar_url           String?
   created_at           DateTime              @default(now())
   updated_at           DateTime              @updatedAt
+  favorite_avatars     String[]              @default([])
   AIFriend             AIFriend[]
   conversation_history ConversationHistory[]
   sessions             Session[]
   user_knowledge_base  UserKnowledgeBase[]
   todaysSummary        Boolean               @default(true)
+  created_avatars      Avatar[]
 
   // Relations
   settings        UserSettings?
@@ -35,22 +37,52 @@ model User {
   accountSettings AccountSettings?
 }
 
+model Avatar {
+  id           String   @id @default(uuid())
+  name         String
+  creator_id   String
+  description  String
+  image_url    String
+  interactions Int      @default(0)
+  tags         String[] @default([])
+  is_featured  Boolean  @default(false)
+  is_public    Boolean  @default(false)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  // AI Friend properties
+  about          String  @default("")
+  persona        String  @default("")
+  knowledge_base String  @default("")
+  memory         Json?
+  status         Boolean @default(true)
+
+  // Relations
+  creator            User       @relation(fields: [creator_id], references: [id])
+  used_by_ai_friends AIFriend[]
+
+  @@index([creator_id])
+}
+
 model AIFriend {
-  id                     String                @id @default(uuid())
-  user_id                String
-  name                   String
-  about                  String
-  persona                String
-  knowledge_base         String
-  memory                 Json?
-  status                 Boolean               @default(true)
-  created_at             DateTime              @default(now())
-  updated_at             DateTime              @updatedAt
+  id             String   @id @default(uuid())
+  user_id        String
+  avatar_id      String
+  name           String
+  about          String
+  persona        String
+  knowledge_base String
+  memory         Json?
+  status         Boolean  @default(true)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  // Relations
   User                   User                  @relation(fields: [user_id], references: [id])
+  avatar                 Avatar                @relation(fields: [avatar_id], references: [id])
   conversation_history   ConversationHistory[]
   knowledge_base_updates KnowledgeBase[]
   sessions               Session[]             @relation("AIFriendToSession")
-  avatar_url             String?
 
   @@unique([user_id, name])
 }
@@ -148,7 +180,6 @@ model UserSettings {
   emailNotifications Boolean?  @default(false) @map("email_notifications")
   pushNotifications  Boolean?  @default(false) @map("push_notifications")
   shareUsageData     Boolean?  @default(false) @map("share_usage_data")
-  publicProfile      Boolean?  @default(false) @map("public_profile")
   messageHistory     Boolean?  @default(false) @map("message_history")
   autoReply          Boolean?  @default(false) @map("auto_reply")
   createdAt          DateTime? @default(now()) @map("created_at")
