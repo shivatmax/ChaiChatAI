@@ -16,7 +16,12 @@ export const useAIFriend = (id: string, userId: string) =>
     queryFn: async () => {
       const { data, error } = await supabase
         .from('AIFriend')
-        .select('*')
+        .select(
+          `
+          *,
+          avatar:Avatar(id, image_url)
+        `
+        )
         .eq('id', id)
         .eq('user_id', userId)
         .single();
@@ -35,7 +40,7 @@ export const useAIFriends = (userId: string) =>
         .select(
           `
           *,
-          avatar:Avatar!avatar_id(image_url)
+          avatar:Avatar(id, image_url)
         `
         )
         .eq('user_id', userId);
@@ -45,7 +50,7 @@ export const useAIFriends = (userId: string) =>
       // Transform the data to include avatar_url from the avatar relation
       return data.map((friend) => ({
         ...friend,
-        avatar_url: friend.avatar?.image_url,
+        avatar_url: friend.avatar?.image_url || '',
       }));
     },
   });
@@ -89,20 +94,50 @@ export const useUpdateAIFriend = () => {
       updatedAIFriend,
       userId,
     }: {
-      updatedAIFriend: Partial<AIFriend> & { id: string };
+      updatedAIFriend: Partial<AIFriend> & { id: string; avatar_id: string };
       userId: string;
     }) => {
+      const { avatar, avatar_url, ...updateData } =
+        updatedAIFriend as Partial<AIFriend> & {
+          id: string;
+          avatar_id: string;
+          avatar?: { id: string; image_url: string };
+          avatar_url?: string;
+        };
+
+      console.log('updateData', updateData);
+      console.log('avatar', avatar);
+      console.log('avatar_url', avatar_url);
+      // First update the Avatar
+      const { error: avatarError } = await supabase
+        .from('Avatar')
+        .update({
+          name: updateData.name,
+          about: updateData.about,
+          persona: updateData.persona,
+          knowledge_base: updateData.knowledge_base,
+          status: updateData.status,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', updatedAIFriend.avatar_id);
+
+      if (avatarError) throw new Error(avatarError.message);
+
+      // Then update the AIFriend
       const { data, error } = await supabase
         .from('AIFriend')
         .update({
-          ...updatedAIFriend,
+          ...updateData,
           updated_at: new Date().toISOString(),
         })
         .eq('id', updatedAIFriend.id)
-        .eq('user_id', userId);
+        .eq('user_id', userId).select(`
+          *,
+          avatar:Avatar(id, image_url)
+        `);
 
       if (error) throw new Error(error.message);
-      return data;
+      return data[0];
     },
     onSuccess: (_, { userId }) => {
       queryClient.invalidateQueries({ queryKey: ['aiFriends', userId] });

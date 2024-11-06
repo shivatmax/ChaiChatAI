@@ -63,7 +63,7 @@ const AvatarCard = ({
     <>
       <div
         className={cn(
-          'group relative bg-white/80 backdrop-blur-sm rounded-lg shadow-sm overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105 border border-avatar-primary/5 animate-fade-in min-w-[140px]',
+          'group relative bg-white/90 backdrop-blur-sm rounded-xl shadow-sm overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] border border-avatar-primary/10 animate-fade-in min-w-[120px] md:min-w-[140px]',
           className
         )}
       >
@@ -71,30 +71,30 @@ const AvatarCard = ({
           <Image
             src={image_url || '/images/comic/1.png'}
             alt={name || 'Avatar'}
-            width={400}
-            height={400}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            width={300}
+            height={300}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             priority={true}
           />
         </div>
-        <div className="p-2 sm:p-3 lg:p-4">
-          <div className="flex items-center justify-between mb-1 sm:mb-2">
-            <h3 className="font-semibold text-sm sm:text-base lg:text-lg text-avatar-primary line-clamp-1">
+        <div className="p-2.5 md:p-3.5">
+          <div className="flex items-start justify-between gap-3 mb-2.5">
+            <h3 className="font-semibold text-xs md:text-sm text-avatar-primary line-clamp-1 flex-1">
               {name}
             </h3>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               {showPrivacyControls && (
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     setShowPrivacyDialog(true);
                   }}
-                  className="focus:outline-none transform transition-transform active:scale-90"
+                  className="focus:outline-none transform transition-transform active:scale-90 p-1.5"
                 >
                   {is_public ? (
-                    <Eye className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-avatar-primary" />
+                    <Eye className="w-3.5 h-3.5 md:w-4 md:h-4 text-avatar-primary/70 hover:text-avatar-primary" />
                   ) : (
-                    <EyeOff className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-avatar-primary" />
+                    <EyeOff className="w-3.5 h-3.5 md:w-4 md:h-4 text-avatar-primary/70 hover:text-avatar-primary" />
                   )}
                 </button>
               )}
@@ -103,11 +103,11 @@ const AvatarCard = ({
                   e.stopPropagation();
                   onFavoriteToggle();
                 }}
-                className="focus:outline-none transform transition-transform active:scale-90"
+                className="focus:outline-none transform transition-transform active:scale-90 p-1.5"
               >
                 <Star
                   className={cn(
-                    'w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 transition-colors duration-300',
+                    'w-3.5 h-3.5 md:w-4 md:h-4 transition-colors duration-300',
                     isFavorite
                       ? 'text-avatar-accent fill-avatar-accent'
                       : 'text-gray-400 hover:text-avatar-hover'
@@ -116,22 +116,22 @@ const AvatarCard = ({
               </button>
             </div>
           </div>
-          <p className="text-xs lg:text-sm text-avatar-primary/60 mb-1 sm:mb-2">
+          <p className="text-[10px] md:text-xs text-avatar-primary/60 mb-2">
             {creator}
           </p>
-          <p className="text-xs lg:text-sm text-avatar-primary/80 line-clamp-2 mb-2 sm:mb-3">
+          <p className="text-[10px] md:text-xs text-avatar-primary/80 line-clamp-2 mb-3.5">
             {description}
           </p>
-          <div className="flex items-center justify-between flex-wrap gap-y-1">
-            <div className="text-xs lg:text-sm text-avatar-primary/60 font-medium">
+          <div className="flex flex-col gap-2.5">
+            <div className="text-[10px] md:text-xs text-avatar-primary/60 font-medium">
               {interactions.toLocaleString()} interactions
             </div>
-            <div className="flex gap-1 flex-wrap justify-end">
+            <div className="flex flex-wrap gap-1.5">
               {tags.map((tag) => (
                 <Badge
                   key={tag}
                   variant="secondary"
-                  className="bg-avatar-secondary/80 text-avatar-primary text-[10px] sm:text-xs px-1.5 py-0.5 sm:px-2 lg:px-3 lg:py-1"
+                  className="bg-avatar-secondary/70 text-avatar-primary text-[8px] md:text-[10px] px-1.5 py-0.5 rounded-full"
                 >
                   {tag}
                 </Badge>
@@ -142,28 +142,30 @@ const AvatarCard = ({
       </div>
 
       <AlertDialog open={showPrivacyDialog} onOpenChange={setShowPrivacyDialog}>
-        <AlertDialogContent className="bg-white/95 backdrop-blur-sm">
+        <AlertDialogContent className="bg-white/95 backdrop-blur-sm max-w-[85vw] md:max-w-sm rounded-xl p-3.5 md:p-5">
           <AlertDialogHeader>
-            <AlertDialogTitle>Change Avatar Visibility</AlertDialogTitle>
-            <AlertDialogDescription className="space-y-2">
+            <AlertDialogTitle className="text-base md:text-lg font-semibold text-avatar-primary">
+              Change Avatar Visibility
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-2.5 text-xs md:text-sm text-avatar-primary/70">
               <p>
                 Are you sure you want to make this avatar{' '}
                 {is_public ? 'private' : 'public'}?
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-[10px] md:text-xs text-avatar-primary/60">
                 {is_public
                   ? 'Private avatars are only visible to you'
                   : 'Public avatars can be seen by everyone'}
               </p>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="hover:bg-avatar-secondary">
+          <AlertDialogFooter className="flex gap-2.5 mt-5">
+            <AlertDialogCancel className="flex-1 px-3.5 py-1.5 rounded-lg text-xs md:text-sm hover:bg-avatar-secondary/10">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handlePrivacyConfirm}
-              className="bg-avatar-primary hover:bg-avatar-hover"
+              className="flex-1 px-3.5 py-1.5 rounded-lg text-xs md:text-sm bg-avatar-primary text-white hover:bg-avatar-hover"
             >
               Make {is_public ? 'Private' : 'Public'}
             </AlertDialogAction>

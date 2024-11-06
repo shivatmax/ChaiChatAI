@@ -10,5 +10,9 @@ export interface AIFriend {
   status: boolean;
   created_at?: Date;
   updated_at?: Date;
+  avatar?: {
+    id: string;
+    image_url: string;
+  };
   avatar_url?: string;
 }

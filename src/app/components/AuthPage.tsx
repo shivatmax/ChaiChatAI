@@ -162,7 +162,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess, onNavigate }) => {
     try {
       // Create default UserSettings
       const defaultSettings = {
-        id: crypto.randomUUID(),
+        id: uuidv4(),
         user_id: userId,
         email_notifications: false,
         push_notifications: false,
@@ -176,7 +176,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess, onNavigate }) => {
 
       // Create default AccountSettings
       const defaultAccount = {
-        id: crypto.randomUUID(),
+        id: uuidv4(),
         user_id: userId,
         subscription_plan: 'FREE',
         bio: '',
@@ -186,7 +186,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess, onNavigate }) => {
 
       // Create default UsageStatistics
       const defaultUsage = {
-        id: crypto.randomUUID(),
+        id: uuidv4(),
         user_id: userId,
         total_conversations: 0,
         total_ai_friends: 0,

@@ -382,3 +382,15 @@
     display: none;
   }
 }
+
+.dialog-overlay {
+  background-color: transparent !important;
+}
+
+[data-overlay-container='true'] {
+  background: transparent;
+}
+
+.dialog-overlay {
+  background: transparent !important;
+}
