@@ -76,7 +76,7 @@ model AIFriend {
   status         Boolean  @default(true)
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
-  is_original    Boolean  @default(false)
+  is_original    Boolean  @default(true)
   original_id    String?
   max_uses       Int      @default(5)
   in_use         Boolean  @default(false)
