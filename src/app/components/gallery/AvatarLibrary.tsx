@@ -150,6 +150,7 @@ const AvatarLibrary = ({ userId }: { userId: string }) => {
             knowledge_base: avatar.knowledge_base,
             memory: avatar.memory,
             status: true,
+            in_use: true,
             created_at: now,
             updated_at: now,
             is_original: userId === avatar.creator_id,
@@ -161,9 +162,13 @@ const AvatarLibrary = ({ userId }: { userId: string }) => {
 
       if (aiFriendError) throw aiFriendError;
 
-      await queryClient.invalidateQueries({
-        queryKey: ['aiFriends', userId],
-      });
+      // Invalidate and refetch all relevant queries
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['aiFriends', userId] }),
+        queryClient.invalidateQueries({ queryKey: ['inUseAvatars', userId] }),
+        queryClient.invalidateQueries({ queryKey: ['userAIFriends', userId] }),
+        refetchInUseAvatars(),
+      ]);
 
       toast({
         title: 'Success',
@@ -179,6 +184,30 @@ const AvatarLibrary = ({ userId }: { userId: string }) => {
       });
     }
   };
+
+  const { data: inUseAvatars = [], refetch: refetchInUseAvatars } = useQuery({
+    queryKey: ['inUseAvatars', userId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('AIFriend')
+        .select('avatar_id')
+        .eq('user_id', userId)
+        .eq('status', true)
+        .eq('in_use', true);
+      return data?.map((item) => item.avatar_id) || [];
+    },
+  });
+
+  const { data: userAIFriends = [] } = useQuery({
+    queryKey: ['userAIFriends', userId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('AIFriend')
+        .select('avatar_id')
+        .eq('user_id', userId);
+      return data?.map((item) => item.avatar_id) || [];
+    },
+  });
 
   return (
     <div className="flex h-full overflow-hidden bg-white relative">
@@ -303,6 +332,8 @@ const AvatarLibrary = ({ userId }: { userId: string }) => {
                 favorites={favorites}
                 onUseAsAIFriend={handleUseAsAIFriend}
                 userId={userId}
+                inUseAvatars={inUseAvatars}
+                userAIFriends={userAIFriends}
               />
             </div>
           </div>

@@ -11,6 +11,8 @@ interface AvatarGridProps {
   favorites: string[];
   onUseAsAIFriend: (id: string) => void;
   userId: string;
+  inUseAvatars: string[];
+  userAIFriends: string[];
 }
 
 const AvatarGrid = ({
@@ -22,6 +24,8 @@ const AvatarGrid = ({
   favorites,
   onUseAsAIFriend,
   userId,
+  inUseAvatars,
+  userAIFriends,
 }: AvatarGridProps) => {
   if (isLoading) {
     return (
@@ -57,6 +61,8 @@ const AvatarGrid = ({
             showPrivacyControls={showPrivacyControls}
             isCreator={avatar.creator_id === userId}
             onUseAsAIFriend={onUseAsAIFriend}
+            isInUse={inUseAvatars.includes(avatar.id)}
+            hasAIFriend={userAIFriends.includes(avatar.id)}
           />
         );
       })}

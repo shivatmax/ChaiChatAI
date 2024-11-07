@@ -265,7 +265,25 @@ const AIFriendList: React.FC<AIFriendListProps> = React.memo(
                           onAIFriendUpdated={() => {}}
                           userId={userId}
                         >
-                          <Pencil className="h-5 w-5 text-blue-600/70 hover:text-blue-600 transition-colors duration-200" />
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span>
+                                <Pencil
+                                  className={`h-5 w-5 ${
+                                    friend.is_original &&
+                                    friend.user_id === userId
+                                      ? 'text-blue-600/70 hover:text-blue-600'
+                                      : 'text-gray-400 cursor-not-allowed'
+                                  } transition-colors duration-200`}
+                                />
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              {friend.is_original && friend.user_id === userId
+                                ? 'Edit AI Friend'
+                                : 'Cannot edit - Not original creator'}
+                            </TooltipContent>
+                          </Tooltip>
                         </AIFriendEditor>
                         <Button
                           variant="ghost"

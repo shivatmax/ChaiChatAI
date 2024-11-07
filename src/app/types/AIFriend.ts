@@ -15,4 +15,5 @@ export interface AIFriend {
     image_url: string;
   };
   avatar_url?: string;
+  is_original?: boolean;
 }

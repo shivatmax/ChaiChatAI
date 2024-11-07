@@ -34,6 +34,8 @@ interface AvatarCardProps {
   showPrivacyControls?: boolean;
   onUseAsAIFriend?: (id: string) => void;
   isCreator?: boolean;
+  isInUse?: boolean;
+  hasAIFriend?: boolean;
 }
 
 const AvatarCard = ({
@@ -55,12 +57,27 @@ const AvatarCard = ({
   showPrivacyControls,
   onUseAsAIFriend,
   isCreator,
+  isInUse,
+  hasAIFriend,
 }: AvatarCardProps) => {
   const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
 
   const handlePrivacyConfirm = () => {
     onPrivacyToggle?.(id);
     setShowPrivacyDialog(false);
+  };
+
+  const getButtonText = () => {
+    if (isInUse) return 'In Use';
+    if (isCreator && hasAIFriend) return 'Edit AI Friend';
+    return 'Use as AI Friend';
+  };
+
+  const getButtonStyle = () => {
+    if (isInUse) {
+      return 'bg-gray-400 cursor-not-allowed opacity-75';
+    }
+    return 'bg-gradient-to-r from-green-400 to-green-300 hover:from-green-500 hover:to-green-400';
   };
 
   return (
@@ -122,11 +139,14 @@ const AvatarCard = ({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    onUseAsAIFriend?.(id);
+                    if (!isInUse) {
+                      onUseAsAIFriend?.(id);
+                    }
                   }}
-                  className="bg-gradient-to-r from-green-400 to-green-300 hover:from-green-500 hover:to-green-400 text-white text-sm px-2 py-1 rounded-lg shadow-sm transition-all duration-300"
+                  disabled={isInUse}
+                  className={`${getButtonStyle()} text-white text-sm px-2 py-1 rounded-lg shadow-sm transition-all duration-300`}
                 >
-                  {isCreator ? 'Edit AI Friend' : 'Use as AI Friend'}
+                  {getButtonText()}
                 </button>
               )}
             </div>

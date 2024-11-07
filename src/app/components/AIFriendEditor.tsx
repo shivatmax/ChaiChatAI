@@ -35,6 +35,8 @@ const AIFriendEditor: React.FC<AIFriendEditorProps> = ({
   const { toast } = useToast();
   const updateAIFriend = useUpdateAIFriend();
 
+  const canEdit = friend.is_original && friend.user_id === userId;
+
   const validateField = (field: string, value: string) => {
     const newErrors = { ...errors };
 
@@ -103,7 +105,15 @@ const AIFriendEditor: React.FC<AIFriendEditorProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm" className="p-0">
+        <Button
+          variant="ghost"
+          size="sm"
+          disabled={!canEdit}
+          className={`p-1 hover:bg-blue-100 transition-colors duration-200 rounded-lg ${
+            !canEdit ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
+          onClick={(e) => e.stopPropagation()}
+        >
           {children}
         </Button>
       </DialogTrigger>
