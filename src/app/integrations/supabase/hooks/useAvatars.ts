@@ -126,3 +126,37 @@ export const useAvatarAsAIFriend = async (avatarId: string, userId: string) => {
 
   return aiFriend;
 };
+
+export const updateAvatar = async (
+  avatarId: string,
+  userId: string,
+  data: {
+    name: string;
+    description: string;
+    tags: string[];
+    is_public: boolean;
+  }
+) => {
+  console.log('Updating avatar with data:', data);
+
+  const { error } = await supabase
+    .from('Avatar')
+    .update({
+      name: data.name,
+      description: data.description,
+      tags: data.tags,
+      is_public: data.is_public,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', avatarId)
+    .eq('creator_id', userId)
+    .select('*')
+    .single();
+
+  if (error) {
+    console.error('Error updating avatar:', error);
+    throw error;
+  }
+
+  return true;
+};

@@ -3,7 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import Navigation from './Navigation';
 import {
   fetchAvatars,
-  toggleAvatarPrivacy,
+  // toggleAvatarPrivacy,
+  updateAvatar,
   // useAvatarAsAIFriend,
 } from '../../integrations/supabase/hooks/useAvatars';
 import { useToast } from '../ui/use-toast';
@@ -60,20 +61,37 @@ const AvatarLibrary = ({ userId }: { userId: string }) => {
     queryFn: () => fetchAvatars(activeSection, userId),
   });
 
-  const togglePrivacy = async (avatarId: string) => {
+  const togglePrivacy = async (
+    avatarId: string,
+    data: {
+      name: string;
+      description: string;
+      tags: string[];
+      is_public: boolean;
+    }
+  ) => {
     try {
-      const newIsPublic = await toggleAvatarPrivacy(avatarId, userId);
+      console.log('Sending update with data:', data);
+      await updateAvatar(avatarId, userId, {
+        name: data.name || '',
+        description: data.description || '',
+        tags: Array.isArray(data.tags) ? data.tags : [],
+        is_public: Boolean(data.is_public),
+      });
+
+      await queryClient.invalidateQueries({ queryKey: ['avatars'] });
+      await refetch();
+
       toast({
         title: 'Success',
-        description: `Avatar is now ${newIsPublic ? 'public' : 'private'}`,
+        description: 'Avatar updated successfully',
         className: 'bg-avatar-primary text-white',
       });
-      refetch();
     } catch (error) {
-      console.error(error);
+      console.error('Error in togglePrivacy:', error);
       toast({
         title: 'Error',
-        description: 'Failed to update avatar privacy. Please try again.',
+        description: 'Failed to update avatar. Please try again.',
         variant: 'destructive',
       });
     }
