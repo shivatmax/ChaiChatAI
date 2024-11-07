@@ -5,7 +5,7 @@ import { logger } from '../../../utils/logger';
 import { v4 as uuidv4 } from 'uuid';
 
 const fetchUser = async (currentUserId: string) => {
-  console.log('Fetching user data for ID:', currentUserId);
+  logger.debug('Fetching user data for ID:', currentUserId);
   const { data: user, error: userError } = await supabase
     .from('User')
     .select('*')
@@ -14,13 +14,13 @@ const fetchUser = async (currentUserId: string) => {
 
   if (userError) {
     if (userError.code === 'PGRST116') {
-      console.log('No user found for ID:', currentUserId);
+      logger.debug('No user found for ID:', currentUserId);
       return null;
     }
     throw userError;
   }
 
-  console.log('Raw user data:', user);
+  logger.debug('Raw user data:', user);
 
   // Decrypt user data
   let decryptedUser = { ...user };
@@ -47,10 +47,10 @@ const fetchUser = async (currentUserId: string) => {
   //         user.tag
   //       );
   //     }
-  //     console.log('Successfully decrypted user data');
+  //     logger.debug('Successfully decrypted user data');
   //   } catch (decryptError) {
   //     logger.error('Decryption error:', { error: decryptError });
-  //     console.log('Failed to decrypt user data, using encrypted values');
+  //     logger.debug('Failed to decrypt user data, using encrypted values');
   //     // Fallback to encrypted values
   //     decryptedUser.name = user.encrypted_name;
   //     decryptedUser.email = user.encrypted_email;
@@ -61,12 +61,12 @@ const fetchUser = async (currentUserId: string) => {
   decryptedUser.name = user.encrypted_name;
   decryptedUser.email = user.encrypted_email;
 
-  console.log('Returning user:', decryptedUser);
+  logger.debug('Returning user:', decryptedUser);
   return decryptedUser;
 };
 
 const fetchSettings = async (currentUserId: string) => {
-  console.log('Fetching settings for user ID:', currentUserId);
+  logger.debug('Fetching settings for user ID:', currentUserId);
   const { data, error } = await supabase
     .from('UserSettings')
     .select('*')
@@ -75,7 +75,7 @@ const fetchSettings = async (currentUserId: string) => {
 
   if (error) {
     if (error.code === 'PGRST116') {
-      console.log('No settings found, creating default settings');
+      logger.debug('No settings found, creating default settings');
       const defaultSettings = {
         id: uuidv4(),
         user_id: currentUserId,
@@ -99,7 +99,7 @@ const fetchSettings = async (currentUserId: string) => {
     }
     throw error;
   }
-  console.log('Settings data:', data);
+  logger.debug('Settings data:', data);
   return data;
 };
 
@@ -126,7 +126,7 @@ const fetchUsageStats = async (currentUserId: string) => {
 };
 
 const fetchAccount = async (currentUserId: string) => {
-  console.log('Fetching account settings for user ID:', currentUserId);
+  logger.debug('Fetching account settings for user ID:', currentUserId);
   const { data, error } = await supabase
     .from('AccountSettings')
     .select('*')
@@ -135,7 +135,7 @@ const fetchAccount = async (currentUserId: string) => {
 
   if (error) {
     if (error.code === 'PGRST116') {
-      console.log('No account settings found, creating default settings');
+      logger.debug('No account settings found, creating default settings');
       const defaultAccount = {
         userId: currentUserId,
         subscriptionPlan: 'FREE',
@@ -153,22 +153,22 @@ const fetchAccount = async (currentUserId: string) => {
     }
     throw error;
   }
-  console.log('Account settings:', data);
+  logger.debug('Account settings:', data);
   return data;
 };
 
 const fetchBeta = async () => {
-  console.log('Fetching beta features');
+  logger.debug('Fetching beta features');
   const { data, error } = await supabase.from('BetaFeatures').select('*');
 
   if (error) {
     if (error.code === 'PGRST116') {
-      console.log('No beta features found');
+      logger.debug('No beta features found');
       return [];
     }
     throw error;
   }
-  console.log('Beta features:', data);
+  logger.debug('Beta features:', data);
   return data;
 };
 
@@ -177,7 +177,7 @@ export const useUserData = (currentUserId: string) => {
     queryKey: ['user-data', currentUserId],
     queryFn: async () => {
       try {
-        console.log('Starting useUserData query for ID:', currentUserId);
+        logger.debug('Starting useUserData query for ID:', currentUserId);
         const [user, settings, usage, account, beta] = await Promise.all([
           fetchUser(currentUserId),
           fetchSettings(currentUserId),
@@ -193,7 +193,7 @@ export const useUserData = (currentUserId: string) => {
           account,
           beta,
         };
-        console.log('Final aggregated user data:', result);
+        logger.debug('Final aggregated user data:', result);
         return result;
       } catch (error) {
         logger.error('Error in useUserData:', error);

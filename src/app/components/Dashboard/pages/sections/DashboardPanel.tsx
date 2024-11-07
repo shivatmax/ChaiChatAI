@@ -10,6 +10,7 @@ import { Sheet, SheetContent, SheetTrigger } from '../../../ui/sheet';
 import React from 'react';
 import { useUserData } from '../../../../integrations/supabase/hooks/useUserData';
 import { updateUsageStats } from '../../../../integrations/supabase/hooks/useUpdateUsageStats';
+import { logger } from '@/app/utils/logger';
 
 type Tab = 'usage' | 'account' | 'settings' | 'beta';
 
@@ -23,10 +24,10 @@ const DashboardPanel = ({
   const [activeTab, setActiveTab] = useState<Tab>('usage');
   const { data: userData, isLoading, error } = useUserData(currentUserId);
 
-  console.log('DashboardPanel - userData:', userData);
-  console.log('DashboardPanel - isLoading:', isLoading);
-  console.log('DashboardPanel - error:', error);
-  console.log('DashboardPanel - currentUserId:', currentUserId);
+  logger.debug('DashboardPanel - userData:', userData);
+  logger.debug('DashboardPanel - isLoading:', isLoading);
+  logger.debug('DashboardPanel - error:', error);
+  logger.debug('DashboardPanel - currentUserId:', currentUserId);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

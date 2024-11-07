@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../supabase';
 import { AIFriend } from '../../../types/SupabaseTypes';
 import { v4 as uuidv4 } from 'uuid';
+import { logger } from '@/app/utils/logger';
 // import { PostgrestSingleResponse, PostgrestResponse } from '@supabase/supabase-js';
 
 // const fromSupabase = async <T>(query: Promise<PostgrestSingleResponse<T> | PostgrestResponse<T>>): Promise<T> => {
@@ -105,9 +106,9 @@ export const useUpdateAIFriend = () => {
           avatar_url?: string;
         };
 
-      console.log('updateData', updateData);
-      console.log('avatar', avatar);
-      console.log('avatar_url', avatar_url);
+      logger.debug('updateData', updateData);
+      logger.debug('avatar', avatar);
+      logger.debug('avatar_url', avatar_url);
       // First update the Avatar
       const { error: avatarError } = await supabase
         .from('Avatar')

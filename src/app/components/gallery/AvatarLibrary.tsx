@@ -19,6 +19,7 @@ import { useQueryClient } from '@tanstack/react-query';
 // import { createClient } from '@supabase/supabase-js';
 import { supabase } from '@/app/integrations/supabase';
 import { v4 as uuidv4 } from 'uuid';
+import { logger } from '@/app/utils/logger';
 
 const AVATAR_CATEGORIES = [
   'All',
@@ -71,7 +72,7 @@ const AvatarLibrary = ({ userId }: { userId: string }) => {
     }
   ) => {
     try {
-      console.log('Sending update with data:', data);
+      logger.debug('Sending update with data:', data);
       await updateAvatar(avatarId, userId, {
         name: data.name || '',
         description: data.description || '',

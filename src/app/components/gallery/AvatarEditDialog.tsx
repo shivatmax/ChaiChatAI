@@ -11,6 +11,7 @@ import {
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
 import { X } from 'lucide-react';
+import { logger } from '@/app/utils/logger';
 
 const AVAILABLE_TAGS = [
   'Anime',
@@ -84,17 +85,17 @@ const AvatarEditDialog = ({
   };
 
   const handleSubmit = () => {
-    console.log('Tags:', tags);
-    console.log('Is Public:', isPublic);
-    console.log('Name:', name);
-    console.log('Description:', description);
+    logger.debug('Tags:', tags);
+    logger.debug('Is Public:', isPublic);
+    logger.debug('Name:', name);
+    logger.debug('Description:', description);
     const formData = {
       name: name.trim(),
       description: description.trim(),
       tags: tags,
       is_public: isPublic,
     };
-    console.log('Submitting form data:', formData);
+    logger.debug('Submitting form data:', formData);
     onConfirm(formData);
   };
 

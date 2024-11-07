@@ -1,5 +1,6 @@
 import { Avatar } from '@/app/types/avatar';
 import { supabase } from '../supabase';
+import { logger } from '@/app/utils/logger';
 
 export const fetchAvatars = async (section: string, userId: string) => {
   let query = supabase.from('Avatar').select(`
@@ -137,7 +138,7 @@ export const updateAvatar = async (
     is_public: boolean;
   }
 ) => {
-  console.log('Updating avatar with data:', data);
+  logger.debug('Updating avatar with data:', data);
 
   const { error } = await supabase
     .from('Avatar')

@@ -20,7 +20,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    // console.log('Sending request to Unify API:', body);
+    // logger.debug('Sending request to Unify API:', body);
 
     const response = await fetch(apiUrl, {
       method: 'POST',
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     }
 
     const data = await response.json();
-    // console.log('Unify API response:', data);
+    // logger.debug('Unify API response:', data);
     return NextResponse.json(data);
   } catch (error) {
     // console.error('Error in unify-proxy:', error);

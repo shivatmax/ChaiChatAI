@@ -6,6 +6,7 @@ import { useUserData } from '../../../../integrations/supabase/hooks/useUserData
 import { AccountPlans } from './account/AccountPlans';
 import { AccountDangerZone } from './account/AccountDangerZone';
 import React from 'react';
+import { logger } from '@/app/utils/logger';
 
 const Account = ({ currentUserId }: { currentUserId: string }) => {
   const { data: userData, isLoading, error } = useUserData(currentUserId);
@@ -16,9 +17,9 @@ const Account = ({ currentUserId }: { currentUserId: string }) => {
   //   bio: '',
   // });
 
-  console.log('Account - userData:', userData);
-  console.log('Account - isLoading:', isLoading);
-  console.log('Account - error:', error);
+  logger.debug('Account - userData:', userData);
+  logger.debug('Account - isLoading:', isLoading);
+  logger.debug('Account - error:', error);
 
   // useEffect(() => {
   //   if (userData?.account) {
