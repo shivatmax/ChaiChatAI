@@ -4,6 +4,7 @@ import Navigation from './Navigation';
 import {
   fetchAvatars,
   toggleAvatarPrivacy,
+  // useAvatarAsAIFriend,
 } from '../../integrations/supabase/hooks/useAvatars';
 import { useToast } from '../ui/use-toast';
 import SearchBar from './avatar/SearchBar';
@@ -13,6 +14,10 @@ import { useFavorites } from '../../hooks/useFavorites';
 import { cn } from '../../lib/utils';
 import React from 'react';
 import { Menu } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
+// import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/app/integrations/supabase';
+import { v4 as uuidv4 } from 'uuid';
 
 const AVATAR_CATEGORIES = [
   'All',
@@ -33,6 +38,7 @@ const AvatarLibrary = ({ userId }: { userId: string }) => {
   const { favorites, toggleFavorite } = useFavorites(userId);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(0);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -98,6 +104,81 @@ const AvatarLibrary = ({ userId }: { userId: string }) => {
   };
 
   const isMobile = windowWidth < 768;
+
+  const handleUseAsAIFriend = async (avatarId: string) => {
+    try {
+      // Check if user has reached the maximum limit
+      const { data: existingAIFriends, error: countError } = await supabase
+        .from('AIFriend')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('status', true);
+
+      if (countError) throw countError;
+
+      if (existingAIFriends && existingAIFriends.length >= 5) {
+        toast({
+          title: 'Limit Reached',
+          description: 'You can only have 5 active AI Friends at a time.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      const now = new Date().toISOString();
+
+      // Get the avatar details
+      const { data: avatar } = await supabase
+        .from('Avatar')
+        .select('*')
+        .eq('id', avatarId)
+        .single();
+
+      if (!avatar) throw new Error('Avatar not found');
+
+      // Create a new AI Friend using the avatar's properties
+      const { data: aiFriend, error: aiFriendError } = await supabase
+        .from('AIFriend')
+        .insert([
+          {
+            id: uuidv4(),
+            user_id: userId,
+            avatar_id: avatarId,
+            name: avatar.name,
+            about: avatar.about,
+            persona: avatar.persona,
+            knowledge_base: avatar.knowledge_base,
+            memory: avatar.memory,
+            status: true,
+            created_at: now,
+            updated_at: now,
+            is_original: userId === avatar.creator_id,
+            original_id: userId === avatar.creator_id ? null : avatarId,
+          },
+        ])
+        .select()
+        .single();
+
+      if (aiFriendError) throw aiFriendError;
+
+      await queryClient.invalidateQueries({
+        queryKey: ['aiFriends', userId],
+      });
+
+      toast({
+        title: 'Success',
+        description: `${aiFriend.name} has been added to your AI Friends!`,
+        className: 'bg-green-500 text-white',
+      });
+    } catch (error) {
+      console.error('Error using avatar as AI Friend:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to add AI Friend. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
 
   return (
     <div className="flex h-full overflow-hidden bg-white relative">
@@ -220,6 +301,8 @@ const AvatarLibrary = ({ userId }: { userId: string }) => {
                 onFavoriteToggle={toggleFavorite}
                 onPrivacyToggle={togglePrivacy}
                 favorites={favorites}
+                onUseAsAIFriend={handleUseAsAIFriend}
+                userId={userId}
               />
             </div>
           </div>

@@ -9,6 +9,8 @@ interface AvatarGridProps {
   onFavoriteToggle: (id: string) => void;
   onPrivacyToggle?: (id: string) => void;
   favorites: string[];
+  onUseAsAIFriend: (id: string) => void;
+  userId: string;
 }
 
 const AvatarGrid = ({
@@ -18,6 +20,8 @@ const AvatarGrid = ({
   onFavoriteToggle,
   onPrivacyToggle,
   favorites,
+  onUseAsAIFriend,
+  userId,
 }: AvatarGridProps) => {
   if (isLoading) {
     return (
@@ -51,6 +55,8 @@ const AvatarGrid = ({
             onFavoriteToggle={() => onFavoriteToggle(avatar.id)}
             onPrivacyToggle={() => onPrivacyToggle?.(avatar.id)}
             showPrivacyControls={showPrivacyControls}
+            isCreator={avatar.creator_id === userId}
+            onUseAsAIFriend={onUseAsAIFriend}
           />
         );
       })}

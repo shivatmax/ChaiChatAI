@@ -32,6 +32,8 @@ interface AvatarCardProps {
   onFavoriteToggle: () => void;
   onPrivacyToggle?: (id: string) => void;
   showPrivacyControls?: boolean;
+  onUseAsAIFriend?: (id: string) => void;
+  isCreator?: boolean;
 }
 
 const AvatarCard = ({
@@ -51,6 +53,8 @@ const AvatarCard = ({
   onFavoriteToggle,
   onPrivacyToggle,
   showPrivacyControls,
+  onUseAsAIFriend,
+  isCreator,
 }: AvatarCardProps) => {
   const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
 
@@ -114,6 +118,17 @@ const AvatarCard = ({
                   )}
                 />
               </button>
+              {onUseAsAIFriend && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onUseAsAIFriend?.(id);
+                  }}
+                  className="bg-gradient-to-r from-green-400 to-green-300 hover:from-green-500 hover:to-green-400 text-white text-sm px-2 py-1 rounded-lg shadow-sm transition-all duration-300"
+                >
+                  {isCreator ? 'Edit AI Friend' : 'Use as AI Friend'}
+                </button>
+              )}
             </div>
           </div>
           <p className="text-[10px] md:text-xs text-avatar-primary/60 mb-2">

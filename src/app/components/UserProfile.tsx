@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { User } from '../types/SupabaseTypes';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -58,17 +58,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
     [key: string]: string;
   }>({});
 
-  const validateField = (field: string, value: string) => {
-    if (field === 'name' && value.length < 3) {
-      return 'Name must be at least 3 characters long';
-    } else if (field !== 'name' && value.length < 6) {
-      return 'Must be at least 6 characters long';
-    } else {
-      return '';
-    }
-  };
-
-  const handleSave = async () => {
+  useEffect(() => {
     if (editedUser) {
       const errors: { [key: string]: string } = {};
 
@@ -87,17 +77,22 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
         }
       });
 
-      if (Object.keys(errors).length > 0) {
-        setValidationErrors(errors);
-        const errorMessages = Object.values(errors).join('\n');
-        toast({
-          title: 'Validation Error',
-          description: errorMessages,
-          variant: 'destructive',
-        });
-        return;
-      }
+      setValidationErrors(errors);
+    }
+  }, [editedUser]);
 
+  const validateField = (field: string, value: string) => {
+    if (field === 'name' && value.length < 3) {
+      return 'Name must be at least 3 characters long';
+    } else if (field !== 'name' && value.length < 6) {
+      return 'Must be at least 6 characters long';
+    } else {
+      return '';
+    }
+  };
+
+  const handleSave = async () => {
+    if (editedUser && Object.keys(validationErrors).length === 0) {
       try {
         await updateUserMutation.mutateAsync({
           ...editedUser,
@@ -116,6 +111,13 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
       } catch (error) {
         logger.error('Error updating user:', error);
       }
+    } else {
+      const errorMessages = Object.values(validationErrors).join('\n');
+      toast({
+        title: 'Validation Error',
+        description: errorMessages,
+        variant: 'destructive',
+      });
     }
   };
 
@@ -130,21 +132,11 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, isGlowing }) => {
             }
           : null
       );
-      const error = validateField('name', newName);
-      setValidationErrors((prev) => ({
-        ...prev,
-        name: error,
-      }));
     }
   };
 
   const handleFieldChange = (field: string, value: string) => {
     setEditedUser((prev) => (prev ? { ...prev, [field]: value } : null));
-    const error = validateField(field, value);
-    setValidationErrors((prev) => ({
-      ...prev,
-      [field]: error,
-    }));
   };
 
   const handleAvatarUpload = async (

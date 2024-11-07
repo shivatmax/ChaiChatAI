@@ -76,6 +76,9 @@ model AIFriend {
   status         Boolean  @default(true)
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
+  is_original    Boolean  @default(false)
+  original_id    String?
+  max_uses       Int      @default(5)
 
   // Relations
   User                   User                  @relation(fields: [user_id], references: [id])

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../integrations/supabase/supabase';
 import { User } from '../types/SupabaseTypes';
 import LoadingScreen from '../components/LoadingScreen';
@@ -15,8 +15,19 @@ interface IndexProps {
 const Index: React.FC<IndexProps> = ({ onLogout, onNavigate }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const loadingTimeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
+    // Add timeout to handle stuck loading states
+    loadingTimeoutRef.current = setTimeout(() => {
+      if (loading) {
+        // Clear localStorage and redirect to login if loading takes too long
+        localStorage.clear();
+        onLogout();
+        onNavigate('/');
+      }
+    }, 4000); // 10 second timeout
+
     const fetchOrCreateUser = async () => {
       const userId = localStorage.getItem('userId');
       if (!userId) {
@@ -43,9 +54,9 @@ const Index: React.FC<IndexProps> = ({ onLogout, onNavigate }) => {
               id: userId,
               ...encryptedData,
               persona:
-                'Sarcastic comedian with a love for cereal and a hatred for close-talkers. Interests include observational humor, vintage cars, and Superman. Dislikes include puffy shirts, man-hands, and anyone who double-dips.',
+                'Sarcastic comedian with a love for cereal and a hatred for close-talkers.',
               about:
-                "I'm a 23-year-old New York native with a knack for turning everyday situations into comedy gold. When I'm not on stage, you can find me in my favorite diner, contemplating the absurdities of life.",
+                "I'm a 23-year-old New York native with a knack for turning everyday situations into comedy gold.",
               knowledge_base:
                 'Extensive repertoire of 90s pop culture references, fluent in English and sarcasm.',
               created_at: new Date().toISOString(),
@@ -71,6 +82,8 @@ const Index: React.FC<IndexProps> = ({ onLogout, onNavigate }) => {
         }
       } catch (error) {
         logger.error('Error fetching or creating user:', error);
+        // Clear localStorage on error
+        localStorage.clear();
         onLogout();
         onNavigate('/');
       } finally {
@@ -79,7 +92,14 @@ const Index: React.FC<IndexProps> = ({ onLogout, onNavigate }) => {
     };
 
     fetchOrCreateUser();
-  }, [onLogout, onNavigate]);
+
+    // Cleanup timeout on unmount or when loading completes
+    return () => {
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+      }
+    };
+  }, [loading, onLogout, onNavigate]);
 
   if (loading) {
     return <LoadingScreen />;

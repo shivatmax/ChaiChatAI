@@ -228,6 +228,7 @@ const AIFriendEditor: React.FC<AIFriendEditorProps> = ({
             </Button>
             <Button
               type="submit"
+              disabled={updateAIFriend.isPending}
               className="w-1/2 bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white rounded-xl transform hover:scale-105 transition-all duration-300"
             >
               <Save className="mr-2 h-5 w-5" /> Save

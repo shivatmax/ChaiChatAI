@@ -90,3 +90,39 @@ export const toggleAvatarFavorite = async (
 
   return newFavorites;
 };
+
+export const useAvatarAsAIFriend = async (avatarId: string, userId: string) => {
+  // First, get the avatar details
+  const { data: avatar, error: avatarError } = await supabase
+    .from('Avatar')
+    .select('*')
+    .eq('id', avatarId)
+    .single();
+
+  if (avatarError) throw avatarError;
+
+  // Create a new AI Friend using the avatar's properties
+  const now = new Date().toISOString();
+  const { data: aiFriend, error: aiFriendError } = await supabase
+    .from('AIFriend')
+    .insert([
+      {
+        user_id: userId,
+        avatar_id: avatarId,
+        name: avatar.name,
+        about: avatar.about,
+        persona: avatar.persona,
+        knowledge_base: avatar.knowledge_base,
+        memory: avatar.memory,
+        status: true,
+        created_at: now,
+        updated_at: now,
+      },
+    ])
+    .select()
+    .single();
+
+  if (aiFriendError) throw aiFriendError;
+
+  return aiFriend;
+};
