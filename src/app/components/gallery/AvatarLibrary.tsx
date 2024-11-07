@@ -232,7 +232,7 @@ const AvatarLibrary = ({ userId }: { userId: string }) => {
     <div className="flex h-full overflow-hidden bg-white relative">
       {/* Mobile Menu Button and Navigation */}
       {isMobile && (
-        <div className="fixed top-0 left-0 right-0 z-[100]">
+        <div className="fixed top-0 left-0 right-0">
           <div className="flex items-center justify-between p-3 bg-white border-b border-avatar-primary/10">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -270,10 +270,7 @@ const AvatarLibrary = ({ userId }: { userId: string }) => {
       )}
 
       <main
-        className={cn(
-          'flex-1 h-full overflow-hidden',
-          isMobile && 'w-full pt-[48px]'
-        )}
+        className={cn('flex-1 h-full overflow-hidden', isMobile && 'w-full')}
       >
         <div className="h-full flex flex-col">
           {/* Header Section */}
@@ -337,11 +334,11 @@ const AvatarLibrary = ({ userId }: { userId: string }) => {
           </div>
 
           {/* Spacer div */}
-          <div className="h-4 md:h-6 lg:h-8 bg-gray-50/50" />
+          <div className="h-4 md:h-6 lg:h-8 bg-gray-50/50 flex-shrink-0" />
 
           {/* Avatar Grid Section */}
-          <div className="flex-1 overflow-y-auto px-3 md:px-4 lg:px-8 py-6 bg-gray-50/50">
-            <div className="max-w-[2000px] mx-auto">
+          <div className="flex-1 min-h-0 overflow-y-auto scrollbar-none px-3 md:px-4 lg:px-8 py-6 bg-gray-50/50">
+            <div className="max-w-[2000px] mx-auto h-full">
               <AvatarGrid
                 avatars={filterAvatars()}
                 isLoading={isLoading}
