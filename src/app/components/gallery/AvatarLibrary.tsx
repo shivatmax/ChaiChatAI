@@ -232,7 +232,7 @@ const AvatarLibrary = ({ userId }: { userId: string }) => {
     <div className="flex h-full overflow-hidden bg-white relative">
       {/* Mobile Menu Button and Navigation */}
       {isMobile && (
-        <div className="fixed top-0 left-0 right-0">
+        <div className="fixed top-0 left-0 right-0 z-[100]">
           <div className="flex items-center justify-between p-3 bg-white border-b border-avatar-primary/10">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
