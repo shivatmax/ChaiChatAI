@@ -57,15 +57,28 @@ const AvatarEditDialog = ({
     if (open) {
       setName(initialData.name);
       setDescription(initialData.description);
-      setTags(Array.isArray(initialData.tags) ? initialData.tags : []);
+      const initialTags = Array.isArray(initialData.tags)
+        ? initialData.tags
+        : [];
+      // Ensure there are between 1-2 tags
+      if (initialTags.length > 2) {
+        setTags(initialTags.slice(0, 2));
+      } else if (initialTags.length === 0) {
+        setTags([AVAILABLE_TAGS[0]]);
+      } else {
+        setTags(initialTags);
+      }
       setIsPublic(Boolean(initialData.is_public));
     }
   }, [initialData, open]);
 
   const handleTagToggle = (tag: string) => {
     if (tags.includes(tag)) {
-      setTags(tags.filter((t) => t !== tag));
-    } else if (tags.length < 5) {
+      // Don't remove if it would leave 0 tags
+      if (tags.length > 1) {
+        setTags(tags.filter((t) => t !== tag));
+      }
+    } else if (tags.length < 2) {
       setTags([...tags, tag]);
     }
   };
@@ -119,7 +132,7 @@ const AvatarEditDialog = ({
 
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
-              Tags (max 5)
+              Tags (1-2 tags required)
             </label>
             <div className="flex flex-wrap gap-2">
               {AVAILABLE_TAGS.map((tag) => (

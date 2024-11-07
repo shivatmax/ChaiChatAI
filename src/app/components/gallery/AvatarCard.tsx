@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import React from 'react';
 import AvatarEditDialog from './AvatarEditDialog';
+import AvatarViewDialog from './AvatarViewDialog';
 
 interface AvatarCardProps {
   id: string;
@@ -57,6 +58,7 @@ const AvatarCard = ({
   hasAIFriend,
 }: AvatarCardProps) => {
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showViewDialog, setShowViewDialog] = useState(false);
 
   const handleEditConfirm = (data: {
     name: string;
@@ -87,10 +89,13 @@ const AvatarCard = ({
         className={cn(
           'group relative bg-white/95 backdrop-blur-md rounded-3xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] border border-gray-100/50',
           'hover:border-emerald-200/50',
+          'w-full', // Allow card to fill available grid space
           className
         )}
       >
-        <div className="aspect-[4/3] overflow-hidden">
+        <div className="h-[225px] md:h-[240px] lg:h-[255px] overflow-hidden">
+          {' '}
+          {/* Fixed aspect ratio */}
           <Image
             src={image_url || '/images/comic/1.png'}
             alt={name || 'Avatar'}
@@ -101,24 +106,24 @@ const AvatarCard = ({
           />
         </div>
 
-        <div className="p-6 space-y-4">
-          <div className="flex items-center justify-between gap-4">
-            <h3 className="font-bold text-base md:text-lg text-gray-800 line-clamp-1 flex-1">
+        <div className="p-4 md:p-5 lg:p-6 space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <h3 className="font-bold text-base md:text-lg text-gray-800 line-clamp-1 flex-1 min-w-0">
               {name}
             </h3>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 flex-shrink-0">
               {showPrivacyControls && (
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     setShowEditDialog(true);
                   }}
-                  className="focus:outline-none hover:text-gray-600 transition-colors p-2 rounded-full hover:bg-gray-100"
+                  className="focus:outline-none hover:text-gray-600 transition-colors p-1.5 rounded-full hover:bg-gray-100"
                 >
                   {is_public ? (
-                    <Eye className="w-5 h-5 md:w-6 md:h-6 text-gray-500" />
+                    <Eye className="w-5 h-5 text-gray-500" />
                   ) : (
-                    <EyeOff className="w-5 h-5 md:w-6 md:h-6 text-gray-500" />
+                    <EyeOff className="w-5 h-5 text-gray-500" />
                   )}
                 </button>
               )}
@@ -127,11 +132,11 @@ const AvatarCard = ({
                   e.stopPropagation();
                   onFavoriteToggle();
                 }}
-                className="focus:outline-none transition-transform active:scale-95 p-2 rounded-full hover:bg-gray-100"
+                className="focus:outline-none transition-transform active:scale-95 p-1.5 rounded-full hover:bg-gray-100"
               >
                 <Star
                   className={cn(
-                    'w-5 h-5 md:w-6 md:h-6 transition-colors duration-300',
+                    'w-5 h-5 transition-colors duration-300',
                     isFavorite
                       ? 'text-yellow-400 fill-yellow-400'
                       : 'text-gray-400 hover:text-yellow-400'
@@ -141,30 +146,43 @@ const AvatarCard = ({
             </div>
           </div>
 
-          <p className="text-sm md:text-base text-purple-600 font-medium">
+          <p className="text-sm text-purple-600 font-medium truncate">
             @{creator}
           </p>
 
-          <p className="text-sm md:text-base text-gray-600 line-clamp-2 leading-relaxed">
+          <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed h-[40px]">
             {description}
           </p>
 
-          <div className="pt-3 flex flex-col gap-4">
-            <div className="text-sm md:text-base text-gray-500 font-semibold">
+          <div className="pt-2 flex flex-col gap-3">
+            <div className="text-sm text-gray-500 font-semibold">
               {interactions.toLocaleString()} interactions
             </div>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5 min-h-[28px]">
               {tags.map((tag) => (
                 <Badge
                   key={tag}
                   variant="secondary"
-                  className="bg-emerald-50 text-emerald-700 text-xs md:text-sm px-3 py-1 rounded-full font-medium"
+                  className="bg-emerald-50 text-emerald-700 text-xs px-2 py-0.5 rounded-full font-medium"
                 >
                   {tag}
                 </Badge>
               ))}
             </div>
+
+            {!showPrivacyControls && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowViewDialog(true);
+                }}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors duration-200 text-sm font-medium text-gray-700"
+              >
+                <Eye className="w-4 h-4" />
+                View Details
+              </button>
+            )}
 
             {onUseAsAIFriend && (
               <button
@@ -175,7 +193,7 @@ const AvatarCard = ({
                   }
                 }}
                 disabled={isInUse}
-                className={`${getButtonStyle()} text-white text-sm md:text-base px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 w-full font-semibold transform hover:-translate-y-0.5`}
+                className={`${getButtonStyle()} text-white text-sm px-4 py-2 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 w-full font-semibold transform hover:-translate-y-0.5`}
               >
                 {getButtonText()}
               </button>
@@ -192,6 +210,18 @@ const AvatarCard = ({
           description: description || '',
           tags: Array.isArray(tags) ? tags : [],
           is_public: Boolean(is_public),
+        }}
+      />
+      <AvatarViewDialog
+        open={showViewDialog}
+        onOpenChange={setShowViewDialog}
+        avatar={{
+          name,
+          description,
+          tags,
+          creator,
+          image_url,
+          interactions,
         }}
       />
     </>
