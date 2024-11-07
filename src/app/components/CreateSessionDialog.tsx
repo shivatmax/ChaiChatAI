@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from './ui/dialog';
 import { Button } from './ui/button';
@@ -81,11 +82,20 @@ const CreateSessionDialog: React.FC<CreateSessionDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[550px] bg-gradient-to-br from-blue-50 to-white backdrop-blur-lg rounded-2xl border border-blue-200 shadow-2xl max-h-[96vh] overflow-y-auto">
+      <DialogContent
+        className="sm:max-w-[550px] bg-gradient-to-br from-blue-50 to-white backdrop-blur-lg rounded-2xl border border-blue-200 shadow-2xl max-h-[96vh] overflow-y-auto"
+        aria-describedby="create-session-description"
+      >
         <DialogHeader>
           <DialogTitle className="text-4xl font-bold bg-gradient-to-r from-blue-500 to-blue-400 bg-clip-text text-transparent">
             Create New Session
           </DialogTitle>
+          <DialogDescription
+            id="create-session-description"
+            className="text-lg text-blue-600/80 mt-2"
+          >
+            Create a new chat session by filling out the details below.
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="flex items-center justify-between p-4 bg-blue-50/50 rounded-xl backdrop-blur-sm">

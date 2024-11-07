@@ -1,7 +1,14 @@
 import { User, X } from 'lucide-react';
 import React from 'react';
 import { Button } from '../ui/button';
-import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '../ui/dialog';
 import AvatarLibrary from './AvatarLibrary';
 
 const AvatarButton = ({ userId }: { userId: string }) => {
@@ -13,7 +20,16 @@ const AvatarButton = ({ userId }: { userId: string }) => {
           Avatar Gallery
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-[90vw] h-[90vh] max-w-7xl bg-white/95 backdrop-blur-sm border border-avatar-primary/10 shadow-xl">
+      <DialogContent
+        className="w-[90vw] h-[90vh] max-w-7xl bg-white/95 backdrop-blur-sm border border-avatar-primary/10 shadow-xl"
+        aria-describedby="avatar-gallery-description"
+      >
+        <DialogHeader>
+          <DialogTitle>Avatar Gallery</DialogTitle>
+          <DialogDescription id="avatar-gallery-description">
+            Browse and select avatars from your collection
+          </DialogDescription>
+        </DialogHeader>
         <button
           onClick={() => {
             const closeButton = document.querySelector(

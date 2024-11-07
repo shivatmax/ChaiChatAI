@@ -45,6 +45,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from './ui/dialog';
 import { Input } from './ui/input';
 import { imageGen } from '../utils/models';
@@ -339,11 +340,18 @@ const AIFriendList: React.FC<AIFriendListProps> = React.memo(
           </AlertDialogContent>
         </AlertDialog>
         <Dialog open={isAvatarDialogOpen} onOpenChange={setIsAvatarDialogOpen}>
-          <DialogContent className="sm:max-w-[500px] bg-gradient-to-br from-blue-100 to-white backdrop-blur-xl rounded-2xl border border-blue-200">
+          <DialogContent
+            className="sm:max-w-[500px] bg-gradient-to-br from-blue-100 to-white backdrop-blur-xl rounded-2xl border border-blue-200"
+            aria-describedby="avatar-dialog-description"
+          >
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold text-blue-800 mb-4 text-center">
                 Update {selectedFriend?.name} Avatar
               </DialogTitle>
+              <DialogDescription id="avatar-dialog-description">
+                Choose to either upload a custom image or generate an AI-powered
+                avatar for your AI friend.
+              </DialogDescription>
             </DialogHeader>
             <Tabs defaultValue="upload" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-4 bg-blue-50 rounded-xl overflow-hidden">

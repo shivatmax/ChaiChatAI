@@ -81,9 +81,7 @@ export const AccountDangerZone = ({
         <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <AlertDialogContent
             className="max-w-md bg-gradient-to-b from-gray-900 to-gray-800 border-2 border-red-500/20"
-            role="alertdialog"
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
+            aria-describedby="delete-account-description"
           >
             <AlertDialogHeader>
               <AlertDialogTitle
@@ -93,7 +91,7 @@ export const AccountDangerZone = ({
                 Delete Account Permanently
               </AlertDialogTitle>
               <AlertDialogDescription
-                id="alert-dialog-description"
+                id="delete-account-description"
                 className="space-y-4"
               >
                 <p className="text-gray-300">
