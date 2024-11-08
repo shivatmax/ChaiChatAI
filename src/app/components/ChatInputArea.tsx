@@ -14,6 +14,7 @@ import {
   TooltipTrigger,
 } from './ui/tooltip';
 import { detectUrls } from '../utils/urlDetector';
+import AudioTranscriber from './AudioTranscriber';
 
 interface ChatInputAreaProps {
   inputMessage: string;
@@ -172,6 +173,12 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = React.memo(
               </Tooltip>
             </TooltipProvider>
           </GlowingComponent>
+          <AudioTranscriber
+            onTranscriptionComplete={(text) =>
+              setInputMessage((prev) => prev + text)
+            }
+            isDisabled={isDisabled}
+          />
           <motion.div
             whileHover={{ scale: isDisabled ? 1 : 1.1 }}
             whileTap={{ scale: isDisabled ? 1 : 0.9 }}
