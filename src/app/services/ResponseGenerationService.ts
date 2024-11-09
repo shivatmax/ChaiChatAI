@@ -70,12 +70,35 @@ export const generateAIResponse = async (
   webContent?: string
 ): Promise<string> => {
   // Fetch additional conversations from Supabase if needed
-  if (lastConversations.length < 20) {
+  if (lastConversations.length > 30) {
+    lastConversations = [...lastConversations].slice(-20);
+  } else if (lastConversations.length < 30) {
     const additionalConversations = await fetchConversationsFromSupabase(
       conversationId,
-      20
+      30
     );
-    lastConversations = [...additionalConversations].slice(-20);
+    // Merge consecutive messages from same sender
+    const mergedConversations = [];
+    let currentSender = '';
+    let currentMessage = '';
+
+    for (const conv of additionalConversations) {
+      const [sender, message] = conv.split(': ');
+      if (sender === currentSender) {
+        currentMessage += ' ' + message;
+      } else {
+        if (currentMessage) {
+          mergedConversations.push(`${currentSender}: ${currentMessage}`);
+        }
+        currentSender = sender;
+        currentMessage = message;
+      }
+    }
+    if (currentMessage) {
+      mergedConversations.push(`${currentSender}: ${currentMessage}`);
+    }
+
+    lastConversations = [...mergedConversations].slice(-20);
   }
 
   const { descriptionString, sessionType } =

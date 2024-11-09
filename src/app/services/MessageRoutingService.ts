@@ -9,6 +9,7 @@ export const routeMessage = async (
   message: string,
   user: User,
   aiFriends: AIFriend[],
+  conversationId: string,
   lastConversations: string[],
   fetchConversationsFromSupabase: (
     sessionId: string,
@@ -32,12 +33,35 @@ export const routeMessage = async (
   };
 
   // Fetch additional conversations from Supabase if needed
-  if (lastConversations.length < 10) {
+  if (lastConversations.length > 10) {
+    lastConversations = [...lastConversations].slice(-20);
+  } else if (lastConversations.length < 10) {
     const additionalConversations = await fetchConversationsFromSupabase(
-      message,
+      conversationId,
       10
     );
-    lastConversations = [...additionalConversations].slice(-10);
+    // Merge consecutive messages from same sender
+    const mergedConversations = [];
+    let currentSender = '';
+    let currentMessage = '';
+
+    for (const conv of additionalConversations) {
+      const [sender, message] = conv.split(': ');
+      if (sender === currentSender) {
+        currentMessage += ' ' + message;
+      } else {
+        if (currentMessage) {
+          mergedConversations.push(`${currentSender}: ${currentMessage}`);
+        }
+        currentSender = sender;
+        currentMessage = message;
+      }
+    }
+    if (currentMessage) {
+      mergedConversations.push(`${currentSender}: ${currentMessage}`);
+    }
+
+    lastConversations = [...mergedConversations].slice(-20);
   }
 
   const finalMessage = `lastConversations: ${lastConversations} and lastMessage of user ${user.name}: ${message}`;

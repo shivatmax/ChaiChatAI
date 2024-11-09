@@ -176,6 +176,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
           sanitizedMessage,
           user,
           aiFriends,
+          selectedSession || '',
           lastConversationsForRoute,
           fetchConversationsFromSupabase
         );
@@ -187,9 +188,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
         const { friends: respondingFriends, mode, webContent } = routeData;
 
         for (const friendName of respondingFriends || []) {
+          console.log('friendName', friendName);
           const aiFriend = aiFriends.find(
             (friend: AIFriend) => friend.name === friendName
           );
+          console.log('aiFriend', aiFriend);
           if (aiFriend) {
             setTypingFriend(aiFriend.name);
             const lastConversations = getLastConversations(
@@ -279,6 +282,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
                 }
               }
             }
+          } else {
+            console.log('aiFriend not found', friendName);
           }
         }
         setIsTyping(false);
