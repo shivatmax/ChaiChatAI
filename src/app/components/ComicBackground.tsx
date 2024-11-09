@@ -1,258 +1,261 @@
-// import { logger } from '../utils/logger';
-// import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import confetti from 'canvas-confetti';
 
-// const ComicBackground: React.FC = () => {
-//   const canvasRef = useRef<HTMLCanvasElement>(null);
-//   const [isDragging, setIsDragging] = useState(false);
-//   const [draggedElement, setDraggedElement] = useState<number | null>(null);
-//   const comicElementsRef = useRef<
-//     Array<{
-//       x: number;
-//       y: number;
-//       image: HTMLImageElement;
-//       scale: number;
-//       rotation: number;
-//       velocityX: number;
-//       velocityY: number;
-//       mass: number;
-//     }>
-//   >([]);
+interface Balloon {
+  id: number;
+  x: number;
+  y: number;
+  color: string;
+  size: number;
+  speed: number;
+  hasSurprise: boolean;
+  surpriseType: 'points' | 'confetti' | 'emoji' | 'message' | 'gift' | 'none';
+  surpriseValue: string;
+}
 
-//   const animate = useCallback(() => {
-//     const canvas = canvasRef.current;
-//     const ctx = canvas?.getContext('2d');
-//     if (!ctx || !canvas) return;
+const colors = ['#A5F3FC', '#BAE6FD', '#93C5FD']; // Light blue shades
 
-//     ctx.clearRect(0, 0, canvas.width, canvas.height);
+const surpriseMessages = [
+  '🎉 Awesome!',
+  '⭐ Great job!',
+  '🌟 Amazing!',
+  '🎨 Beautiful!',
+  '🚀 Fantastic!',
+];
 
-//     comicElementsRef.current.forEach((element, index) => {
-//       drawComicElement(ctx, element);
+const surpriseEmojis = [
+  '🎨',
+  '🎮',
+  '🎸',
+  '🎪',
+  '🎭',
+  '🎬',
+  '🎢',
+  '🎡',
+  '🎠',
+  '🎪',
+  '🎯',
+  '🎲',
+  '🎳',
+  '🎹',
+  '🎺',
+  '🎻',
+  '🎼',
+  '🎵',
+  '🎶',
+  '🎩',
+  '🎪',
+  '🎭',
+  '🎨',
+  '🎯',
+  '🎱',
+  '🎲',
+  '🎮',
+  '🕹️',
+  '🎰',
+  '🎳',
+  '🎯',
+  '🎪',
+  '🎭',
+  '🎨',
+  '🎬',
+  '🎤',
+  '🎧',
+  '🎼',
+  '🎹',
+  '🎸',
+  '🎺',
+  '🎻',
+  '🥁',
+  '🎷',
+  '🎵',
+  '🎶',
+  '🎙️',
+  '🎚️',
+  '🎛️',
+  '🎞️',
+];
 
-//       if (!isDragging || draggedElement !== index) {
-//         // Slow down the movement
-//         element.x += element.velocityX * 0.1;
-//         element.y += element.velocityY * 0.1;
-//         element.rotation += 0.001;
+const giftItems = [
+  '🎁 +10 Points!',
+  '🎵 Music Note!',
+  '🌈 Rainbow!',
+  '⚡ Power Up!',
+  '🍭 Candy!',
+  '🎉 Party!',
+];
 
-//         // Bounce off the walls with damping
-//         if (element.x < 0 || element.x > canvas.width) {
-//           element.velocityX *= -0.8;
-//           element.x = element.x < 0 ? 0 : canvas.width;
-//         }
-//         if (element.y < 0 || element.y > canvas.height) {
-//           element.velocityY *= -0.8;
-//           element.y = element.y < 0 ? 0 : canvas.height;
-//         }
+const ComicBackground: React.FC = () => {
+  const [balloons, setBalloons] = useState<Balloon[]>([]);
+  const [score, setScore] = useState(0);
 
-//         // Check collision with other elements
-//         for (let j = index + 1; j < comicElementsRef.current.length; j++) {
-//           checkCollision(element, comicElementsRef.current[j]);
-//         }
+  const createBalloon = () => {
+    const hasSurprise = Math.random() < 0.4; // 40% chance for surprise
+    const surpriseTypes = ['points', 'confetti', 'emoji', 'message', 'gift'];
+    const surpriseType = hasSurprise
+      ? surpriseTypes[Math.floor(Math.random() * surpriseTypes.length)]
+      : 'none';
 
-//         // Apply friction to slow down movement
-//         element.velocityX *= 0.99;
-//         element.velocityY *= 0.99;
-//       }
-//     });
+    let surpriseValue = '';
+    if (surpriseType === 'message') {
+      surpriseValue =
+        surpriseMessages[Math.floor(Math.random() * surpriseMessages.length)];
+    } else if (surpriseType === 'emoji') {
+      surpriseValue =
+        surpriseEmojis[Math.floor(Math.random() * surpriseEmojis.length)];
+    } else if (surpriseType === 'gift') {
+      surpriseValue = giftItems[Math.floor(Math.random() * giftItems.length)];
+    }
 
-//     requestAnimationFrame(animate);
-//   }, [isDragging, draggedElement]);
+    const newBalloon: Balloon = {
+      id: Date.now(),
+      x: Math.random() * (window.innerWidth - 80),
+      y: window.innerHeight + 50,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      size: Math.random() * (150 - 100) + 50,
+      speed: Math.random() * (2 - 1) + 0.5,
+      hasSurprise,
+      surpriseType: surpriseType as Balloon['surpriseType'],
+      surpriseValue: surpriseValue || 'Pop!',
+    };
+    setBalloons((prev) => [...prev, newBalloon]);
+  };
 
-//   useEffect(() => {
-//     const canvas = canvasRef.current;
-//     if (!canvas) return;
+  useEffect(() => {
+    const interval = setInterval(createBalloon, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
-//     const ctx = canvas.getContext('2d');
-//     if (!ctx) return;
+  useEffect(() => {
+    const animationFrame = requestAnimationFrame(function animate() {
+      setBalloons((prev) =>
+        prev
+          .map((balloon) => ({
+            ...balloon,
+            y: balloon.y - balloon.speed,
+          }))
+          .filter((balloon) => balloon.y > -100)
+      );
+      requestAnimationFrame(animate);
+    });
 
-//     canvas.width = window.innerWidth;
-//     canvas.height = window.innerHeight;
+    return () => cancelAnimationFrame(animationFrame);
+  }, []);
 
-//     const numElements = 11;
-//     const iconPaths = [
-//       '/images/comic/1.png',
-//       '/images/comic/2.png',
-//       '/images/comic/3.png',
-//       '/images/comic/4.png',
-//       '/images/comic/5.png',
-//       '/images/comic/6.png',
-//       '/images/comic/7.png',
-//       '/images/comic/8.png',
-//       '/images/comic/9.png',
-//       '/images/comic/10.png',
-//       '/images/comic/11.png',
-//     ];
+  const handlePop = (balloon: Balloon) => {
+    setBalloons((prev) => prev.filter((b) => b.id !== balloon.id));
 
-//     const loadImage = (src: string): Promise<HTMLImageElement> => {
-//       return new Promise((resolve) => {
-//         const img = new Image();
-//         img.onload = () => resolve(img);
-//         img.onerror = () => {
-//           logger.warn(`Failed to load image: ${src}`);
-//         };
-//         img.src = src;
-//       });
-//     };
+    // Handle different surprise types
+    switch (balloon.surpriseType) {
+      case 'points':
+        setScore((prev) => prev + 5);
+        showFloatingText('+5 Points!', balloon.x, balloon.y);
+        break;
+      case 'confetti':
+        confetti({
+          particleCount: 150,
+          spread: 180,
+          origin: {
+            x: balloon.x / window.innerWidth,
+            y: balloon.y / window.innerHeight,
+          },
+          colors: colors,
+        });
+        break;
+      case 'emoji':
+        showFloatingEmoji(balloon.surpriseValue, balloon.x, balloon.y);
+        setScore((prev) => prev + 2);
+        break;
+      case 'message':
+        showFloatingText(balloon.surpriseValue, balloon.x, balloon.y);
+        setScore((prev) => prev + 3);
+        break;
+      case 'gift':
+        showGiftAnimation(balloon.x, balloon.y);
+        setScore((prev) => prev + 10);
+        break;
+      default:
+        setScore((prev) => prev + 1);
+        showFloatingText('Pop!', balloon.x, balloon.y);
+    }
+  };
 
-//     const initializeElements = async () => {
-//       comicElementsRef.current = []; // Reset the elements array
-//       for (let i = 0; i < numElements; i++) {
-//         const imagePath = iconPaths[i];
-//         try {
-//           const image = await loadImage(imagePath);
-//           comicElementsRef.current.push({
-//             x: Math.random() * canvas.width,
-//             y: Math.random() * canvas.height,
-//             image: image,
-//             scale: Math.random() * 0.15 + 0.1,
-//             rotation: Math.random() * Math.PI * 2,
-//             velocityX: (Math.random() - 0.5) * 0.5, // Reduced initial velocity
-//             velocityY: (Math.random() - 0.5) * 0.5, // Reduced initial velocity
-//             mass: Math.random() * 0.5 + 0.5,
-//           });
-//         } catch (error) {
-//           logger.error(`Failed to load image: ${imagePath}`, error);
-//         }
-//       }
-//       animate();
-//     };
+  const showFloatingText = (text: string, x: number, y: number) => {
+    const element = document.createElement('div');
+    element.className = 'floating-text';
+    element.innerText = text;
+    element.style.left = `${x}px`;
+    element.style.top = `${y}px`;
+    document.body.appendChild(element);
+    setTimeout(() => element.remove(), 1000);
+  };
 
-//     initializeElements();
+  const showFloatingEmoji = (emoji: string, x: number, y: number) => {
+    const element = document.createElement('div');
+    element.className = 'floating-emoji';
+    element.innerText = emoji;
+    element.style.left = `${x}px`;
+    element.style.top = `${y}px`;
+    document.body.appendChild(element);
+    setTimeout(() => element.remove(), 1500);
+  };
 
-//     const handleResize = () => {
-//       canvas.width = window.innerWidth;
-//       canvas.height = window.innerHeight;
-//     };
+  const showGiftAnimation = (x: number, y: number) => {
+    const element = document.createElement('div');
+    element.className = 'gift-animation';
+    element.innerHTML = '🎁';
+    element.style.left = `${x}px`;
+    element.style.top = `${y}px`;
+    document.body.appendChild(element);
+    setTimeout(() => element.remove(), 2000);
+  };
 
-//     window.addEventListener('resize', handleResize);
+  return (
+    <div className="fixed inset-0 pointer-events-auto overflow-hidden">
+      <div className="absolute top-6 right-6 bg-white/90 backdrop-blur-md px-6 py-3 rounded-full shadow-glow filter-glow text-lg font-bold text-blue-600 transform hover:scale-105 transition-transform duration-200">
+        Score: {score}
+      </div>
 
-//     const handleMouseDown = (e: MouseEvent) => {
-//       const rect = canvas.getBoundingClientRect();
-//       const mouseX = e.clientX - rect.left;
-//       const mouseY = e.clientY - rect.top;
+      <div className="absolute top-6 left-4 bg-white/90 backdrop-blur-md px-6 py-4 rounded-2xl shadow-glow filter-glow text-lg font-bold text-blue-600 flex flex-col items-start">
+        <div>Pop balloons</div>
+        <div className="mt-1">for surprises!</div>
+      </div>
 
-//       for (let i = comicElementsRef.current.length - 1; i >= 0; i--) {
-//         const element = comicElementsRef.current[i];
-//         const dx = mouseX - element.x;
-//         const dy = mouseY - element.y;
-//         const distance = Math.sqrt(dx * dx + dy * dy);
+      <AnimatePresence>
+        {balloons.map((balloon) => (
+          <motion.div
+            key={balloon.id}
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            exit={{ scale: 0 }}
+            className="absolute pin-cursor"
+            style={{
+              left: balloon.x,
+              top: balloon.y,
+              width: balloon.size,
+              height: balloon.size * 1.2,
+            }}
+            onClick={() => handlePop(balloon)}
+          >
+            <div
+              className="balloon-string absolute left-1/2 top-full w-0.5 h-12 -translate-x-1/2"
+              style={{ backgroundColor: balloon.color }}
+            />
+            <svg
+              viewBox="0 0 50 60"
+              className="w-full h-full transform -translate-y-2"
+            >
+              <path
+                d="M25 0 C10 0 0 10 0 25 C0 40 10 50 25 50 C40 50 50 40 50 25 C50 10 40 0 25 0"
+                fill={balloon.color}
+              />
+            </svg>
+          </motion.div>
+        ))}
+      </AnimatePresence>
+    </div>
+  );
+};
 
-//         if (distance < (element.image.width * element.scale) / 2) {
-//           setIsDragging(true);
-//           setDraggedElement(i);
-//           // Reset velocity when starting to drag
-//           element.velocityX = 0;
-//           element.velocityY = 0;
-//           break;
-//         }
-//       }
-//     };
-
-//     const handleMouseMove = (e: MouseEvent) => {
-//       if (isDragging && draggedElement !== null) {
-//         const rect = canvas.getBoundingClientRect();
-//         const newX = e.clientX - rect.left;
-//         const newY = e.clientY - rect.top;
-//         const element = comicElementsRef.current[draggedElement];
-
-//         // Update position
-//         element.x = newX;
-//         element.y = newY;
-
-//         // Calculate new velocity based on movement (reduced for slower movement)
-//         element.velocityX = (newX - element.x) * 0.05;
-//         element.velocityY = (newY - element.y) * 0.05;
-//       }
-//     };
-
-//     const handleMouseUp = () => {
-//       setIsDragging(false);
-//       setDraggedElement(null);
-//     };
-
-//     canvas.addEventListener('mousedown', handleMouseDown);
-//     canvas.addEventListener('mousemove', handleMouseMove);
-//     canvas.addEventListener('mouseup', handleMouseUp);
-//     canvas.addEventListener('touchstart', (e) =>
-//       handleMouseDown(e.touches[0] as unknown as MouseEvent)
-//     );
-//     canvas.addEventListener('touchmove', (e) =>
-//       handleMouseMove(e.touches[0] as unknown as MouseEvent)
-//     );
-//     canvas.addEventListener('touchend', handleMouseUp);
-
-//     return () => {
-//       window.removeEventListener('resize', handleResize);
-//       canvas.removeEventListener('mousedown', handleMouseDown);
-//       canvas.removeEventListener('mousemove', handleMouseMove);
-//       canvas.removeEventListener('mouseup', handleMouseUp);
-//       canvas.removeEventListener('touchstart', (e) =>
-//         handleMouseDown(e.touches[0] as unknown as MouseEvent)
-//       );
-//       canvas.removeEventListener('touchmove', (e) =>
-//         handleMouseMove(e.touches[0] as unknown as MouseEvent)
-//       );
-//       canvas.removeEventListener('touchend', handleMouseUp);
-//     };
-//   }, [animate, draggedElement, isDragging]);
-
-//   function drawComicElement(
-//     ctx: CanvasRenderingContext2D,
-//     element: (typeof comicElementsRef.current)[0]
-//   ) {
-//     ctx.save();
-//     ctx.translate(element.x, element.y);
-//     ctx.rotate(element.rotation);
-//     ctx.scale(element.scale, element.scale);
-
-//     const width = element.image.width;
-//     const height = element.image.height;
-//     ctx.drawImage(element.image, -width / 2, -height / 2, width, height);
-
-//     ctx.restore();
-//   }
-
-//   function checkCollision(
-//     a: (typeof comicElementsRef.current)[0],
-//     b: (typeof comicElementsRef.current)[0]
-//   ) {
-//     const dx = b.x - a.x;
-//     const dy = b.y - a.y;
-//     const distance = Math.sqrt(dx * dx + dy * dy);
-//     const minDistance = (a.image.width * a.scale + b.image.width * b.scale) / 2;
-
-//     if (distance < minDistance) {
-//       const angle = Math.atan2(dy, dx);
-//       const targetX = a.x + Math.cos(angle) * minDistance;
-//       const targetY = a.y + Math.sin(angle) * minDistance;
-
-//       // Reduce the collision force for slower movement
-//       const ax = (targetX - b.x) * 0.01;
-//       const ay = (targetY - b.y) * 0.01;
-
-//       // Apply damping to the collision response
-//       const damping = 0.8;
-//       a.velocityX -= (ax / a.mass) * damping;
-//       a.velocityY -= (ay / a.mass) * damping;
-//       b.velocityX += (ax / b.mass) * damping;
-//       b.velocityY += (ay / b.mass) * damping;
-
-//       // Ensure minimum velocity for a bouncy effect
-//       const minVelocity = 0.1;
-//       a.velocityX =
-//         Math.sign(a.velocityX) * Math.max(Math.abs(a.velocityX), minVelocity);
-//       a.velocityY =
-//         Math.sign(a.velocityY) * Math.max(Math.abs(a.velocityY), minVelocity);
-//       b.velocityX =
-//         Math.sign(b.velocityX) * Math.max(Math.abs(b.velocityX), minVelocity);
-//       b.velocityY =
-//         Math.sign(b.velocityY) * Math.max(Math.abs(b.velocityY), minVelocity);
-//     }
-//   }
-
-//   return (
-//     <canvas ref={canvasRef} className="fixed top-0 left-0 w-full h-full z-0" />
-//   );
-// };
-
-// export default ComicBackground;
+export default ComicBackground;

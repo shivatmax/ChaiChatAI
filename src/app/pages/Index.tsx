@@ -6,6 +6,7 @@ import MainContent from '../components/MainContent';
 import { motion } from 'framer-motion';
 import { createEncryptedUser } from '../utils/encryption';
 import { logger } from '../utils/logger';
+import ComicBackground from '../components/ComicBackground';
 
 interface IndexProps {
   onLogout: () => void;
@@ -118,6 +119,7 @@ const Index: React.FC<IndexProps> = ({ onLogout, onNavigate }) => {
       className="relative min-h-screen w-full bg-gradient-to-b from-blue-50 to-blue-100"
     >
       <div className="max-w-[75rem] mx-auto px-4 py-4 relative z-10 h-[calc(100vh-2rem)]">
+        <ComicBackground />
         <MainContent user={user} onLogout={onLogout} />
       </div>
     </motion.div>

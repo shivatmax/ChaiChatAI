@@ -35,7 +35,7 @@ export async function POST(request: Request) {
 
     const { upload_url } = await uploadResponse.json();
 
-    // Start transcription
+    // Start transcription with improved parameters for multi-language support
     const transcribeResponse = await fetch(
       'https://api.assemblyai.com/v2/transcript',
       {
@@ -46,7 +46,9 @@ export async function POST(request: Request) {
         },
         body: JSON.stringify({
           audio_url: upload_url,
-          language_code: 'en',
+          language_detection: true, // Enable automatic language detection
+          punctuate: true, // Enable automatic punctuation
+          format_text: true, // Enable text formatting
         }),
       }
     );

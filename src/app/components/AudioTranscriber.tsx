@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Mic, MicOff, Loader2 } from 'lucide-react';
+import { Mic, Disc2, Loader2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { motion } from 'framer-motion';
 import { useToast } from '../hooks/use-toast';
@@ -104,11 +104,26 @@ const AudioTranscriber: React.FC<AudioTranscriberProps> = ({
         disabled={isDisabled || isProcessing}
       >
         {isProcessing ? (
-          <Loader2 className="h-4 w-4 sm:h-6 sm:w-6 text-blue-500 animate-spin" />
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+          >
+            <Loader2 className="h-4 w-4 sm:h-6 sm:w-6 text-blue-500 filter-glow" />
+          </motion.div>
         ) : isRecording ? (
-          <MicOff className="h-4 w-4 sm:h-6 sm:w-6 text-red-500" />
+          <motion.div
+            animate={{
+              scale: [1, 1.2, 1],
+              color: ['#ef4444', '#dc2626', '#ef4444'],
+            }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          >
+            <Disc2 className="h-4 w-4 sm:h-6 sm:w-6 text-red-500 filter-glow" />
+          </motion.div>
         ) : (
-          <Mic className="h-4 w-4 sm:h-6 sm:w-6 text-blue-500" />
+          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+            <Mic className="h-4 w-4 sm:h-6 sm:w-6 text-blue-500 filter-glow" />
+          </motion.div>
         )}
       </Button>
     </motion.div>
