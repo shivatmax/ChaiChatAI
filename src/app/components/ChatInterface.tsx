@@ -211,76 +211,92 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
             );
 
             const sentences = aiResponse.split(/(?<=[.!?])\s+/);
+            let combinedContent = '';
+
             for (const sentence of sentences) {
+              combinedContent += sentence + ' ';
+
+              if (
+                sentences.indexOf(sentence) === sentences.length - 1 ||
+                combinedContent.length > 200
+              ) {
+                const aiMessage: Message = {
+                  sender: aiFriend.name,
+                  content: combinedContent.trim(),
+                  timestamp: new Date(),
+                  avatar_url: aiFriend.avatar_url,
+                  mode: mode,
+                  webContent: webContent,
+                };
+                setMessages((prevMessages) => [...prevMessages, aiMessage]);
+
+                await addConversationHistory.mutateAsync({
+                  user_id: user.id,
+                  ai_friend_id: aiFriend.id,
+                  message: combinedContent.trim(),
+                  sender: aiFriend.name,
+                  conversation_id: selectedSession || '',
+                });
+
+                // Add the AI's response to the conversation storage
+                addConversation(
+                  selectedSession || '',
+                  `${aiFriend.name}: ${sentence}`
+                );
+
+                // Check localStorage first
+                const todaysSummaryDone = storageWithExpiry.getItem(
+                  `todays_summarys_${user.id}`
+                );
+
+                if (!todaysSummaryDone) {
+                  // Only check database if not in localStorage
+                  const { data: userData } = await supabase
+                    .from('User')
+                    .select('todaysSummary')
+                    .eq('id', user.id)
+                    .single();
+
+                  if (userData && !userData.todaysSummary) {
+                    // Run FriendsMemory
+                    await FriendsMemory(
+                      aiFriends || [],
+                      user.id,
+                      selectedSession || '',
+                      await generateFriendsSummary(aiFriends, user),
+                      fetchConversationsFromSupabase
+                    );
+
+                    // Update todaysSummary in database
+                    await supabase
+                      .from('User')
+                      .update({ todaysSummary: true })
+                      .eq('id', user.id);
+
+                    // Store in localStorage with 1 hour expiry
+                    storageWithExpiry.setItem(
+                      `todaysSummary_${user.id}`,
+                      true,
+                      3600000
+                    );
+                  }
+                }
+
+                // Add the AI's response to the conversation storage
+                addConversation(
+                  selectedSession || '',
+                  `${aiFriend.name}: ${combinedContent.trim()}`
+                );
+
+                combinedContent = '';
+              }
+
               await new Promise<void>((resolve) => {
                 timeoutRef.current = setTimeout(
-                  () => {
-                    const aiMessage: Message = {
-                      sender: aiFriend.name,
-                      content: sentence,
-                      timestamp: new Date(),
-                      avatar_url: aiFriend.avatar_url,
-                      mode: mode,
-                      webContent: webContent,
-                    };
-                    setMessages((prevMessages) => [...prevMessages, aiMessage]);
-                    resolve();
-                  },
-                  Math.random() * 2000 + 1000
+                  resolve,
+                  Math.random() * 1000 + 500
                 );
               });
-
-              await addConversationHistory.mutateAsync({
-                user_id: user.id,
-                ai_friend_id: aiFriend.id,
-                message: sentence,
-                sender: aiFriend.name,
-                conversation_id: selectedSession || '',
-              });
-
-              // Add the AI's response to the conversation storage
-              addConversation(
-                selectedSession || '',
-                `${aiFriend.name}: ${sentence}`
-              );
-
-              // Check localStorage first
-              const todaysSummaryDone = storageWithExpiry.getItem(
-                `todays_summarys_${user.id}`
-              );
-
-              if (!todaysSummaryDone) {
-                // Only check database if not in localStorage
-                const { data: userData } = await supabase
-                  .from('User')
-                  .select('todaysSummary')
-                  .eq('id', user.id)
-                  .single();
-
-                if (userData && !userData.todaysSummary) {
-                  // Run FriendsMemory
-                  await FriendsMemory(
-                    aiFriends || [],
-                    user.id,
-                    selectedSession || '',
-                    await generateFriendsSummary(aiFriends, user),
-                    fetchConversationsFromSupabase
-                  );
-
-                  // Update todaysSummary in database
-                  await supabase
-                    .from('User')
-                    .update({ todaysSummary: true })
-                    .eq('id', user.id);
-
-                  // Store in localStorage with 1 hour expiry
-                  storageWithExpiry.setItem(
-                    `todaysSummary_${user.id}`,
-                    true,
-                    3600000
-                  );
-                }
-              }
             }
           } else {
             console.log('aiFriend not found', friendName);

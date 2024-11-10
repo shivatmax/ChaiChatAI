@@ -592,3 +592,30 @@
       12 12,
     auto;
 }
+
+.mention {
+  @apply font-bold text-blue-700 dark:text-blue-500;
+  display: inline-block;
+  position: relative;
+}
+
+.mention:hover {
+  @apply text-blue-800 dark:text-blue-400;
+}
+
+/* Add mention styles */
+.mention-highlight {
+  @apply inline-block font-semibold bg-blue-100/50 text-blue-700 px-1 rounded hover:bg-blue-200/50 transition-colors duration-200;
+}
+
+.mention-highlight:hover {
+  @apply bg-blue-200/50;
+}
+
+.mention-text {
+  @apply inline-block font-semibold text-blue-600 bg-blue-50/80 px-1.5 py-0.5 rounded-md transition-all duration-200;
+}
+
+.mention-text:hover {
+  @apply bg-blue-100/80 text-blue-700 transform scale-[1.02];
+}

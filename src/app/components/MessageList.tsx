@@ -30,15 +30,19 @@ const MessageList: React.FC<MessageListProps> = React.memo(
 
     const renderMessageContent = (content: string) => {
       const urls = detectUrls(content);
-      if (urls.length === 0) return content;
-
       let renderedContent = content;
+
       urls.forEach((url) => {
         renderedContent = renderedContent.replace(
           url,
           `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 underline break-all transition-colors duration-300">${url}</a>`
         );
       });
+
+      renderedContent = renderedContent.replace(
+        /(@[\w\s]+?)(?=\s|$|\.|,|\?|!)/g,
+        '<span class="mention-text">$1</span>'
+      );
 
       return <span dangerouslySetInnerHTML={{ __html: renderedContent }} />;
     };
