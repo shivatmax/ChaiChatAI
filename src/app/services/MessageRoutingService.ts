@@ -4,11 +4,13 @@ import { logger } from '../utils/logger';
 interface RouterData {
   user: Partial<User>;
   activeFriends: Partial<AIFriend>[];
+  friendsSummary: string;
 }
 export const routeMessage = async (
   message: string,
   user: User,
   aiFriends: AIFriend[],
+  friendsSummary: string,
   conversationId: string,
   lastConversations: string[],
   fetchConversationsFromSupabase: (
@@ -30,6 +32,7 @@ export const routeMessage = async (
       about: friend.about,
       knowledge_base: friend.knowledge_base,
     })),
+    friendsSummary: friendsSummary,
   };
 
   // Fetch additional conversations from Supabase if needed

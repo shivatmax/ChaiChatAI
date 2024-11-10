@@ -44,7 +44,19 @@ const MessageList: React.FC<MessageListProps> = React.memo(
         '<span class="mention-text">$1</span>'
       );
 
-      return <span dangerouslySetInnerHTML={{ __html: renderedContent }} />;
+      renderedContent = renderedContent
+        .split(/(?<=[.!?])\s+/)
+        .map((sentence) => {
+          return `<span class="message-sentence">${sentence}</span>`;
+        })
+        .join(' ');
+
+      return (
+        <div
+          className="message-content whitespace-pre-wrap break-words"
+          dangerouslySetInnerHTML={{ __html: renderedContent }}
+        />
+      );
     };
 
     const getDisplayName = (user: User) => {
@@ -113,7 +125,7 @@ const MessageList: React.FC<MessageListProps> = React.memo(
               <p className="font-bold text-sm mb-2 text-blue-900/90">
                 {message.sender}
               </p>
-              <p className="text-sm leading-relaxed break-words">
+              <p className="text-sm leading-relaxed break-words message-content">
                 {renderMessageContent(message.content)}
               </p>
               <p className="text-xs mt-2 text-blue-800/70 font-light">
