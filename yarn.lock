@@ -2653,20 +2653,20 @@
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-2.0.0.tgz#f544a148d3ab35801c1f633a7441fd87c2e484bf"
   integrity sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==
 
-"@trigger.dev/build@^3.1.0":
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/@trigger.dev/build/-/build-3.1.1.tgz#38570b16b720cdc228a32de0f3de55a1aa4d6baf"
-  integrity sha512-Dt6KnZXq9C0Dna5KeUCJWraPVVBAok/UAZoMkwleOEvDItXMo5G9l8ZXKkUbywZ/j5MmqWw5a7WdbKN5ji/q4w==
+"@trigger.dev/build@3.1.2":
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/@trigger.dev/build/-/build-3.1.2.tgz#4a35f7afca7024d5fdfb56a0c4a4d90c5d947fda"
+  integrity sha512-Wv7ldZAqiEYF1ZCX5ukytQF+fUUsKVmyEBJ5HdzBIQhEk557qer1VVRHskGeM4e0hI2D4d3O7byI9KWCGBRofw==
   dependencies:
-    "@trigger.dev/core" "3.1.1"
+    "@trigger.dev/core" "3.1.2"
     pkg-types "^1.1.3"
     tinyglobby "^0.2.2"
     tsconfck "3.1.3"
 
-"@trigger.dev/core@3.1.1":
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/@trigger.dev/core/-/core-3.1.1.tgz#7d3b776039134032615f17810dca91c51b57e52f"
-  integrity sha512-xmJtPNNZHkdSQBfKAtwttj78vzdsVuxaUcE0knoeVllZcejMB8Xh8Lo0ZvdcvQ8jWsQzN82h5D555Tp0BioZig==
+"@trigger.dev/core@3.1.2":
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/@trigger.dev/core/-/core-3.1.2.tgz#1de74958dd17460719dddc22906aa22ed0b1e1da"
+  integrity sha512-a9kQK20zehyVuXxWm2j0st+ydmNU4SB+4Ye+rC4ZwwoTFFUb4D9p2uiEjqYrKKUAJxExj/mixgcldOlznfdJiw==
   dependencies:
     "@electric-sql/client" "0.6.3"
     "@google-cloud/precise-date" "^4.0.0"
@@ -2693,22 +2693,22 @@
     zod-error "1.5.0"
     zod-validation-error "^1.5.0"
 
-"@trigger.dev/nextjs@^3.1.0":
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/@trigger.dev/nextjs/-/nextjs-3.1.1.tgz#0660329cc53721b1787734be4a65807df158f191"
-  integrity sha512-9BHRuejBv0bRAlU+0oHKZlaB9BWSvBxfpe6zzR4af6k1+C1klA6Rd/TkXe51pBIdaey7cJv2vjgTW/w4OKCeEg==
+"@trigger.dev/nextjs@3.1.2":
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/@trigger.dev/nextjs/-/nextjs-3.1.2.tgz#ef55beb0a37e7899a2d8f7d5eee966c0508075de"
+  integrity sha512-uwdQE1vM7Do7xCbqpw4PKw8/YbW3mjwpeTK7so5hsrndcKDxhr5rarPrjQaAKt0saa7mhxwmp+wFnmeCeRdTvQ==
   dependencies:
     debug "^4.3.4"
 
-"@trigger.dev/sdk@^3.1.0":
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/@trigger.dev/sdk/-/sdk-3.1.1.tgz#354d488dc796edd7a25c84addd821eccf5344924"
-  integrity sha512-80hGrI9KtghwYKFgVWN0z8hQNDNLkRs7ZzIWnhgQc/aKJbtjopeJYfT61Q4G/KdY67W1J5kpN8JTc9kBEOBxmw==
+"@trigger.dev/sdk@3.1.2":
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/@trigger.dev/sdk/-/sdk-3.1.2.tgz#c83b2d4570650f3fdd93c991156f9b962efb7208"
+  integrity sha512-5G1mvZgTTFHaNzXV+wL5V6o2mfCd9gyH2jTehJVGDak2PbFTcXXLYHMY+TOWG0G2eAAdUm6kCGpCZCNYiY+StQ==
   dependencies:
     "@opentelemetry/api" "1.9.0"
     "@opentelemetry/api-logs" "0.52.1"
     "@opentelemetry/semantic-conventions" "1.25.1"
-    "@trigger.dev/core" "3.1.1"
+    "@trigger.dev/core" "3.1.2"
     chalk "^5.2.0"
     cronstrue "^2.21.0"
     debug "^4.3.4"
