@@ -343,6 +343,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
                 selectedSession={selectedSession}
                 onSelectSession={onSelectSession}
                 isGlowing={isSessionsGlowing}
+                isDisabled={isTyping}
               />
             </div>
           </div>
@@ -371,7 +372,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(
             setInputMessage={setInputMessage}
             handleSendMessage={handleSendMessage}
             isGlowing={isGlowing}
-            isDisabled={!selectedSession}
+            isDisabled={!selectedSession || isTyping}
+            isTyping={isTyping}
           />
         </div>
       </div>

@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 
 export const updateTodaysSummaryTask = schedules.task({
   id: 'update-todays-summary',
-  cron: '50 20 * * *', // 2:20 AM IST (UTC+5:30)
+  cron: '53 7 * * *', // 1:23 PM IST (UTC+5:30)
   maxDuration: 60,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   run: async (payload, { ctx }) => {

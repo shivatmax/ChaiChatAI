@@ -9,6 +9,7 @@ import Index from './pages/Index';
 import AuthPage from './components/AuthPage';
 import LoadingScreen from './components/LoadingScreen';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { getLatestSession } from './services/SessionService';
 
 const queryClient = new QueryClient();
 
@@ -20,12 +21,20 @@ export default function Home() {
   useEffect(() => {
     const checkAuth = () => {
       const userId = localStorage.getItem('userId');
-      setIsAuthenticated(!!userId);
+      if (userId) {
+        setIsAuthenticated(true);
+        // Redirect to the latest session or create a new one
+        getLatestSession(userId).then((session) => {
+          if (session) {
+            router.push(`/chat/${session.id}`);
+          }
+        });
+      }
       setIsLoading(false);
     };
 
     checkAuth();
-  }, []);
+  }, [router]);
 
   const handleNavigate = (path: string) => {
     router.push(path);

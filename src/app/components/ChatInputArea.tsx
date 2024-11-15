@@ -22,6 +22,7 @@ interface ChatInputAreaProps {
   handleSendMessage: () => void;
   isGlowing: boolean;
   isDisabled: boolean;
+  isTyping: boolean;
 }
 
 const ChatInputArea: React.FC<ChatInputAreaProps> = React.memo(
@@ -31,6 +32,7 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = React.memo(
     handleSendMessage,
     isGlowing,
     isDisabled,
+    isTyping,
   }) => {
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const emojiPickerRef = useRef<HTMLDivElement>(null);
@@ -123,7 +125,11 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = React.memo(
               </TooltipTrigger>
               {isDisabled && (
                 <TooltipContent>
-                  <p>Create a session to start chatting! ✨</p>
+                  <p>
+                    {isTyping
+                      ? 'Wait for your friends to finish'
+                      : 'Create a session to start chatting! ✨'}
+                  </p>
                 </TooltipContent>
               )}
             </Tooltip>
@@ -167,7 +173,11 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = React.memo(
                 </TooltipTrigger>
                 {isDisabled && (
                   <TooltipContent>
-                    <p>Create a session to start chatting! ✨</p>
+                    <p>
+                      {isTyping
+                        ? 'Wait for your friends to finish'
+                        : 'Create a session to start chatting! ✨'}
+                    </p>
                   </TooltipContent>
                 )}
               </Tooltip>
@@ -196,7 +206,11 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = React.memo(
               </TooltipTrigger>
               {isDisabled && (
                 <TooltipContent>
-                  <p>Create a session to start chatting! ✨</p>
+                  <p>
+                    {isTyping
+                      ? 'Wait for your friends to finish'
+                      : 'Create a session to start chatting! ✨'}
+                  </p>
                 </TooltipContent>
               )}
             </Tooltip>

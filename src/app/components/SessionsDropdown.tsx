@@ -35,12 +35,14 @@ interface SessionsDropdownProps {
   selectedSession: string | null;
   onSelectSession: (sessionId: string) => void;
   isGlowing: boolean;
+  isDisabled?: boolean;
 }
 
 const SessionsDropdown: React.FC<SessionsDropdownProps> = ({
   selectedSession,
   onSelectSession,
   isGlowing,
+  isDisabled,
 }) => {
   const userId = localStorage.getItem('userId');
   const { data: user } = useUser(userId || '');
@@ -140,8 +142,9 @@ const SessionsDropdown: React.FC<SessionsDropdownProps> = ({
   return (
     <>
       <Select
-        value={selectedSession || undefined}
+        value={selectedSession || ''}
         onValueChange={onSelectSession}
+        disabled={isDisabled}
       >
         <SelectTrigger className="w-[80px] sm:w-[250px] bg-gradient-to-r from-blue-400/90 to-sky-400/90 backdrop-blur-md border border-white/30 rounded-2xl shadow-lg hover:shadow-xl hover:from-blue-500/90 hover:to-sky-500/90 transition-all duration-300 focus:ring-2 focus:ring-white/40 text-sm font-medium py-2.5 px-4">
           <GlowingComponent isGlowing={isGlowing}>
