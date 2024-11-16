@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -H 0.0.0.0",
-    "build": "next build && prisma generate && npx trigger.dev@3.1.2 deploy",
+    "build": "next build && prisma generate",
     "start": "next start && prisma generate",
     "lint": "next lint && eslint . --ext .js,.jsx,.ts,.tsx --config eslint.config.mjs",
     "prepare": "husky install",
