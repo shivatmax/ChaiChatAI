@@ -1,5 +1,5 @@
 import { logger, schedules } from '@trigger.dev/sdk/v3';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../app/lib/prisma';
 
 export const updateTodaysSummaryTask = schedules.task({
   id: 'update-todays-summary',
@@ -7,8 +7,6 @@ export const updateTodaysSummaryTask = schedules.task({
   maxDuration: 60,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   run: async (payload, { ctx }) => {
-    const prisma = new PrismaClient();
-
     try {
       const result = await prisma.user.updateMany({
         where: {
@@ -26,8 +24,6 @@ export const updateTodaysSummaryTask = schedules.task({
     } catch (error) {
       logger.error('Error updating todaysSummary', { error });
       throw error;
-    } finally {
-      await prisma.$disconnect();
     }
   },
 });
